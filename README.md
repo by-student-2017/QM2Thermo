@@ -11,6 +11,10 @@ cd LBT-TETRA
 sudo apt update && sudo apt -y install gfortran build-essential make
 make
 ```
+- If you want to recompile it, just type:
+```
+make clean
+```
 
 
 ## Usage
