@@ -4,22 +4,6 @@
 - H. Sato et al., J. Phase Equilib. Diffus. 45, 397–415 (2024).: [https://doi.org/10.1007/s11669-024-01086-y](https://doi.org/10.1007/s11669-024-01086-y)
 
 
-## Input files
-- parameter.txt
-- phononDOS.dat (option)
-- lambda (option)
-- a2F.dos* (option) from 
-- Note: lambda and a2F.dos: QE format (Data from Abinit, etc. can be used if it matches the QE format.)
-
-
-## WIEN2k output files (test: WIEN2k ver.12 and ver.16. LDA, PBE, WC, PBEsol or TB-mBJ)
-- wien.dos1
-- wien.energy
-- wien.kgen
-- wien.klist
-- wien.struct
-
-
 ## Preparation: Compilation
 ```
 sudo apt update
@@ -37,6 +21,22 @@ make
 ```
 gnuplot < plot_Seebeck.gpl
 ```
+
+
+## Input files
+- parameter.txt
+- phononDOS.dat (option)
+- lambda (option)
+- a2F.dos* (option) from 
+- Note: lambda and a2F.dos: QE format (Data from Abinit, etc. can be used if it matches the QE format.)
+
+
+## WIEN2k output files (test: WIEN2k ver.12 and ver.16. LDA, PBE, WC, PBEsol or TB-mBJ)
+- wien.dos1
+- wien.energy
+- wien.kgen
+- wien.klist
+- wien.struct
 
 
 ## Test
