@@ -45,7 +45,7 @@
 - Intel: Core-i3 or Later
 
 
-## Reference
+## References
 - [1] lambda and a2F.dos* data: https://github.com/nguyen-group/QE-SSP/tree/master/gr/alpha/reference)
 - [2] quantum ESPRESSO tutorial: http://www.cmpt.phys.tohoku.ac.jp/~koretsune/SATL_qe_tutorial/elphon.html
 
