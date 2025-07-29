@@ -1,5 +1,6 @@
 # LBT-TETRA (QM2Thermo)
 ## QM2Thermo: Post-processing Thermoelectric Parameters from Quantum Mechanical calculations Output
+- Currently, only WIEN2k+QE is supported, but in the future we plan to make it compatible with various first-principles band calculations.
 
 
 ## Components (Fortran 90 codes)
