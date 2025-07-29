@@ -52,7 +52,7 @@ gnuplot < plot_Seebeck.gpl
 ## Test
 - Ubuntu 18.04 LTS or Later
 - WSL, Windows 10 or Later
-- Intel: Core-i3 or Later
+- Intel: Core(TM)-i3-2100 or Later
 
 
 ## References
