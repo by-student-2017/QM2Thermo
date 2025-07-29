@@ -14,6 +14,7 @@ make
 - If you want to recompile it, just type:
 ```
 make clean
+make
 ```
 
 
