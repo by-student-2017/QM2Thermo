@@ -1,4 +1,4 @@
-# QM2Thermo
+# QM2Thermo (LBT-TETRA)
 ## Post-processing Thermoelectric Parameters from Quantum Mechanical calculations Output
 
 
