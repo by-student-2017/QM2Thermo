@@ -23,6 +23,7 @@
 - wien.kgen
 - wien.klist
 - wien.struct
+- Note: Code processing flow: WIEN2k output files -> generate_stencil.f90 (output: f*.dat) -> group_velocity.f90 (output: AKK.DATA) -> chemical_potential.f90 (output: apot.dat) -> Seebeck_analysis.f90 (output: Seebeck_analysis.dat)
 
 
 ## Preparation: Compilation
