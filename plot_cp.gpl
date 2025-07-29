@@ -1,0 +1,29 @@
+#!/usr/bin/gnuplot
+
+# === Display on screen ===
+set terminal win font "Arial,12"
+set xlabel "Temperature, {/Italic T} / K
+set ylabel "Chemical potential, {/Symbol m} / eV"
+set grid
+set xrange [0:*]
+set format y "%.2f"
+
+# Add minor ticks
+set xtics 100
+set ytics 0.2
+
+set mxtics 5
+set mytics 5
+
+# Line style: Blue line with points
+set style line 1 lt 1 lw 2 lc rgb "#0072BD" pt 7 ps 1.2
+
+# --- Display preview on screen ---
+#plot "apot.data" using 1:2 with linespoints linestyle 1 title "{/Symbol m}(T)"
+plot "apot.data" using 1:2 with linespoints linestyle 1 title "{/Symbol m}(T) (inukai)", "apot.data" using 1:2 with linespoints linestyle 1 lc "red" title "{/Symbol m}(T) (sato)"
+
+# === Save as PNG for publication ===
+set terminal pngcairo size 800,600 font "Times New Roman,12"
+set output "chemical_potential_vs_temperature.png"
+replot
+unset output
