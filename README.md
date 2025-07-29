@@ -40,31 +40,21 @@
 
 ---
 
-## Thermophysical property analysis flow
+## Seebeck Coefficient Analysis Workflow
 
-This document describes the processing flow for calculating the Thermophysical properties using WIEN2k output and a series of Fortran programs.
+This document describes the workflow for computing the Seebeck coefficient using WIEN2k and a series of Fortran codes based on Allen's theory.
 
-### Workflow Overview
+### Workflow Summary
 
-The analysis proceeds through the following steps:
+| Code                   | Input File(s)                                                                               | Output File(s)                                            | Description                                           |
+|------------------------|---------------------------------------------------------------------------------------------|-----------------------------------------------------------|-------------------------------------------------------|
+| WIEN2k                 | -                                                                                           | Band structure, DOS, and other electronic structure files | Generate electronic structure data for the material.  |
+| generate_stencil.f90   | WIEN2k output files                                                                         | f*.dat                                                    | Convert WIEN2k output into stencil data.              |
+| group_velocity.f90     | f*.dat, WIEN2k output files                                                                 | AKK.DATA                                                  | Calculate group velocities from stencil data.         |
+| chemical_potential.f90 | AKK.DATA, parameter.txt, WIEN2k output files                                                | apot.dat                                                  | Determine the chemical potential.                     |
+| Seebeck_analysis.f90   | f*.dat, apot.dat, AKK.DATA, parameter.txt, WIEN2k output files (optional: lambda, a2F.dos*) | Seebeck_analysis.dat                                      | Compute the Seebeck coefficient using Allen's theory. |
 
-1. **WIEN2k** generates electronic structure data.
-2. **generate_stencil.f90** processes WIEN2k output to create stencil data.
-3. **group_velocity.f90** calculates group velocities.
-4. **chemical_potential.f90** determines the chemical potential.
-5. **Seebeck_analysis.f90** computes the Seebeck coefficient.
-
-### Processing Table
-
-| Code                   | Input File(s)         | Output File(s)         | Description                                                                 |
-|------------------------|-----------------------|-------------------------|-----------------------------------------------------------------------------|
-| WIEN2k                 | -                     | WIEN2k output files     | Performs electronic structure calculations for the material.               |
-| generate_stencil.f90   | WIEN2k output files   | f*.dat                  | Generates stencil data from WIEN2k results for further analysis.           |
-| group_velocity.f90     | f*.dat                | AKK.DATA                | Computes group velocities based on stencil data.                           |
-| chemical_potential.f90 | AKK.DATA              | apot.dat                | Calculates the chemical potential from group velocity data.                |
-| Seebeck_analysis.f90   | AKK.DATA, apot.dat    | Seebeck_analysis.dat    | Performs final analysis to compute the Seebeck coefficient.                |
-
-### Detailed Descriptions
+### Code Descriptions
 
 #### 1. WIEN2k
 - **Purpose**: Generate electronic structure data for the material.
@@ -77,17 +67,17 @@ The analysis proceeds through the following steps:
 
 #### 3. group_velocity.f90
 - **Purpose**: Calculate group velocities from stencil data.
-- **Input**: `f*.dat and WIEN2k output files`
+- **Input**: `f*.dat` and WIEN2k output files.
 - **Output**: `AKK.DATA` containing velocity information.
 
 #### 4. chemical_potential.f90
 - **Purpose**: Determine the chemical potential.
-- **Input**: `AKK.DATA, parameter.txt, and WIEN2k output files`
+- **Input**: `AKK.DATA`, `parameter.txt`, and WIEN2k output files.
 - **Output**: `apot.dat` with chemical potential values.
 
 #### 5. Seebeck_analysis.f90
 - **Purpose**: Compute the Seebeck coefficient using Allen's theory.
-- **Input**: `f*.dat, apot.dat, AKK.DATA, parameter.txt, and WIEN2k output files (option: lambda and a2F.dos* (QE format))`
+- **Input**: `f*.dat`, `apot.dat`, `AKK.DATA`, `parameter.txt`, and WIEN2k output files (optional: `lambda`, `a2F.dos*` in QE format).
 - **Output**: `Seebeck_analysis.dat` with final Seebeck coefficient results.
 
 ---
