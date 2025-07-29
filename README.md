@@ -69,7 +69,6 @@ gnuplot < plot_Seebeck.gpl
 ```
 2. arXiv version
 ```
-
 ```
 
 ---
@@ -126,7 +125,8 @@ This document describes the workflow for computing the Seebeck coefficient using
 
 ## Troubleshooting
 - The data reading position differs depending on the version of WIEN2k, so the Fortran 90 code needs to be rewritten.
-- Calculations that have data files will be skipped, so if you want to calculate again, delete the file. 
+- Calculations that have data files will be skipped, so if you want to calculate again, delete the file.
+
 ## File Deletion Rules for Recalculation
 
 If calculation result files already exist, the corresponding calculations will be skipped.  
