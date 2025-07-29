@@ -29,7 +29,7 @@ make
 ```
 bash ./run.sh
 ```
-5. (Optional: run plot_Seebeck.gpl to display the figure)
+5. The results (*.dat) can be plotted using gnuplot etc. For gnuplot, a g script (gpl) is provided. Use it as follows:
 ```
 gnuplot plot_Seebeck.gpl
 ```
