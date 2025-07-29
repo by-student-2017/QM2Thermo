@@ -62,7 +62,7 @@ The analysis proceeds through the following steps:
 | generate_stencil.f90   | WIEN2k output files   | f*.dat                  | Generates stencil data from WIEN2k results for further analysis.           |
 | group_velocity.f90     | f*.dat                | AKK.DATA                | Computes group velocities based on stencil data.                           |
 | chemical_potential.f90 | AKK.DATA              | apot.dat                | Calculates the chemical potential from group velocity data.                |
-| Seebeck_analysis.f90   | apot.dat              | Seebeck_analysis.dat    | Performs final analysis to compute the Seebeck coefficient.                |
+| Seebeck_analysis.f90   | AKK.DATA, apot.dat    | Seebeck_analysis.dat    | Performs final analysis to compute the Seebeck coefficient.                |
 
 ### Detailed Descriptions
 
