@@ -22,7 +22,7 @@ make
 ## Usage
 1. Calculated with symmetry 1 (P1 structure): After the calculation with SCF (either GGA-PBE or TB-mBJ), run the calculation with as many k-points as possible (e.g., Si 58 x 58 x 58 mesh) without shifting in DOS.
 2. Create a file named wien and put the WIEN2k output file into it. (Optional: In QE, for phonon DOS, lambda, and a2F.dos*, put it in the same file as the Fortran code *.f90.) You can use other file names by rewriting run.sh.
-3. Edit parameter.txt and enter the conditions you want to calculate.
+3. Edit parameter.txt and enter the conditions you want to calculate. (Note: ince this is Fortran, the read position is fixed. Please write the value within the provided range.)
 4. The calculation is performed using the following command:
 ```
 bash ./run.sh
