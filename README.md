@@ -44,7 +44,7 @@ gnuplot plot_dos.gpl
 | `plot_cp.gpl`       | `apot.dat`                  | Chemical Potential            | Plots the variation of chemical potential in the material.                 |
 | `plot_dos.gpl`      | `wien.dos1`                 | Density of States (DOS)       | Displays the electronic density of states for band structure analysis.     |
 - For DOS, you need to write the EF described in wien.dos1 into the script gnuplot plot_dos.gpl.
-- For practical use, a method to simultaneously plot two files when shifting the Fermi level (using DEF) to draw the conduction band (enter a plus value in DEF) and the valence band (enter a minus value in DEF) is shown in Ref_Si_TB-mBJ_dope. Note that the filenames end with "_plus" and "_minus" and that the description in *.gpl has been expanded. The VEC value is listed in *.dat.
+- Ref_Si_TB-mBJ_dope shows an advanced use case where the Fermi level is shifted (using DEF in parameter.txt) to simultaneously plot two files: the conduction band (entering a plus value in DEF) and the valence band (entering a minus value in DEF). Note that "_plus" and "_minus" are manually added to the end of the output file (*.dat), and the gnuplot script (*_dope.gpl) also has more text. The VEC value is listed in *.dat.
 
 
 ## Input files
