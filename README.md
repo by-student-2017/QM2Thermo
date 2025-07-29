@@ -47,3 +47,23 @@
 ## Reference
 - [1] lambda and a2F.dos* data: https://github.com/nguyen-group/QE-SSP/tree/master/gr/alpha/reference)
 - [2] quantum ESPRESSO tutorial: http://www.cmpt.phys.tohoku.ac.jp/~koretsune/SATL_qe_tutorial/elphon.html
+
+
+## Citation
+1. Journal version
+```
+@article{sato2024seebeck,
+  author    = {Sato, Hiroshi and Miyazaki, Hiroshi and Nishino, Yoshikazu and others},
+  title     = {Quantitative Evaluation of Seebeck Coefficient using Linearized Boltzmann Transport Equation for Fe₂VAl-Based Compounds},
+  journal   = {Journal of Phase Equilibria and Diffusion},
+  volume    = {45},
+  pages     = {397--415},
+  year      = {2024},
+  doi       = {10.1007/s11669-024-01086-y},
+  url       = {https://doi.org/10.1007/s11669-024-01086-y}
+}
+```
+2. arXiv version
+```
+
+```
