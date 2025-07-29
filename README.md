@@ -16,7 +16,7 @@
 - a2F.dot* (option) from QE format (Data from Abinit, etc. can be used if it matches the QE format.)
 
 
-## WIEN2k output files (test: WIEN2k ver.12 & ver.16. LDA, PBE, WC, PBEsol or TB-mBJ)
+## WIEN2k output files (test: WIEN2k ver.12 and ver.16. LDA, PBE, WC, PBEsol or TB-mBJ)
 - wien.dos1
 - wien.energy
 - wien.kgen
