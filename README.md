@@ -77,17 +77,17 @@ The analysis proceeds through the following steps:
 
 #### 3. group_velocity.f90
 - **Purpose**: Calculate group velocities from stencil data.
-- **Input**: `f*.dat`
+- **Input**: `f*.dat and WIEN2k output files`
 - **Output**: `AKK.DATA` containing velocity information.
 
 #### 4. chemical_potential.f90
 - **Purpose**: Determine the chemical potential.
-- **Input**: `AKK.DATA`
+- **Input**: `AKK.DATA, parameter.txt, and WIEN2k output files`
 - **Output**: `apot.dat` with chemical potential values.
 
 #### 5. Seebeck_analysis.f90
 - **Purpose**: Compute the Seebeck coefficient using Allen's theory.
-- **Input**: `apot.dat`
+- **Input**: `f*.dat, apot.dat, AKK.DATA, parameter.txt, and WIEN2k output files (option: lambda and a2F.dos* (QE format))`
 - **Output**: `Seebeck_analysis.dat` with final Seebeck coefficient results.
 
 ---
