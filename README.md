@@ -33,7 +33,7 @@
 
 
 ## Usage
-1. Calculated with symmetry 1 (P1 structure): After the calculation with SCF (either GGA-PBE or TB-mBJ), run the calculation with as many k-points as possible without shifting in DOS.
+1. Calculated with symmetry 1 (P1 structure): After the calculation with SCF (either GGA-PBE or TB-mBJ), run the calculation with as many k-points as possible (e.g., Si 58 x 58 x 58 mesh) without shifting in DOS.
 2. Extract the necessary files from WIEN2k and put them in the same file. (Optional: Calculate phonon DOS, lambda, a2F.dos* in QE and put them in the same file.)
 3. Edit parameter.txt and enter the conditions you want to calculate.
 4. The calculation is run with "bash ./run.sh".
