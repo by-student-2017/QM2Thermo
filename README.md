@@ -1,4 +1,5 @@
-# QM2Thermo: Post-processing Thermoelectric Parameters from Quantum Mechanical calculations Output
+# QM2Thermo
+## Post-processing Thermoelectric Parameters from Quantum Mechanical calculations Output
 
 
 ## Components (Fortran 90 codes)
