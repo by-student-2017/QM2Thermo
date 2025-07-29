@@ -43,6 +43,8 @@ gnuplot plot_dos.gpl
 | `plot_Seebeck.gpl`  | `Seebeck_analysis.dat`      | Seebeck Coefficient           | Visualizes the temperature dependence of the Seebeck coefficient related to thermoelectric effects. |
 | `plot_cp.gpl`       | `apot.dat`                  | Chemical Potential            | Plots the variation of chemical potential in the material.                 |
 | `plot_dos.gpl`      | `wien.dos1`                 | Density of States (DOS)       | Displays the electronic density of states for band structure analysis.     |
+- For DOS, you need to write the EF described in wien.dos1 into the script gnuplot plot_dos.gpl.
+- For practical use, for example, a method to simultaneously plot two files when shifting the Fermi level (using DEF) to draw the conduction band (enter a plus value in DEF) and the valence band (enter a minus value in DEF) is shown in Ref_Si_TB-mBJ_dope. Note that the filenames end with "_plus" and "_minus" and that the description in *.gpl has been expanded. The VEC value is listed in *.dat.
 
 
 ## Input files
