@@ -79,7 +79,7 @@ This document describes the workflow for computing the Seebeck coefficient using
 
 | Code                   | Input File(s)                                                                               | Output File(s)                                            | Description                                           |
 |------------------------|---------------------------------------------------------------------------------------------|-----------------------------------------------------------|-------------------------------------------------------|
-| WIEN2k                 | -                                                                                           | wien.dos1, wien.energ, wien.kgen, wien.klist, wien.struct | Generate electronic structure data for the material.  |
+| WIEN2k                 | -                                                                                           | wien.dos1, wien.energ, wien.kgen, wien.klist, and wien.struct | Generate electronic structure data for the material.  |
 | generate_stencil.f90   | WIEN2k output files                                                                         | f*.dat                                                    | Convert WIEN2k output into stencil data.              |
 | group_velocity.f90     | f*.dat, WIEN2k output files                                                                 | AKK.DATA                                                  | Calculate group velocities from stencil data.         |
 | chemical_potential.f90 | AKK.DATA, parameter.txt, WIEN2k output files                                                | apot.dat                                                  | Determine the chemical potential.                     |
