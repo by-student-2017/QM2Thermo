@@ -28,9 +28,11 @@
 
 
 ## Preparation: Compilation
-1. sudo apt update
-2. sudo apt -y install gfortran build-essential make
-3. make
+```
+sudo apt update
+sudo apt -y install gfortran build-essential make
+make
+```
 
 
 ## Usage
@@ -39,6 +41,9 @@
 3. Edit parameter.txt and enter the conditions you want to calculate.
 4. The calculation is run with "bash ./run.sh".
 5. (Optional: run plot_Seebeck.gpl to display the figure)
+```
+gnuplot < plot_Seebeck.gpl
+```
 
 
 ## Test
