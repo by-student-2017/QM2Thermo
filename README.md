@@ -138,6 +138,7 @@ This document describes the workflow for computing the Seebeck coefficient using
 
 If calculation result files already exist, the corresponding calculations will be skipped.  
 To force recalculation, please delete the relevant files as described below.
+(You can find more details by looking at the run.sh Bash file.)
 
 | Calculation Target     | Files to Delete         | Notes                                                                 |
 |------------------------|-------------------------|-----------------------------------------------------------------------|
