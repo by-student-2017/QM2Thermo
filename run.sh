@@ -1,6 +1,6 @@
 #!/bin/bash
 
-filename=Si
+filename=wien
 cp ./$filename/*.dos1    wien.dos1
 cp ./$filename/*.energy  wien.energy
 cp ./$filename/*.kgen    wien.kgen
