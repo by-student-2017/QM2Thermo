@@ -126,5 +126,18 @@ This document describes the workflow for computing the Seebeck coefficient using
 
 ## Troubleshooting
 - The data reading position differs depending on the version of WIEN2k, so the Fortran 90 code needs to be rewritten.
+- Calculations that have data files will be skipped, so if you want to calculate again, delete the file. 
+## File Deletion Rules for Recalculation
+
+If calculation result files already exist, the corresponding calculations will be skipped.  
+To force recalculation, please delete the relevant files as described below.
+
+| Calculation Target     | Files to Delete         | Notes                                                                 |
+|------------------------|-------------------------|-----------------------------------------------------------------------|
+| Change in k-point mesh | `f*.dat`                | Example: `f001.dat`, `f002.dat`, etc. Delete files corresponding to the k-points. |
+| Change in DEF          | `apot.dat`              | Delete this file if the DEF (structure details) has been modified.   |
+| Other parameter changes| No deletion needed (`parameter.txt`) | Changes in `parameter.txt` alone will trigger recalculation automatically. |
+
+> Note: Calculations will only run if the corresponding result files are not present.
 
 ---
