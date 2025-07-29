@@ -41,7 +41,7 @@ gnuplot plot_Seebeck.gpl
 | `plot_cp.gpl`       | `apot.dat`                  | Chemical Potential            | Plots the variation of chemical potential in the material.                 |
 | `plot_dos.gpl`      | `wien.dos1`                 | Density of States (DOS)       | Displays the electronic density of states for band structure analysis.     |
 
-#### How to Run
+### How to Run
 
 To generate the plots using Gnuplot, run the following commands:
 
