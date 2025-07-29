@@ -12,8 +12,9 @@
 ## Input files
 - parameter.txt
 - phononDOS.dat (option)
-- lambda (option) from QE format (Data from Abinit, etc. can be used if it matches the QE format.)
-- a2F.dot* (option) from QE format (Data from Abinit, etc. can be used if it matches the QE format.)
+- lambda (option)
+- a2F.dos* (option) from 
+- Note: lambda and a2F.dos: QE format (Data from Abinit, etc. can be used if it matches the QE format.)
 
 
 ## WIEN2k output files (test: WIEN2k ver.12 and ver.16. LDA, PBE, WC, PBEsol or TB-mBJ)
