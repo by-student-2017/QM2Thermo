@@ -16,6 +16,7 @@ make
 make clean
 make
 ```
+- Note: There are compile options in the Makefile. If you want to customize it, remove the # from "FLAGS" or "DEBUG" or add the necessary options.
 
 
 ## Usage
