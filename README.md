@@ -4,13 +4,6 @@
 - H. Sato et al., J. Phase Equilib. Diffus. 45, 397–415 (2024).: [https://doi.org/10.1007/s11669-024-01086-y](https://doi.org/10.1007/s11669-024-01086-y)
 
 
-## Components (Fortran 90 codes)
-- generate_stencil.f90
-- group_velocity.f90
-- chemical_potential.f90
-- Seebeck_analysis.f90
-
-
 ## Input files
 - parameter.txt
 - phononDOS.dat (option)
@@ -56,6 +49,7 @@ gnuplot < plot_Seebeck.gpl
 - [1] lambda and a2F.dos* data: https://github.com/nguyen-group/QE-SSP/tree/master/gr/alpha/reference)
 - [2] quantum ESPRESSO tutorial: http://www.cmpt.phys.tohoku.ac.jp/~koretsune/SATL_qe_tutorial/elphon.html
 
+
 ## Citation
 1. Journal version
 ```
@@ -74,6 +68,15 @@ gnuplot < plot_Seebeck.gpl
 ```
 
 ```
+
+---
+
+## Components (Fortran 90 codes)
+- generate_stencil.f90
+- group_velocity.f90
+- chemical_potential.f90
+- Seebeck_analysis.f90
+
 ---
 
 ## Seebeck Coefficient Analysis Workflow
