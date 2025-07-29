@@ -123,3 +123,8 @@ This document describes the workflow for computing the Seebeck coefficient using
 - **Output**: `Seebeck_analysis.dat` with final Seebeck coefficient results.
 
 ---
+
+## Troubleshooting
+- The data reading position differs depending on the version of WIEN2k, so the Fortran 90 code needs to be rewritten.
+
+---
