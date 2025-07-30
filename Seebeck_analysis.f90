@@ -1938,7 +1938,27 @@ PROGRAM seebeck_analysis
      specific_heat = Cv_DOS                        ! Specific heat at constant volume
      
      ! --- Output results (skip if denominator too small) ---
-     IF (ABS(T) > 1.0D-12) THEN
+     !=======================================================================
+     ! Note: Precision considerations for REAL(8) (double precision)
+     !-----------------------------------------------------------------------
+     ! REAL(8) corresponds to IEEE 754 double precision, which provides
+     ! approximately 15–17 significant decimal digits (typically 16 digits).
+     !
+     ! The machine epsilon (smallest distinguishable difference from 1.0D0)
+     ! is approximately 2.220D-16. This means that differences smaller than
+     ! this may be lost due to rounding errors.
+     !
+     ! Therefore, values like 1.0D-16 are near the precision limit, and
+     ! comparisons or convergence checks should use thresholds such as:
+     !
+     !   IF (ABS(x - y) < 1.0D-14) THEN
+     !       ! x and y are considered approximately equal
+     !   END IF
+     !
+     ! For higher precision requirements, consider using REAL(16) or
+     ! arbitrary precision libraries (e.g., MPFR).
+     !=======================================================================
+     IF (ABS(T) > 1.0D-16) THEN
         ! Calculate and output average energy offset <E - mu> and Seebeck coefficient
         ! T1/T is the averaged energy deviation <E - mu>
         ! -T1/T/TEM * CO gives Seebeck coefficient in muV/K
