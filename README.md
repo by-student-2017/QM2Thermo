@@ -69,7 +69,7 @@ For DOS, you need to write the EF described in wien.dos1 into the script gnuplot
 EF = 0.34363
 ```
 As the second line of wien.dos1 states "EF = 0.34363", we can confirm that the same value is specified for EF on line 22 of plot_dos.pgl.   
-- Ref_Si_TB-mBJ_dope shows an advanced use case where the Fermi level is shifted (using DEF in parameter.txt) to simultaneously plot two files: the conduction band (entering a plus value in DEF) and the valence band (entering a minus value in DEF). Note that "_plus" and "_minus" are manually added to the end of the output file (*.dat), and the gnuplot script (*_dope.gpl) also has more text. The VEC value is listed in *.dat.
+- Ref_Si_TB-mBJ_dope shows an advanced use case where the Fermi level is shifted (using DEF in parameter.txt) to simultaneously plot two files: the conduction band (entering a plus value in DEF) and the valence band (entering a minus value in DEF). Note that "_plus" and "_minus" are manually added to the end of the output file (*.dat), and the gnuplot script (*_dope.gpl) also has more text. The VEC value is listed in Seebeck_analysis.dat (output file).
 
 ---
 
