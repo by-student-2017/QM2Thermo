@@ -106,6 +106,21 @@ In reality, fewer files would be sufficient, but this is done for convenience. I
 - apot.dat: Since Seebeck_analysis.f90 uses this, the comments are placed at the end. If you want to change the list of temperatures to be calculated, you need to rewrite chemical_potential.f90 and Seebeck_analysis.f90 so that they correspond. This part is not dynamically allocated, so you need to match the number of data and change the array and information in the code.
 
 
+## File Deletion Rules for Recalculation
+
+If calculation result files already exist, the corresponding calculations will be skipped.  
+To force recalculation, please delete the relevant files as described below.  
+(You can find more details by looking at the run.sh Bash file.)
+
+| Calculation Target     | Files to Delete         | Notes                                                                 |
+|------------------------|-------------------------|-----------------------------------------------------------------------|
+| Change in k-point mesh | `f*.dat`                | Example: `f001.dat`, `f002.dat`, etc. Delete files corresponding to the k-points. |
+| Change in DEF          | `apot.dat`              | Delete this file if the DEF (structure details) has been modified.   |
+| Other parameter changes| No deletion needed (`parameter.txt`) | Changes in `parameter.txt` alone will trigger recalculation automatically. |
+
+> Note: Calculations will only run if the corresponding result files are not present.
+
+
 ## Test
 - Ubuntu 18.04 LTS or Later
 - WSL, Windows 10 or Later
@@ -189,22 +204,6 @@ This document describes the workflow for computing the Seebeck coefficient using
 ## Troubleshooting
 - The data reading position differs depending on the version of WIEN2k, so the Fortran 90 code needs to be rewritten.
 - Calculations that have data files will be skipped, so if you want to calculate again, delete the file.
-
----
-
-## File Deletion Rules for Recalculation
-
-If calculation result files already exist, the corresponding calculations will be skipped.  
-To force recalculation, please delete the relevant files as described below.  
-(You can find more details by looking at the run.sh Bash file.)
-
-| Calculation Target     | Files to Delete         | Notes                                                                 |
-|------------------------|-------------------------|-----------------------------------------------------------------------|
-| Change in k-point mesh | `f*.dat`                | Example: `f001.dat`, `f002.dat`, etc. Delete files corresponding to the k-points. |
-| Change in DEF          | `apot.dat`              | Delete this file if the DEF (structure details) has been modified.   |
-| Other parameter changes| No deletion needed (`parameter.txt`) | Changes in `parameter.txt` alone will trigger recalculation automatically. |
-
-> Note: Calculations will only run if the corresponding result files are not present.
 
 ---
 
