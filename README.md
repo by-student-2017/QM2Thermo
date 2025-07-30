@@ -68,7 +68,7 @@ ls
 a2F.dos1   a2F.dos2  a2F.dos4  a2F.dos6  a2F.dos8  lambda         wien
 a2F.dos10  a2F.dos3  a2F.dos5  a2F.dos7  a2F.dos9  phononDOS.dat
 ```
-3. Edit parameter.txt and enter the conditions you want to calculate. (Note: since this is Fortran, the read position is fixed. Please write the value within the provided range. In the paper, the base relaxation time is set to 1.0.) For example:
+3. Edit parameter.txt and enter the conditions you want to calculate. (Note: since this is Fortran, the read position is fixed. Please write the value within the provided range.) For example:
 ```
 !-----------------------:------------!--Memo---------------------------------------------------------------------------
 DEF (Energy shift)  [eV]:  1.173000  ! This is good !
@@ -81,6 +81,9 @@ Base relaxation time [s]1.00e-14     ! This is bad !
 !-----------------------:------------!--Memo---------------------------------------------------------------------------
 DEF (Energy shift)  [eV]:     1.173000  ! This is bad !
 Base relaxation time [s]:     1.00e-14  ! This is bad !
+
+# As an aside, in the paper the basic relaxation time is calculated as 1.0.
+# From this version onwards, the calculation of relaxation time is considered based on Alle's theory.
 ```
 4. The calculation is performed using the following command:
 ```
