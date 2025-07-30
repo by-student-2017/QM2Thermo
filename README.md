@@ -28,7 +28,7 @@ make
 ```
 FLAGS = -O2 -ftree-vectorize -ffp-contract=fast -fno-math-errno -march=native
 ```
-- The "-O3" option is not used here because it is an optimization that, in principle, has side effects. Therefore, "-O3" is not usually recommended, but it may be used in cases where the code has been coded taking side effects into consideration, such as OpenMX. This code prioritizes readability as much as possible to make it easier for others to improve.
+- The "-O3" option is not used here because it is an optimization that, in principle, has side effects. Therefore, "-O3" is not usually recommended, but it may be used in cases where the code is coded with side effects in mind, such as OpenMX (Professor Ozaki, the developer of OpenMX, is a genius, so he can do it. I, who am not very knowledgeable, could not do it). This code (LBT-TETRA) prioritizes readability as much as possible to make it easier for others to improve.
 - Use DEBUG when you encounter problems improving your code. For example:
 ```
 DEBUG = -g -Wall -fcheck=all -fcheck=bounds -fcheck=pointer -fbacktrace
