@@ -28,7 +28,7 @@ make
 ```
 FLAGS = -O2 -ftree-vectorize -ffp-contract=fast -fno-math-errno -march=native
 ```
-- The "-O3" option is not used here because it is an optimization that, in principle, has side effects. Therefore, "-O3" is not usually recommended, but it is recommended when the code is coded to solve side effects, such as OpenMX. This code prioritizes readability as much as possible so that others can easily improve it.
+- The "-O3" option is not used here because it is an optimization that, in principle, has side effects. Therefore, "-O3" is not usually recommended, but it may be used in cases where the code has been coded taking side effects into consideration, such as OpenMX. This code prioritizes readability as much as possible to make it easier for others to improve.
 
 
 ## Usage
