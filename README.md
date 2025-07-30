@@ -109,7 +109,7 @@ In reality, fewer files would be sufficient, but this is done for convenience. I
 
 
 ## File Deletion Rules for Recalculation
-If calculation result files already exist, the corresponding calculations will be skipped. To force recalculation, please delete the relevant files as described below. (You can find more details by looking at the run.sh Bash file.)
+If a calculation result file already exists, the corresponding calculation will be skipped. To force a recalculation, delete the corresponding file using the following procedure. (For details, see the run.sh Bash file.) You can run the calculation as usual with "bash ./run.sh".
 | Calculation Target     | Files to Delete         | Notes                                                                 |
 |------------------------|-------------------------|-----------------------------------------------------------------------|
 | Change in k-point mesh | `f*.dat`                | Example: `f001.dat`, `f002.dat`, etc. Delete files corresponding to the k-points. |
