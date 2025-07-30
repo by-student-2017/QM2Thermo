@@ -120,7 +120,7 @@ first-principles codes, particularly for Seebeck coefficient and electron-phonon
 lambda and a2F.dos: QE format (Data from Abinit, etc. can be used if it matches the QE format.)
 
 
-## WIEN2k output files (test: WIEN2k ver.12 and ver.16. LDA, PBE, WC, PBEsol or TB-mBJ)
+### WIEN2k output files (test: WIEN2k ver.12 and ver.16. LDA, PBE, WC, PBEsol or TB-mBJ)
 This document provides a summary of key files used in WIEN2k calculations and their respective purposes.
 | File Name       | Description                                                                 |
 |----------------|-----------------------------------------------------------------------------|
