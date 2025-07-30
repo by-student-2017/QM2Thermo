@@ -14,10 +14,10 @@ sudo apt update && sudo apt -y install gfortran build-essential make dos2unix
 dos2unix *
 make
 ```
-- Note: Our group uses a mixture of operating systems, including Linux, Windows (WSL1 or WLS2), and Mac, so we use "dos2unix" to convert line breaks to Linux format.
+Our group uses a mixture of operating systems, including Linux, Windows (WSL1 or WLS2), and Mac, so we use "dos2unix" to convert line breaks to Linux format.
 
 
-- If you want to recompile it, just type:
+If you want to recompile it, just type:
 ```
 make clean
 make
@@ -29,12 +29,12 @@ There are compile options in the Makefile. If you want to customize it, remove t
 ```
 FLAGS = -O2 -ftree-vectorize -ffp-contract=fast -fno-math-errno -march=native
 ```
-- The "-O3" option is not used here because it is an optimization that, in principle, has side effects. Therefore, "-O3" is not usually recommended, but it may be used in cases where the code is coded with side effects in mind, such as OpenMX (Professor Ozaki, the developer of OpenMX, is a genius, so he can do it. I, who am not very knowledgeable, could not do it). This code (LBT-TETRA) prioritizes readability as much as possible to make it easier for others to improve.
-- Use DEBUG when you encounter problems improving your code. For example:
+The "-O3" option is not used here because it is an optimization that, in principle, has side effects. Therefore, "-O3" is not usually recommended, but it may be used in cases where the code is coded with side effects in mind, such as OpenMX (Professor Ozaki, the developer of OpenMX, is a genius, so he can do it. I, who am not very knowledgeable, could not do it). This code (LBT-TETRA) prioritizes readability as much as possible to make it easier for others to improve.  
+Use DEBUG when you encounter problems improving your code. For example:
 ```
 DEBUG = -g -Wall -fcheck=all -fcheck=bounds -fcheck=pointer -fbacktrace
 ```
-- As you can see from the previous examples, you only need to remove the "#". Of course, you can add or remove options.
+As you can see from the previous examples, you only need to remove the "#". Of course, you can add or remove options.
 
 
 ## Usage
@@ -51,7 +51,8 @@ gnuplot plot_Seebeck.gpl
 gnuplot plot_cp.gpl
 gnuplot plot_dos.gpl
 ```
-- Graphs are also output in *.png format. If it doesn't work properly on Linux, you can install gnuplot on Windows and set up the environment, then just double-click the *.gpl file to make it work. (see *.png in "Ref_Si_TB-mBJ_dope")
+Graphs are also output in *.png format. If it doesn't work properly on Linux, you can install gnuplot on Windows and set up the environment, then just double-click the *.gpl file to make it work. (see *.png in "Ref_Si_TB-mBJ_dope")
+
 
 ### Visualization Scripts Overview
 
@@ -60,12 +61,12 @@ gnuplot plot_dos.gpl
 | `plot_Seebeck.gpl`  | `Seebeck_analysis.dat`      | Seebeck Coefficient           | Visualizes the temperature dependence of the Seebeck coefficient related to thermoelectric effects. |
 | `plot_cp.gpl`       | `apot.dat`                  | Chemical Potential            | Plots the variation of chemical potential in the material.                 |
 | `plot_dos.gpl`      | `wien.dos1`                 | Density of States (DOS)       | Displays the electronic density of states for band structure analysis.     |
-- For DOS, you need to write the EF described in wien.dos1 into the script gnuplot plot_dos.gpl. The EF part is on line 22 of plot_dos.pgl shown below (written in [Ry] units). 
+For DOS, you need to write the EF described in wien.dos1 into the script gnuplot plot_dos.gpl. The EF part is on line 22 of plot_dos.pgl shown below (written in [Ry] units). 
 ```
 EF = 0.34363
 ```
-- As the second line of wien.dos1 states "EF = 0.34363", we can confirm that the same value is specified for EF on line 22 of plot_dos.pgl.
-- Ref_Si_TB-mBJ_dope shows an advanced use case where the Fermi level is shifted (using DEF in parameter.txt) to simultaneously plot two files: the conduction band (entering a plus value in DEF) and the valence band (entering a minus value in DEF). Note that "_plus" and "_minus" are manually added to the end of the output file (*.dat), and the gnuplot script (*_dope.gpl) also has more text. The VEC value is listed in *.dat.
+As the second line of wien.dos1 states "EF = 0.34363", we can confirm that the same value is specified for EF on line 22 of plot_dos.pgl.  
+Ref_Si_TB-mBJ_dope shows an advanced use case where the Fermi level is shifted (using DEF in parameter.txt) to simultaneously plot two files: the conduction band (entering a plus value in DEF) and the valence band (entering a minus value in DEF). Note that "_plus" and "_minus" are manually added to the end of the output file (*.dat), and the gnuplot script (*_dope.gpl) also has more text. The VEC value is listed in *.dat.
 
 
 ## Input files
@@ -76,7 +77,7 @@ first-principles codes, particularly for Seebeck coefficient and electron-phonon
 | `phononDOS.dat`   | *(Optional)* Contains phonon density of states (DOS) vs. energy (in eV). Can be sourced from any first-principles code. |
 | `lambda`          | *(Optional)* Currently supported only in Quantum ESPRESSO (QE) format.                                |
 | `a2F.dos*`        | *(Optional)* Currently supported only in QE format. The first column (frequency/energy) and second column (a2Fdos_total) are essential; other columns are read but not used. The "*" in a2F.dos* corresponds to the number of data listed in the lambda file (an integer).
-- lambda and a2F.dos: QE format (Data from Abinit, etc. can be used if it matches the QE format.)
+lambda and a2F.dos: QE format (Data from Abinit, etc. can be used if it matches the QE format.)
 
 
 ## WIEN2k output files (test: WIEN2k ver.12 and ver.16. LDA, PBE, WC, PBEsol or TB-mBJ)
@@ -88,7 +89,7 @@ This document provides a summary of key files used in WIEN2k calculations and th
 | `wien.kgen`     | Used to retrieve the actual k-points utilized in the calculation.          |
 | `wien.klist`    | Provides detailed information about the k-points (e.g., coordinates).      |
 | `wien.struct`   | Contains lattice constants, angles, and symmetry data of the crystal.      |
-- In reality, fewer files would be sufficient, but this is done for convenience. If wien.klist is available, wien.kgen can actually be coded so that it is not necessary.
+In reality, fewer files would be sufficient, but this is done for convenience. If wien.klist is available, wien.kgen can actually be coded so that it is not necessary.
 
 
 ## Test
