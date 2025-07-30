@@ -5,8 +5,6 @@
 - Various function expansions will be fully implemented after new project applications are approved.
 - H. Sato et al., J. Phase Equilib. Diffus. 45, 397–415 (2024).: [https://doi.org/10.1007/s11669-024-01086-y](https://doi.org/10.1007/s11669-024-01086-y)
 
----
-
 ## Preparation: Compilation
 ```
 git clone https://github.com/by-student-2017/LBT-TETRA.git
@@ -107,7 +105,6 @@ In reality, fewer files would be sufficient, but this is done for convenience. I
 - AKK.DATA: AKK.DATA is output by group_velocity.f90, and is important data as it is used later by chemical_potential.f90 and Seebeck_analysis.f90. This information is essential when rewriting the code to calculate various physical quantities in Seebeck_analysis.f90.
 - apot.dat: Since Seebeck_analysis.f90 uses this, the comments are placed at the end. If you want to change the list of temperatures to be calculated, you need to rewrite chemical_potential.f90 and Seebeck_analysis.f90 so that they correspond. This part is not dynamically allocated, so you need to match the number of data and change the array and information in the code.
 
----
 
 ## Test
 - Ubuntu 18.04 LTS or Later
