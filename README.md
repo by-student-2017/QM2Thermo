@@ -109,17 +109,12 @@ In reality, fewer files would be sufficient, but this is done for convenience. I
 
 
 ## File Deletion Rules for Recalculation
-
-If calculation result files already exist, the corresponding calculations will be skipped.  
-To force recalculation, please delete the relevant files as described below.  
-(You can find more details by looking at the run.sh Bash file.)
-
+If calculation result files already exist, the corresponding calculations will be skipped. To force recalculation, please delete the relevant files as described below. (You can find more details by looking at the run.sh Bash file.)
 | Calculation Target     | Files to Delete         | Notes                                                                 |
 |------------------------|-------------------------|-----------------------------------------------------------------------|
 | Change in k-point mesh | `f*.dat`                | Example: `f001.dat`, `f002.dat`, etc. Delete files corresponding to the k-points. |
 | Change in DEF          | `apot.dat`              | Delete this file if the DEF (structure details) has been modified.   |
 | Other parameter changes| No deletion needed (`parameter.txt`) | Changes in `parameter.txt` alone will trigger recalculation automatically. |
-
 > Note: Calculations will only run if the corresponding result files are not present.
 
 ---
