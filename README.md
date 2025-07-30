@@ -143,7 +143,6 @@ In reality, fewer files would be sufficient, but this is done for convenience. I
 - chemical_potential.f90
 - Seebeck_analysis.f90
 
----
 
 ## Seebeck Coefficient Analysis Workflow
 
