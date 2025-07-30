@@ -52,12 +52,16 @@ Shift k-mesh (if applicable) [No]
 3. Create a file named wien and put the WIEN2k output file into it. (Optional: In QE, for phonon DOS, lambda, and a2F.dos*, put it in the same file as the Fortran code *.f90.) You can use other file names by rewriting run.sh. If you use the "cd" and "ls" commands to look at the contents of the wien directory, you will see the following:
 ```
 cd wien && ls && cd ../
+```
+```
 Si.dos1  Si.energy  Si.kgen  Si.klist  Si.struct
 # Note: Although the names such as Si.dos1 have "Si" in them, they are renamed to wien by "run.sh" and placed in LBT-TETRA for use in the calculation.
 ```
    - **Option**: lambda, a2F.dos*, and phononDOS.dat should be placed in the LBT-TETRA directory. Only the necessary files are shown here. (Note: wien contains Si.dos1 Si.energy Si.kgen Si.klist Si.struct.)
 ```
 ls
+```
+```
 a2F.dos1   a2F.dos2  a2F.dos4  a2F.dos6  a2F.dos8  lambda         wien
 a2F.dos10  a2F.dos3  a2F.dos5  a2F.dos7  a2F.dos9  phononDOS.dat
 ```
