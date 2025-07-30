@@ -49,7 +49,7 @@ Shift k-mesh (if applicable) [No]
 [58] [58] [58]
 ```
    - **Note**: When the lattice constants (a, b, c) are long or in the case of a supercell, the number of k-points can be reduced in proportion to "1/a x 1/b x 1/c". For example, in the FCC-type 2x2x2 supercell in the paper, Nk=34^3 (i.e., 34 x 34 x 34 k-points).)
-3. Create a file named wien and put the WIEN2k output file into it. (Optional: In QE, for phonon DOS, lambda, and a2F.dos*, put it in the same file as the Fortran code *.f90.) You can use other file names by rewriting run.sh. If you use the "cd" and "ls" commands to look at the contents of the wien directory, you will see the following:
+2. Create a file named wien and put the WIEN2k output file into it. (Optional: In QE, for phonon DOS, lambda, and a2F.dos*, put it in the same file as the Fortran code *.f90.) You can use other file names by rewriting run.sh. If you use the "cd" and "ls" commands to look at the contents of the wien directory, you will see the following:
 ```
 # inukai@PC-LAB3:/mnt/c/Users/inukai/sato_program/LBT-TETRA$ cd wien && ls && cd ../
 cd wien && ls && cd ../
@@ -68,7 +68,7 @@ ls
 a2F.dos1   a2F.dos2  a2F.dos4  a2F.dos6  a2F.dos8  lambda         wien
 a2F.dos10  a2F.dos3  a2F.dos5  a2F.dos7  a2F.dos9  phononDOS.dat
 ```
-4. Edit parameter.txt and enter the conditions you want to calculate. (Note: since this is Fortran, the read position is fixed. Please write the value within the provided range.) For example:
+3. Edit parameter.txt and enter the conditions you want to calculate. (Note: since this is Fortran, the read position is fixed. Please write the value within the provided range.) For example:
 ```
 !-----------------------:------------!--Memo---------------------------------------------------------------------------
 DEF (Energy shift)  [eV]:  1.173000  ! This is good !
