@@ -24,7 +24,8 @@ make
 ```
 
 
-- Note: There are compile options in the Makefile. If you want to customize it, remove the # from "FLAGS" or "DEBUG" or add the necessary options. An example of the optimization option is:
+## Advanced Compilation
+There are compile options in the Makefile. If you want to customize it, remove the # from "FLAGS" or "DEBUG" or add the necessary options. An example of the optimization option is:
 ```
 FLAGS = -O2 -ftree-vectorize -ffp-contract=fast -fno-math-errno -march=native
 ```
