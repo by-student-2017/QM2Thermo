@@ -1,4 +1,4 @@
-# LBT-TETRA (QM2Thermo)
+The "*" in a2F.dos* corresponds to the number of data listed in the lambda file (an integer).# LBT-TETRA (QM2Thermo)
 ## QM2Thermo: Post-processing Thermoelectric Parameters from Quantum Mechanical calculations Output
 - Currently, only WIEN2k+QE is supported, but in the future we plan to make it compatible with various first-principles band calculations. We also plan to support GPUs with OpenACC in the future.
 - Functions other than chemical potential and Seebeck coefficient, such as carrier concentration Nc, were created for future expansion and should be used only as a reference.
@@ -70,7 +70,7 @@ first-principles codes, particularly for Seebeck coefficient and electron-phonon
 | `parameter.txt`   | Used by `Seebeck_analysis.f90` to select calculation methods and input parameters. Also used in `chemical_potential.f90` for DEF-related settings. |
 | `phononDOS.dat`   | *(Optional)* Contains phonon density of states (DOS) vs. energy (in eV). Can be sourced from any first-principles code. |
 | `lambda`          | *(Optional)* Currently supported only in Quantum ESPRESSO (QE) format.                                |
-| `a2F.dos*`        | *(Optional)* Currently supported only in QE format. The first column (frequency/energy) and second column (a2Fdos_total) are essential; other columns are read but not used. |
+| `a2F.dos*`        | *(Optional)* Currently supported only in QE format. The first column (frequency/energy) and second column (a2Fdos_total) are essential; other columns are read but not used. The "*" in a2F.dos* corresponds to the number of data listed in the lambda file (an integer).
 - lambda and a2F.dos: QE format (Data from Abinit, etc. can be used if it matches the QE format.)
 
 
