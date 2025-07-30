@@ -23,8 +23,8 @@ plus  = "DEF =  1.1730 [eV]"
 minus = "DEF = -0.0027 [eV]"
 
 # Add VEC annotations
-set label sprintf("VEC %s (minus): 3.9999997000000000", minus) at 400,  0.1 textcolor rgb "red"  font "Arial,12"
-set label sprintf("VEC %s (plus) : 4.0025006999848038", plus)  at 400, -0.1 textcolor rgb "blue" font "Arial,12"
+set label sprintf("VEC (%s (minus)): 3.9999997000000000", minus) at 400,  0.1 textcolor rgb "red"  font "Arial,12"
+set label sprintf("VEC (%s (plus)) : 4.0025006999848038", plus)  at 400, -0.1 textcolor rgb "blue" font "Arial,12"
 
 # Line style: Blue line with points
 set style line 1 lt 1 lw 2 lc rgb "#0072BD" pt 7 ps 1.2
