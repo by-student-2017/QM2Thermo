@@ -1,4 +1,4 @@
-The "*" in a2F.dos* corresponds to the number of data listed in the lambda file (an integer).# LBT-TETRA (QM2Thermo)
+# LBT-TETRA (QM2Thermo)
 ## QM2Thermo: Post-processing Thermoelectric Parameters from Quantum Mechanical calculations Output
 - Currently, only WIEN2k+QE is supported, but in the future we plan to make it compatible with various first-principles band calculations. We also plan to support GPUs with OpenACC in the future.
 - Functions other than chemical potential and Seebeck coefficient, such as carrier concentration Nc, were created for future expansion and should be used only as a reference.
