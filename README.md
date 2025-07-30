@@ -14,12 +14,14 @@ sudo apt update && sudo apt -y install gfortran build-essential make dos2unix
 dos2unix *
 make
 ```
+- Note: Our group uses a mixture of operating systems, including Linux, Windows (WSL1 or WLS2), and Mac, so we use "dos2unix" to convert line breaks to Linux format.
+
+
 - If you want to recompile it, just type:
 ```
 make clean
 make
 ```
-- Note: Since our group uses a mixture of operating systems, including Linux, Windows WLS2, and Mac, we use "dos2unix" to resolve line break issues in Linux typing.
 - Note: There are compile options in the Makefile. If you want to customize it, remove the # from "FLAGS" or "DEBUG" or add the necessary options.
 
 
