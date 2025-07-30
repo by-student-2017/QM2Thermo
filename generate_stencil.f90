@@ -2,7 +2,7 @@
 ! Author   : H. Sato and M. Inukai
 ! Affiliation : [AUE / Riken]
 ! Contact  : [your.email@domain.edu]
-! GitHub   : https://github.com/yourusername/seebeck_analysis (optional)
+! GitHub   : https://github.com/by-student-2017/LBT-TETRA (optional)
 !-----------------------------------------------------------------------
 ! Program: GenerateStencil
 ! Purpose: Constructs finite-difference stencils for k-space derivatives
@@ -81,24 +81,24 @@
 !     and avoids rounding errors in stencil matching.
 !-----------------------------------------------------------------------
 !generate_stencil.f90            <- Main Fortran source file
-!„¥„Ÿ„Ÿ constants module         <- Defines grid parameters, symmetry type, and utility functions
-!„    „¤„Ÿ„Ÿ SymOp type: rotation matrix + translation vector
-!„    „¤„Ÿ„Ÿ Wrap function for periodic index handling
-!„ 
-!„¥„Ÿ„Ÿ read_constants           <- Reads NPX, NPY, NPZ, IMAX, Nsym from WIEN2k files
-!„¥„Ÿ„Ÿ ReadSymmetry             <- Loads symmetry operations from wien.struct
-!„¥„Ÿ„Ÿ ApplySymmetry            <- Applies rotation (ignoring translation) to k-point coordinates
-!„¥„Ÿ„Ÿ ReadKList                <- Loads k-point coordinates and weights from wien.klist
-!„¥„Ÿ„Ÿ BuildIC                  <- Maps grid points to symmetry-equivalent k-points
-!„¥„Ÿ„Ÿ WriteStencils            <- Generates and writes +/-15-point stencil indices
-!„ 
-!„¥„Ÿ„Ÿ wien.struct              <- Input: crystal structure and symmetry operations
-!„¥„Ÿ„Ÿ wien.klist               <- Input: list of k-points and weights
-!„¥„Ÿ„Ÿ wien.kgen                <- Input: number of k-points (IMAX)
-!„ 
-!„¥„Ÿ„Ÿ cfA1.dat - cfA3.dat  <- Output: x-direction stencil indices
-!„¥„Ÿ„Ÿ cfB1.dat - cfB3.dat  <- Output: y-direction stencil indices
-!„¥„Ÿ„Ÿ cfC1.dat - cfC3.dat  <- Output: z-direction stencil indices
+!â€žÂ¥â€žÅ¸â€žÅ¸ constants module         <- Defines grid parameters, symmetry type, and utility functions
+!â€žÂ    â€žÂ¤â€žÅ¸â€žÅ¸ SymOp type: rotation matrix + translation vector
+!â€žÂ    â€žÂ¤â€žÅ¸â€žÅ¸ Wrap function for periodic index handling
+!â€žÂ 
+!â€žÂ¥â€žÅ¸â€žÅ¸ read_constants           <- Reads NPX, NPY, NPZ, IMAX, Nsym from WIEN2k files
+!â€žÂ¥â€žÅ¸â€žÅ¸ ReadSymmetry             <- Loads symmetry operations from wien.struct
+!â€žÂ¥â€žÅ¸â€žÅ¸ ApplySymmetry            <- Applies rotation (ignoring translation) to k-point coordinates
+!â€žÂ¥â€žÅ¸â€žÅ¸ ReadKList                <- Loads k-point coordinates and weights from wien.klist
+!â€žÂ¥â€žÅ¸â€žÅ¸ BuildIC                  <- Maps grid points to symmetry-equivalent k-points
+!â€žÂ¥â€žÅ¸â€žÅ¸ WriteStencils            <- Generates and writes +/-15-point stencil indices
+!â€žÂ 
+!â€žÂ¥â€žÅ¸â€žÅ¸ wien.struct              <- Input: crystal structure and symmetry operations
+!â€žÂ¥â€žÅ¸â€žÅ¸ wien.klist               <- Input: list of k-points and weights
+!â€žÂ¥â€žÅ¸â€žÅ¸ wien.kgen                <- Input: number of k-points (IMAX)
+!â€žÂ 
+!â€žÂ¥â€žÅ¸â€žÅ¸ cfA1.dat - cfA3.dat  <- Output: x-direction stencil indices
+!â€žÂ¥â€žÅ¸â€žÅ¸ cfB1.dat - cfB3.dat  <- Output: y-direction stencil indices
+!â€žÂ¥â€žÅ¸â€žÅ¸ cfC1.dat - cfC3.dat  <- Output: z-direction stencil indices
 !-----------------------------------------------------------------------
 
 
