@@ -50,7 +50,7 @@ gnuplot plot_Seebeck.gpl
 gnuplot plot_cp.gpl
 gnuplot plot_dos.gpl
 ```
-- Graphs are also output in *.png format. If it doesn't work properly on Linux, you can install gnuplot on Windows and set up the environment, then just double-click the *.gpl file to make it work.
+- Graphs are also output in *.png format. If it doesn't work properly on Linux, you can install gnuplot on Windows and set up the environment, then just double-click the *.gpl file to make it work. (see *.png in "Ref_Si_TB-mBJ_dope")
 
 ### Visualization Scripts Overview
 
