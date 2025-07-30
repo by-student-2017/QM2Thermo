@@ -94,6 +94,7 @@ This document provides a summary of key files used in WIEN2k calculations and th
 | `wien.kgen`     | Used to retrieve the actual k-points utilized in the calculation.          |
 | `wien.klist`    | Provides detailed information about the k-points (e.g., coordinates).      |
 | `wien.struct`   | Contains lattice constants, angles, and symmetry data of the crystal.      |
+
 In reality, fewer files would be sufficient, but this is done for convenience. If wien.klist is available, wien.kgen can actually be coded so that it is not necessary.
 
 
