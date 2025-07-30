@@ -120,6 +120,7 @@ To force recalculation, please delete the relevant files as described below.
 
 > Note: Calculations will only run if the corresponding result files are not present.
 
+---
 
 ## Test
 - Ubuntu 18.04 LTS or Later
