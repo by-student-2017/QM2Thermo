@@ -153,7 +153,7 @@ In reality, fewer files would be sufficient, but this is done for convenience. I
 If a calculation result file already exists, the corresponding calculation will be skipped. To force a recalculation, delete the corresponding file using the following procedure. (For details, see the run.sh Bash file.) You can run the calculation as usual with "bash ./run.sh".
 | Calculation Target     | Files to Delete         | Notes                                                                 |
 |------------------------|-------------------------|-----------------------------------------------------------------------|
-| Change in k-point mesh | `cf*.dat`                | Delete only cfA1.dat file if change in k-point mesh. |
+| Change in k-point mesh | `cf*.dat`                | Delete only cfA1.dat file if change in k-point mesh or symmetry group. |
 | Change in DEF          | `apot.dat`              | Delete apot.dat file if the DEF (structure details) has been modified.   |
 | Other parameter changes| No delete files | Changing parameters other than DEF in `parameter.txt` does not require deleting the file. |
 > Note: Calculations will only run if the corresponding result files are not present.
@@ -288,3 +288,30 @@ To make the code compatible with outputs from other DFT packages:
   However, due to the complexity and cost of development, modifications are **not recommended** unless you are an experienced developer. In practice, calculations involving element substitution, the introduction of various defects, and distortion result in the P1 symmetry, which is the highest, so there is little benefit to making it an HCP other than for research purposes.
 
 ---
+
+## Precision Considerations for `REAL(8)` (Double Precision)
+
+### Overview
+
+`REAL(8)` in Fortran corresponds to **IEEE 754 double precision**, which provides approximately **15–17 significant decimal digits**, typically around **16 digits**.
+
+This level of precision is suitable for many scientific and engineering applications, but it has limitations that developers should be aware of when performing numerical computations.
+
+---
+
+### Machine Epsilon
+
+- The **machine epsilon** for `REAL(8)` is approximately `2.220D-16`.
+- This is the smallest value such that `1.0D0 + ε ≠ 1.0D0`.
+- Differences smaller than this may be lost due to rounding errors.
+
+---
+
+### Practical Implications
+
+When comparing floating-point numbers or checking for convergence, avoid direct equality checks. Instead, use a threshold to determine approximate equality:
+
+```fortran
+IF (ABS(x - y) < 1.0D-14) THEN
+    ! x and y are considered approximately equal
+END IF
