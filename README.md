@@ -42,8 +42,7 @@ As you can see from the previous examples, you only need to remove the "#". Of c
 ## Usage
 1. Calculated with symmetry 1 (P1 structure): After the calculation with SCF (either GGA-PBE or TB-mBJ), run the calculation with as many k-points as possible (e.g., Si Nk=34^3 (i.e., 58 x 58 x 58 k-points)) without shifting in DOS.
 ```
-WIEN2k: Tasks -> DOS -> x kgen
-
+(On WIEN2k: Tasks -> DOS -> x kgen)
 Number of k-points: [0]
 Shift k-mesh (if applicable) [No]
 (For experts:...
