@@ -185,6 +185,6 @@ To force recalculation, please delete the relevant files as described below.
 - Regarding the Seebeck_analysis.f90 section, the seebeck_coefficient and get_tau functions at the end of the main section are important. Tracing back the get_tau function, we find the part that calculates the relaxation time using Matthiessen's law, so we recommend improving the calculation there.
 - Currently, we are only using Phonon DOS, but if we use data at each q-point of Phonon, we can achieve further improvement.
 - Another method would be to use only the chemical potential data in apot.dat and change the Fermi level using BoltzTraP or similar to use only a portion of it, as shown in the figure.
-- To make it compatible with other first-principles calculations, either output it in the same format as wien.energy, or change the code for reading the data in group_velocity.f90. It simply obtains the energy for each k-point. wien.klist contains k-point information, but you can also read it from wien.energy. This code obtains data from wien.energy and wien.klist without any changes from the code used in the paper.
+- To make it compatible with other first-principles calculations, either output it in the same format as wien.energy and wien.klist, or change the code for reading the data in group_velocity.f90. It simply obtains the energy for each k-point. wien.klist contains k-point information, but you can also read it from wien.energy. This code obtains data from wien.energy and wien.klist without any changes from the code used in the paper.
 
 ---
