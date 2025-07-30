@@ -1,7 +1,7 @@
 !-----------------------------------------------------------------------
 ! Author   : H. Sato and M. Inukai
 ! Affiliation : [AUE / Riken]
-! Contact  : [your.email@domain.edu]
+! Contact  : [uichiro25@gmail.com]
 ! GitHub   : https://github.com/by-student-2017/LBT-TETRA (optional)
 !-----------------------------------------------------------------------
 ! Program      : chemical_potential.f90
