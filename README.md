@@ -114,7 +114,7 @@ If a calculation result file already exists, the corresponding calculation will 
 |------------------------|-------------------------|-----------------------------------------------------------------------|
 | Change in k-point mesh | `f*.dat`                | Example: `f001.dat`, `f002.dat`, etc. Delete files corresponding to the k-points. |
 | Change in DEF          | `apot.dat`              | Delete this file if the DEF (structure details) has been modified.   |
-| Other parameter changes| No deletion needed (`parameter.txt`) | Changes in `parameter.txt` alone will trigger recalculation automatically. |
+| Other parameter changes| No deletion needed (`parameter.txt`) | Changing parameters other than DEF in `parameter.txt` does not require deleting the file. |
 > Note: Calculations will only run if the corresponding result files are not present.
 
 ---
