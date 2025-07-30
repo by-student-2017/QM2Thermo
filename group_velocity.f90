@@ -32,21 +32,22 @@
 !   - AKK.DATA        : Band-resolved energy, DOS, velocity^2
 !-----------------------------------------------------------------------
 !   src/
-!   „¥„Ÿ„Ÿ modules/
-!   „    „¥„Ÿ„Ÿ constants              ! Physical constants and size definitions
-!   „    „¥„Ÿ„Ÿ band_data              ! AMA1 arrays and shared variable definitions (formerly COMMON)
-!   „    „¥„Ÿ„Ÿ tetra_data             ! E(), FK(), CNT() etc. for DOS density
-!   „    „¤„Ÿ„Ÿ index_data             ! For group velocity difference such as IP(), IM()
-!   „¥„Ÿ„Ÿ subroutines/
-!   „    „¥„Ÿ„Ÿ read_constants         ! 
-!   „    „¥„Ÿ„Ÿ TGEN                   ! Define the tetrahedrons associated with each K point
-!   „    „¥„Ÿ„Ÿ VDATA                  ! Load differential points (cf*.dat)
-!   „    „¥„Ÿ„Ÿ AEIGEN                 ! Load AMA1 from wien.energy (WIEN2k)
-!   „    „¥„Ÿ„Ÿ DENS                   ! PDNS applied to all tetras
-!   „    „¥„Ÿ„Ÿ PDNS                   ! Calculate density of states for a single tetra
-!   „    „¥„Ÿ„Ÿ SORT                   ! 4-point sort subroutine (S, F, G, O, P)
-!   „    „¤„Ÿ„Ÿ GV                     ! Calculate group velocities VX, VY, and VZ using the central difference method  
-!   „¤„Ÿ„Ÿ main                        ! Main Program
+!   +----+ modules/
+!   |    +----- constants              ! Physical constants and size definitions
+!   |    +----- band_data              ! AMA1 arrays and shared variable definitions (formerly COMMON)
+!   |    +----- tetra_data             ! E(), FK(), CNT() etc. for DOS density
+!   |    +----- index_data             ! For group velocity difference such as IP(), IM()
+!   |
+!   +----- subroutines/
+!   |    +----- read_constants         ! 
+!   |    +----- TGEN                   ! Define the tetrahedrons associated with each K point
+!   |    +----- VDATA                  ! Load differential points (cf*.dat)
+!   |    +----- AEIGEN                 ! Load AMA1 from wien.energy (WIEN2k)
+!   |    +----- DENS                   ! PDNS applied to all tetras
+!   |    +----- PDNS                   ! Calculate density of states for a single tetra
+!   |    +----- SORT                   ! 4-point sort subroutine (S, F, G, O, P)
+!   |    +----- GV                     ! Calculate group velocities VX, VY, and VZ using the central difference method  
+!   +----- main                        ! Main Program
 !-----------------------------------------------------------------------
 
 
