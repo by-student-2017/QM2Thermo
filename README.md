@@ -188,11 +188,49 @@ To force recalculation, please delete the relevant files as described below.
 
 ---
 
-## How to develop it further?
-- This section is Seebeck_analysis.f90. The other code is highly complete and will rarely need to be rewritten. There is room for improving the efficiency of generate_stencil.f90 for HCP, but the cost of writing the code is high, so we do not recommend it outside of the original developer.
-- Regarding the Seebeck_analysis.f90 section, the seebeck_coefficient and get_tau functions at the end of the main section are important. Tracing back the get_tau function, we find the part that calculates the relaxation time using Matthiessen's law, so we recommend improving the calculation there.
-- Currently, we are only using Phonon DOS, but if we use data at each q-point of Phonon, we can achieve further improvement.
-- Another method would be to use only the chemical potential data in apot.dat and change the Fermi level using BoltzTraP or similar to use only a portion of it, as shown in the figure.
-- To make it compatible with other first-principles calculations, either output it in the same format as wien.energy and wien.klist, or change the code for reading the data in group_velocity.f90. It simply obtains the energy for each k-point. wien.klist contains k-point information, but you can also read it from wien.energy. This code obtains data from wien.energy and wien.klist without any changes from the code used in the paper.
+## How to Develop It Further
+
+This section focuses on potential improvements to `Seebeck_analysis.f90`. Other parts of the codebase are already highly complete, especially for WIEN2k, and generally do not require rewriting.
+
+### Key Areas for Improvement
+
+- **Main Targets**:  
+  The `seebeck_coefficient` and `get_tau` functions at the end of the main program are central.  
+  Tracing `get_tau` reveals the part that calculates relaxation time using **Matthiessen's law**.  
+  → *Improving this calculation is highly recommended.*
+
+- **Phonon Data Usage**:  
+  Currently, only **Phonon DOS** is used.  
+  → *Further accuracy can be achieved by incorporating data from each q-point in the phonon spectrum.*
+
+- **Alternative Method**:  
+  As illustrated in the figure (not included here), another approach is to:
+  - Use only the **chemical potential data** from `apot.dat`.
+  - Adjust the Fermi level using **BoltzTraP** or similar tools.
+  - Use only a subset of the data for analysis.
+
+### Compatibility with Other First-Principles Codes
+
+To make the code compatible with outputs from other DFT packages:
+
+- **Preferred Format**:  
+  Output data should follow the format of `wien.energy` and `wien.klist`.
+
+- **Alternative Approach**:  
+  Modify the data loading section in `group_velocity.f90`.  
+  This module currently:
+  - Retrieves energy values from `wien.energy`.
+  - Loads k-point information from `wien.klist`, although this can also be extracted from `wien.energy`.
+
+> Note: The current implementation uses `wien.energy` and `wien.klist` exactly as in the original publication, without modification.
+
+### Developer Notes
+
+- `generate_stencil.f90` (for HCP systems) has room for improvement.  
+  However, due to the complexity and cost of development, modifications are **not recommended** unless you are an experienced developer.
+
+---
+
+If you'd like, I can combine this with the previous sections into a full `README.md` file and generate it for download. Would you like that?
 
 ---
