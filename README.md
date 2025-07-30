@@ -165,7 +165,7 @@ To force recalculation, please delete the relevant files as described below.
 ---
 
 ## How to develop it further?
-- This is the Seebeck_analysis.f90 part. The other code is highly complete and will rarely need to be rewritten. There is room for improving the efficiency of generate_stencil.f90 for HCP, but the cost of writing the code is high, so we do not recommend it outside of the original developer.
+- This section is Seebeck_analysis.f90. The other code is highly complete and will rarely need to be rewritten. There is room for improving the efficiency of generate_stencil.f90 for HCP, but the cost of writing the code is high, so we do not recommend it outside of the original developer.
 - Regarding the Seebeck_analysis.f90 section, the seebeck_coefficient and get_tau functions at the end of the main section are important. If you trace the get_tau function back, you will find the part that calculates the relaxation time using Matthiessen's rule, so please further improve the relaxation time here.
 - Currently, we are only using Phonon DOS, but if we use the Phonon distribution and data at each q-point of Phonon, we can achieve further improvement.
 - Another method would be to use only the chemical potential data in apot.dat and change the Fermi level using BoltzTraP or similar to use only a portion of it, as shown in the figure.
