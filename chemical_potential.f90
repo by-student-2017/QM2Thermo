@@ -2,7 +2,7 @@
 ! Author   : H. Sato and M. Inukai
 ! Affiliation : [AUE / Riken]
 ! Contact  : [your.email@domain.edu]
-! GitHub   : https://github.com/yourusername/seebeck_analysis (optional)
+! GitHub   : https://github.com/by-student-2017/LBT-TETRA (optional)
 !-----------------------------------------------------------------------
 ! Program      : chemical_potential.f90
 ! Purpose      : Calculate temperature-dependent chemical potential mu(T)
@@ -31,8 +31,8 @@
 !   ifort    -O2 chemical_potential.f90 -o chemical_potential.exe
 !
 ! Required input files:
-!   - AKK.DATA     : Energy grid, density of states, velocity^2 etc.
-!                    Energy [eV], DOS [states/eV], velocity [m/s]
+!   - AKK.DATA     : Band-resolved energy, velocity^2, velocity^2*DOS, DOS, Cumulative (DOS)
+!     (Energy [eV], group velocity^2 [(m/s)^2], group velocity^2 * Total DOS [(m/s)^2 * (states/eV)], Total DOS [states/eV], Cumulative DOS [states/eV])
 !
 ! Output:
 !   - apot.data    : Table of mu(T): temperature vs. chemical potential [eV]
@@ -83,7 +83,7 @@
 !   - Shared by chemical_potential main program
 !
 ! Input provenance:
-!   Arrays EE(:), DOS(:), V2(:), VD(:), EN(:) are derived from the 4th-column eigenvalues in wien(Si58).energy
+!   Arrays EE(:), DOS(:), V2(:), VD(:), EN(:) are derived from the 4th-column eigenvalues in wien.energy
 !   AKK.DATA reflects post-processing from raw band structure across 4735 k-points and multiple bands
 !
 ! Extension-ready:
@@ -145,7 +145,8 @@ END MODULE carrier_data
 !   A bisection algorithm is applied to find the chemical
 !   potential mu that matches the target carrier density.
 !
-!   Input : AKK.DATA -> Contains energy grid, DOS(E), and related quantities
+!   Input : AKK.DATA -> Contains energy grid, velocity^2, velocity^2*DOS, DOS(E), Cumulative (DOS(E))
+!
 !   Output: apot.data -> Table of mu(T) [eV] versus temperature T [K]
 !
 !   This code is modularized with carrier_data module and is
@@ -403,8 +404,8 @@ END SUBROUTINE BS
 !   - Current routine does not populate or use them.
 !
 ! Source note:
-!   AKK.DATA is constructed from wien(Si58).energy, containing band eigenvalues.
-!   Typically, the 4th column (or designated band index) across 4735 k-points is extracted.
+!   AKK.DATA is constructed from wien.energy, containing band eigenvalues.
+!   Typically, the 4th column (or designated band index) across IMAX k-points is extracted.
 !   These eigenvalues are post-processed into AMA1(:,:), then transformed into AMA(:,:)
 !   Energy values E = AMA(I,J)/EV are converted into EE(:) with offset DEF as needed.
 !   This serves as the input base for DOS(E), velocity squared, scattering, etc.

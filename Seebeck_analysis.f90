@@ -2,7 +2,7 @@
 ! Author   : H. Sato and M. Inukai
 ! Affiliation : [AUE / Riken]
 ! Contact  : [your.email@domain.edu]
-! GitHub   : https://github.com/yourusername/seebeck_analysis (optional)
+! GitHub   : https://github.com/by-student-2017/LBT-TETRA (optional)
 !-----------------------------------------------------------------------
 ! Program : seebeck_analysis.f90
 ! Purpose : Calculate Seebeck coefficient using band structure data
@@ -20,7 +20,8 @@
 !   ifort    -O2 seebeck_analysis.f90 -o seebeck_analysis.exe
 !
 ! Required input files:
-!   - AKK.DATA        : Band-resolved energy, DOS, velocity^2 (Eenergy [eV], DOS [states/eV], velocity [m/s])
+!   - AKK.DATA        : Band-resolved energy, velocity^2, velocity^2*DOS, DOS, Cumulative (DOS)
+!     (Energy [eV], group velocity^2 [(m/s)^2], group velocity^2 * Total DOS [(m/s)^2 * (states/eV)], Total DOS [states/eV], Cumulative DOS [states/eV])
 !   - apot.data       : Temperature-dependent chemical potentials
 !   - phononDOS.dat   : (Optional) Phonon DOS for tau(T) model
 !   - lambda          : (Optional) lambda (QE) for tau(T) model
@@ -94,7 +95,7 @@
 !
 ! Input Files:
 !   „¥„Ÿ„Ÿ lambda          : Electron-phonon coupling constants and DOS data.
-!   „¥„Ÿ„Ÿ AKK.DATA        : Energy mesh, DOS, squared velocity, and band energy levels.
+!   „¥„Ÿ„Ÿ AKK.DATA        : Energy mesh, squared velocity, squared velocity * DOS, DOS, Cumulative DOS.
 !   „¥„Ÿ„Ÿ apot.data       : Temperature (TEM) and chemical potential (AMU) values.
 !   „¥„Ÿ„Ÿ phononDOS.dat   : Phonon DOS data (optional).
 !   „¥„Ÿ„Ÿ a2F.dos         : Eliashberg function data (optional).
@@ -1370,7 +1371,7 @@ END MODULE seebeck_data
 !   Analyze Seebeck coefficient as a function of temperature
 !   using energy-resolved transport data and relaxation time models.
 ! Inputs:
-!   - AKK.DATA       : Band-resolved velocity and DOS
+!   - AKK.DATA       : Band-resolved energy, velocity^2, velocity^2*DOS, DOS, Cumulative (DOS)
 !   - apot.data      : Chemical potentials (mu) vs. temperature
 !   - phononDOS.dat  : Optional phonon DOS for tau(T) model
 ! Outputs:
@@ -1575,7 +1576,7 @@ PROGRAM seebeck_analysis
   
   ! ------------------------------------------------------------------
   ! Step 2: Load band velocity data from 'AKK.DATA'
-  ! This file contains energy mesh (EE1), DOS, squared velocity, and EN
+  ! This file contains energy mesh (EE1), squared velocity, squared velocity*DOS, DOS, and Cumulative DOS
   ! ------------------------------------------------------------------
   OPEN(UNIT=10, FILE='AKK.DATA')
   DO LE = 1, MM
@@ -1985,8 +1986,8 @@ PROGRAM seebeck_analysis
           & , specific_heat
      ELSE
         ! If denominator T is too small (numerical instability), output placeholders
-        WRITE(6,'(F10.1,1X,A)') TEM, CP, "-- -- -- -- -- -- -- -- -- -- -- --"
-        WRITE(20,'(F10.1,1X,F12.6,1X,A)') TEM, CP, "-- -- -- -- -- -- -- -- -- -- -- --"
+        WRITE(6,'(F8.1,1X,F10.6,1X,A)') TEM, CP, "-- -- -- -- -- -- -- -- -- -- -- --"
+        WRITE(20,'(F8.1,1X,F10.6,1X,A)') TEM, CP, "-- -- -- -- -- -- -- -- -- -- -- --"
      END IF
   END DO
   
