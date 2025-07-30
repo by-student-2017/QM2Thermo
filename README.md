@@ -112,9 +112,9 @@ In reality, fewer files would be sufficient, but this is done for convenience. I
 If a calculation result file already exists, the corresponding calculation will be skipped. To force a recalculation, delete the corresponding file using the following procedure. (For details, see the run.sh Bash file.) You can run the calculation as usual with "bash ./run.sh".
 | Calculation Target     | Files to Delete         | Notes                                                                 |
 |------------------------|-------------------------|-----------------------------------------------------------------------|
-| Change in k-point mesh | `f*.dat`                | Example: `f001.dat`, `f002.dat`, etc. Delete files corresponding to the k-points. |
-| Change in DEF          | `apot.dat`              | Delete this file if the DEF (structure details) has been modified.   |
-| Other parameter changes| No deletion needed (`parameter.txt`) | Changing parameters other than DEF in `parameter.txt` does not require deleting the file. |
+| Change in k-point mesh | `cf*.dat`                | Delete only cfA1.dat file if change in k-point mesh. |
+| Change in DEF          | `apot.dat`              | Delete apot.dat file if the DEF (structure details) has been modified.   |
+| Other parameter changes| No delete files | Changing parameters other than DEF in `parameter.txt` does not require deleting the file. |
 > Note: Calculations will only run if the corresponding result files are not present.
 
 ---
@@ -166,10 +166,10 @@ This document describes the workflow for computing the Seebeck coefficient using
 | Code                   | Input File(s)                                                                               | Output File(s)                                            | Description                                           |
 |------------------------|---------------------------------------------------------------------------------------------|-----------------------------------------------------------|-------------------------------------------------------|
 | WIEN2k                 | -                                                                                           | wien.dos1, wien.energ, wien.kgen, wien.klist, wien.struct | Generate electronic structure data for the material.  |
-| generate_stencil.f90   | WIEN2k output files                                                                         | f*.dat                                                    | Convert WIEN2k output into stencil data.              |
-| group_velocity.f90     | f*.dat, WIEN2k output files                                                                 | AKK.DATA                                                  | Calculate group velocities from stencil data.         |
+| generate_stencil.f90   | WIEN2k output files                                                                         | cf*.dat                                                    | Convert WIEN2k output into stencil data.              |
+| group_velocity.f90     | cf*.dat, WIEN2k output files                                                                 | AKK.DATA                                                  | Calculate group velocities from stencil data.         |
 | chemical_potential.f90 | AKK.DATA, parameter.txt, WIEN2k output files                                                | apot.dat                                                  | Determine the chemical potential.                     |
-| Seebeck_analysis.f90   | f*.dat, apot.dat, AKK.DATA, parameter.txt, WIEN2k output files (optional: lambda, a2F.dos*) | Seebeck_analysis.dat                                      | Compute the Seebeck coefficient using Allen's theory. |
+| Seebeck_analysis.f90   | cf*.dat, apot.dat, AKK.DATA, parameter.txt, WIEN2k output files (optional: lambda, a2F.dos*) | Seebeck_analysis.dat                                      | Compute the Seebeck coefficient using Allen's theory. |
 
 ### Code Descriptions
 
@@ -180,11 +180,11 @@ This document describes the workflow for computing the Seebeck coefficient using
 #### 2. generate_stencil.f90
 - **Purpose**: Convert WIEN2k output into stencil data.
 - **Input**: WIEN2k output files.
-- **Output**: `f*.dat` files containing stencil information.
+- **Output**: `cf*.dat` files containing stencil information.
 
 #### 3. group_velocity.f90
 - **Purpose**: Calculate group velocities from stencil data.
-- **Input**: `f*.dat` and WIEN2k output files.
+- **Input**: `cf*.dat` and WIEN2k output files.
 - **Output**: `AKK.DATA` containing velocity information.
 
 #### 4. chemical_potential.f90
@@ -194,7 +194,7 @@ This document describes the workflow for computing the Seebeck coefficient using
 
 #### 5. Seebeck_analysis.f90
 - **Purpose**: Compute the Seebeck coefficient using Allen's theory.
-- **Input**: `f*.dat`, `apot.dat`, `AKK.DATA`, `parameter.txt`, and WIEN2k output files (optional: `lambda`, `a2F.dos*` in QE format).
+- **Input**: `cf*.dat`, `apot.dat`, `AKK.DATA`, `parameter.txt`, and WIEN2k output files (optional: `lambda`, `a2F.dos*` in QE format).
 - **Output**: `Seebeck_analysis.dat` with final Seebeck coefficient results.
 
 ---
