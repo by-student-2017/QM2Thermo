@@ -59,33 +59,33 @@
 !   Seebeck_analysis.f90
 !   +----- Step 0: Load parameters
 !   |    +----- Reads parameters from 'parameter.txt', and shows parameters.
-!   |    +----- Reads lattice parameter from 'wien.struct'.
-!   |    +----- calculate volume and show it.
+!   |    +----- Reads lattice parameter from 'wien.struct', and shows lattice parameters.
+!   |    +----- calculate volume and show its value.
 !   | 
-!   +----- Step 0: Load Electron-Phonon Coupling Data
+!   +----- Step 1: Load Electron-Phonon Coupling Data
 !   |    +----- Reads phonon coupling constants from 'lambda'.
 !   |    +----- Initializes arrays for broadening, lambdaArray, dosEf, and omega_ln.
 !   |    +----- Uses `CALL ReadLambdaData()` for data processing.
 !   | 
-!   +----- Step 1: Load Chemical Potentials
+!   +----- Step 2: Load Chemical Potentials
 !   |    +----- Reads temperature-dependent chemical potentials (AMU) from 'apot.data'.
 !   |    +----- Associates each temperature (TEM) with its corresponding chemical potential.
 !   | 
-!   +----- Step 2: Load Band Velocity Data
+!   +----- Step 3: Load Band Velocity Data
 !   |    +----- Reads energy mesh, density of states (DOS), squared group velocity,
 !   |    |    and band energy levels from 'AKK.DATA'.
 !   |    +----- Applies energy shift if necessary.
 !   |    +----- Computes valence electron concentration (VEC) for given energy levels.
 !   | 
-!   +----- Step 3: Read Phonon DOS or a2F.dos Data
+!   +----- Step 4: Read Phonon DOS or a2F.dos Data
 !   |    +----- Calls `read_phonon_dos()` if phononDOS is enabled.
 !   |    +----- Calls `read_a2F_dos()` if a2F.dos is enabled.
 !   | 
-!   +----- Step 4: Initialize Output File
+!   +----- Step 5: Initialize Output File
 !   |    +----- Prepares 'Seebeck_analysis.dat' file for results storage.
 !   |    +----- Includes headers with energy offsets, VEC, and Seebeck coefficient columns.
 !   | 
-!   +----- Step 5: Compute Seebeck Coefficient
+!   +----- Step 6: Compute Seebeck Coefficient
 !   |    +----- Loops through temperatures to calculate Seebeck coefficient.
 !   |    +----- Computes Fermi-Dirac distribution and its derivative at each energy level.
 !   |    +----- Multiplies by group velocity squared and energy-dependent scattering rate.
@@ -1559,7 +1559,7 @@ PROGRAM seebeck_analysis
   CLOSE(91)
   
   ! ------------------------------------------------------------------
-  ! Step 0: Load "Electron-phonon coupling" data from 'lambda'
+  ! Step 1: Load "Electron-phonon coupling" data from 'lambda'
   ! ------------------------------------------------------------------
   !IF (use_phonon .or. use_phononDOS .or. use_a2Fdos) THEN
   IF (use_phonon .or. use_a2Fdos) THEN
@@ -1570,7 +1570,7 @@ PROGRAM seebeck_analysis
   END IF
   
   ! ------------------------------------------------------------------
-  ! Step 1: Load chemical potentials from 'apot.data'
+  ! Step 2: Load chemical potentials from 'apot.data'
   ! Each line contains temperature (TEM) and chemical potential (AMU)
   ! ------------------------------------------------------------------
   OPEN(UNIT=4, FILE='apot.data')
@@ -1580,7 +1580,7 @@ PROGRAM seebeck_analysis
   CLOSE(4)
   
   ! ------------------------------------------------------------------
-  ! Step 2: Load band velocity data from 'AKK.DATA'
+  ! Step 3: Load band velocity data from 'AKK.DATA'
   ! This file contains energy mesh (EE1), squared velocity, squared velocity*DOS, DOS, and Cumulative DOS
   ! ------------------------------------------------------------------
   OPEN(UNIT=10, FILE='AKK.DATA')
@@ -1613,7 +1613,7 @@ PROGRAM seebeck_analysis
   CLOSE(10)
 
   ! ------------------------------------------------------------------
-  ! Step 3: Read phonon DOS (phononDOS or a2F.dos)
+  ! Step 4: Read phonon DOS (phononDOS or a2F.dos)
   ! ------------------------------------------------------------------
   IF (use_phononDOS) THEN
     CALL read_phonon_dos()
@@ -1636,7 +1636,7 @@ PROGRAM seebeck_analysis
   END IF
 
   ! ------------------------------------------------------------------
-  ! Step 4: Initialize output file and print header
+  ! Step 5: Initialize output file and print header
   ! ------------------------------------------------------------------
   OPEN(UNIT=20, FILE='Seebeck_analysis.dat')
   WRITE(20, *) "! Energy shift offset (EF = 0 -> EF = DEF) [eV]:", DEF
@@ -1653,7 +1653,7 @@ PROGRAM seebeck_analysis
   WRITE(20,'(A)') hdr
 
   ! ------------------------------------------------------------------
-  ! Step 5: Loop over temperatures to compute Seebeck coefficient
+  ! Step 6: Loop over temperatures to compute Seebeck coefficient
   ! "I" is the energy index. If E1 is available, it is not required for 
   ! the get_tau() function, but we include it for future expansion.
   ! ------------------------------------------------------------------
