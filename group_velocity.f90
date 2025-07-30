@@ -2,7 +2,7 @@
 ! Author   : H. Sato and M. Inukai
 ! Affiliation : [AUE / Riken]
 ! Contact  : [your.email@domain.edu]
-! GitHub   : https://github.com/yourusername/seebeck_analysis (optional)
+! GitHub   : https://github.com/by-student-2017/LBT-TETRA (optional)
 !-----------------------------------------------------------------------
 ! Program : group_velocity_fcc.f90
 ! Purpose : 
@@ -32,21 +32,21 @@
 !   - AKK.DATA        : Band-resolved energy, DOS, velocity^2
 !-----------------------------------------------------------------------
 !   src/
-!   „¥„Ÿ„Ÿ modules/
-!   „    „¥„Ÿ„Ÿ constants              ! Physical constants and size definitions
-!   „    „¥„Ÿ„Ÿ band_data              ! AMA1 arrays and shared variable definitions (formerly COMMON)
-!   „    „¥„Ÿ„Ÿ tetra_data             ! E(), FK(), CNT() etc. for DOS density
-!   „    „¤„Ÿ„Ÿ index_data             ! For group velocity difference such as IP(), IM()
-!   „¥„Ÿ„Ÿ subroutines/
-!   „    „¥„Ÿ„Ÿ read_constants         ! 
-!   „    „¥„Ÿ„Ÿ TGEN                   ! Define the tetrahedrons associated with each K point
-!   „    „¥„Ÿ„Ÿ VDATA                  ! Load differential points (cf*.dat)
-!   „    „¥„Ÿ„Ÿ AEIGEN                 ! Load AMA1 from wien.energy (WIEN2k)
-!   „    „¥„Ÿ„Ÿ DENS                   ! PDNS applied to all tetras
-!   „    „¥„Ÿ„Ÿ PDNS                   ! Calculate density of states for a single tetra
-!   „    „¥„Ÿ„Ÿ SORT                   ! 4-point sort subroutine (S, F, G, O, P)
-!   „    „¤„Ÿ„Ÿ GV                     ! Calculate group velocities VX, VY, and VZ using the central difference method  
-!   „¤„Ÿ„Ÿ main                        ! Main Program
+!   â€Â¥â€Å¸â€Å¸ modules/
+!   â€Â    â€Â¥â€Å¸â€Å¸ constants              ! Physical constants and size definitions
+!   â€Â    â€Â¥â€Å¸â€Å¸ band_data              ! AMA1 arrays and shared variable definitions (formerly COMMON)
+!   â€Â    â€Â¥â€Å¸â€Å¸ tetra_data             ! E(), FK(), CNT() etc. for DOS density
+!   â€Â    â€Â¤â€Å¸â€Å¸ index_data             ! For group velocity difference such as IP(), IM()
+!   â€Â¥â€Å¸â€Å¸ subroutines/
+!   â€Â    â€Â¥â€Å¸â€Å¸ read_constants         ! 
+!   â€Â    â€Â¥â€Å¸â€Å¸ TGEN                   ! Define the tetrahedrons associated with each K point
+!   â€Â    â€Â¥â€Å¸â€Å¸ VDATA                  ! Load differential points (cf*.dat)
+!   â€Â    â€Â¥â€Å¸â€Å¸ AEIGEN                 ! Load AMA1 from wien.energy (WIEN2k)
+!   â€Â    â€Â¥â€Å¸â€Å¸ DENS                   ! PDNS applied to all tetras
+!   â€Â    â€Â¥â€Å¸â€Å¸ PDNS                   ! Calculate density of states for a single tetra
+!   â€Â    â€Â¥â€Å¸â€Å¸ SORT                   ! 4-point sort subroutine (S, F, G, O, P)
+!   â€Â    â€Â¤â€Å¸â€Å¸ GV                     ! Calculate group velocities VX, VY, and VZ using the central difference method  
+!   â€Â¤â€Å¸â€Å¸ main                        ! Main Program
 !-----------------------------------------------------------------------
 
 
