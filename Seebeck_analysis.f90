@@ -1,7 +1,7 @@
 !-----------------------------------------------------------------------
 ! Author   : H. Sato and M. Inukai
 ! Affiliation : [AUE / Riken]
-! Contact  : [your.email@domain.edu]
+! Contact  : [uichiro25@gmail.com]
 ! GitHub   : https://github.com/by-student-2017/LBT-TETRA (optional)
 !-----------------------------------------------------------------------
 ! Program : seebeck_analysis.f90
@@ -57,120 +57,120 @@
 !
 ! Main Source File:
 !   Seebeck_analysis.f90
-!   „¥„Ÿ„Ÿ Step 0: Load Electron-Phonon Coupling Data
-!   „    „¥„Ÿ„Ÿ Reads phonon coupling constants from 'lambda'.
-!   „    „¥„Ÿ„Ÿ Initializes arrays for broadening, lambdaArray, dosEf, and omega_ln.
-!   „    „¤„Ÿ„Ÿ Uses `CALL ReadLambdaData()` for data processing.
-!   „ 
-!   „¥„Ÿ„Ÿ Step 1: Load Band Velocity Data
-!   „    „¥„Ÿ„Ÿ Reads energy mesh, density of states (DOS), squared group velocity,
-!   „    „    and band energy levels from 'AKK.DATA'.
-!   „    „¥„Ÿ„Ÿ Applies energy shift if necessary.
-!   „    „¤„Ÿ„Ÿ Computes valence electron concentration (VEC) for given energy levels.
-!   „ 
-!   „¥„Ÿ„Ÿ Step 2: Load Chemical Potentials
-!   „    „¥„Ÿ„Ÿ Reads temperature-dependent chemical potentials (AMU) from 'apot.data'.
-!   „    „¤„Ÿ„Ÿ Associates each temperature (TEM) with its corresponding chemical potential.
-!   „ 
-!   „¥„Ÿ„Ÿ Step 3: Initialize Output File
-!   „    „¥„Ÿ„Ÿ Prepares 'Seebeck_analysis.dat' file for results storage.
-!   „    „¥„Ÿ„Ÿ Includes headers with energy offsets, VEC, and Seebeck coefficient columns.
-!   „ 
-!   „¥„Ÿ„Ÿ Step 4: Read Phonon DOS or a2F.dos Data
-!   „    „¥„Ÿ„Ÿ Calls `read_phonon_dos()` if phononDOS is enabled.
-!   „    „¥„Ÿ„Ÿ Calls `read_a2F_dos()` if a2F.dos is enabled.
-!   „ 
-!   „¥„Ÿ„Ÿ Step 5: Compute Seebeck Coefficient
-!   „    „¥„Ÿ„Ÿ Loops through temperatures to calculate Seebeck coefficient.
-!   „    „¥„Ÿ„Ÿ Computes Fermi-Dirac distribution and its derivative at each energy level.
-!   „    „¥„Ÿ„Ÿ Multiplies by group velocity squared and energy-dependent scattering rate.
-!   „    „¥„Ÿ„Ÿ Accumulates numerator and denominator using integration techniques:
-!   „    „    „¤„Ÿ„Ÿ Options for Riemann sum, trapezoidal rule, or Simpson's rule.
-!   „    „¤„Ÿ„Ÿ Outputs averaged energy deviation <E - mu>, Seebeck coefficient, and Nc.
-!   „ 
-!   „¤„Ÿ„Ÿ Finalize:
-!       „¥„Ÿ„Ÿ Closes output files.
-!       „¥„Ÿ„Ÿ Deallocates arrays for phonon and scattering data if used.
-!       „¤„Ÿ„Ÿ Ensures proper cleanup for each flag (use_phonon, use_phononDOS, use_a2Fdos).
+!   â€Â¥â€Å¸â€Å¸ Step 0: Load Electron-Phonon Coupling Data
+!   â€Â    â€Â¥â€Å¸â€Å¸ Reads phonon coupling constants from 'lambda'.
+!   â€Â    â€Â¥â€Å¸â€Å¸ Initializes arrays for broadening, lambdaArray, dosEf, and omega_ln.
+!   â€Â    â€Â¤â€Å¸â€Å¸ Uses `CALL ReadLambdaData()` for data processing.
+!   â€Â 
+!   â€Â¥â€Å¸â€Å¸ Step 1: Load Band Velocity Data
+!   â€Â    â€Â¥â€Å¸â€Å¸ Reads energy mesh, density of states (DOS), squared group velocity,
+!   â€Â    â€Â    and band energy levels from 'AKK.DATA'.
+!   â€Â    â€Â¥â€Å¸â€Å¸ Applies energy shift if necessary.
+!   â€Â    â€Â¤â€Å¸â€Å¸ Computes valence electron concentration (VEC) for given energy levels.
+!   â€Â 
+!   â€Â¥â€Å¸â€Å¸ Step 2: Load Chemical Potentials
+!   â€Â    â€Â¥â€Å¸â€Å¸ Reads temperature-dependent chemical potentials (AMU) from 'apot.data'.
+!   â€Â    â€Â¤â€Å¸â€Å¸ Associates each temperature (TEM) with its corresponding chemical potential.
+!   â€Â 
+!   â€Â¥â€Å¸â€Å¸ Step 3: Initialize Output File
+!   â€Â    â€Â¥â€Å¸â€Å¸ Prepares 'Seebeck_analysis.dat' file for results storage.
+!   â€Â    â€Â¥â€Å¸â€Å¸ Includes headers with energy offsets, VEC, and Seebeck coefficient columns.
+!   â€Â 
+!   â€Â¥â€Å¸â€Å¸ Step 4: Read Phonon DOS or a2F.dos Data
+!   â€Â    â€Â¥â€Å¸â€Å¸ Calls `read_phonon_dos()` if phononDOS is enabled.
+!   â€Â    â€Â¥â€Å¸â€Å¸ Calls `read_a2F_dos()` if a2F.dos is enabled.
+!   â€Â 
+!   â€Â¥â€Å¸â€Å¸ Step 5: Compute Seebeck Coefficient
+!   â€Â    â€Â¥â€Å¸â€Å¸ Loops through temperatures to calculate Seebeck coefficient.
+!   â€Â    â€Â¥â€Å¸â€Å¸ Computes Fermi-Dirac distribution and its derivative at each energy level.
+!   â€Â    â€Â¥â€Å¸â€Å¸ Multiplies by group velocity squared and energy-dependent scattering rate.
+!   â€Â    â€Â¥â€Å¸â€Å¸ Accumulates numerator and denominator using integration techniques:
+!   â€Â    â€Â    â€Â¤â€Å¸â€Å¸ Options for Riemann sum, trapezoidal rule, or Simpson's rule.
+!   â€Â    â€Â¤â€Å¸â€Å¸ Outputs averaged energy deviation <E - mu>, Seebeck coefficient, and Nc.
+!   â€Â 
+!   â€Â¤â€Å¸â€Å¸ Finalize:
+!       â€Â¥â€Å¸â€Å¸ Closes output files.
+!       â€Â¥â€Å¸â€Å¸ Deallocates arrays for phonon and scattering data if used.
+!       â€Â¤â€Å¸â€Å¸ Ensures proper cleanup for each flag (use_phonon, use_phononDOS, use_a2Fdos).
 !
 ! Input Files:
-!   „¥„Ÿ„Ÿ lambda          : Electron-phonon coupling constants and DOS data.
-!   „¥„Ÿ„Ÿ AKK.DATA        : Energy mesh, squared velocity, squared velocity * DOS, DOS, Cumulative DOS.
-!   „¥„Ÿ„Ÿ apot.data       : Temperature (TEM) and chemical potential (AMU) values.
-!   „¥„Ÿ„Ÿ phononDOS.dat   : Phonon DOS data (optional).
-!   „¥„Ÿ„Ÿ a2F.dos         : Eliashberg function data (optional).
+!   â€Â¥â€Å¸â€Å¸ lambda          : Electron-phonon coupling constants and DOS data.
+!   â€Â¥â€Å¸â€Å¸ AKK.DATA        : Energy mesh, squared velocity, squared velocity * DOS, DOS, Cumulative DOS.
+!   â€Â¥â€Å¸â€Å¸ apot.data       : Temperature (TEM) and chemical potential (AMU) values.
+!   â€Â¥â€Å¸â€Å¸ phononDOS.dat   : Phonon DOS data (optional).
+!   â€Â¥â€Å¸â€Å¸ a2F.dos         : Eliashberg function data (optional).
 !
 ! Output Files:
-!   „¥„Ÿ„Ÿ Seebeck_analysis.dat : Results file containing computed Seebeck coefficients.
+!   â€Â¥â€Å¸â€Å¸ Seebeck_analysis.dat : Results file containing computed Seebeck coefficients.
 !-----------------------------------------------------------------------
 ! Function and Subroutine Relationships for get_tau
 !
 ! Main Function:
 !   get_tau(E1, T, I)
-!   „¥„Ÿ„Ÿ Purpose:
-!   „    Compute the relaxation time tau(E, T) based on multiple scattering 
-!   „    mechanisms combined using Matthiessen's rule.
-!   „ 
-!   „¥„Ÿ„Ÿ Scattering Mechanisms:
-!   „    1. Phonon scattering (tau_ph)      : Dependent on |E - mu|, T, and Lambda.
-!   „    2. Impurity scattering (tau_imp)   : User-defined |E - mu|^n exponent model.
-!   „    3. DOS-based scattering (tau_dos)  : Dependent on DOS(E) * T.
-!   „    4. Phonon DOS-based scattering (tau_phdos): Advanced scattering using phonon data.
-!   „ 
-!   „¥„Ÿ„Ÿ Subroutines and Functions Called:
-!   „    „¥„Ÿ„Ÿ GetLambda(E1, T, I)
-!   „    „    „¥„Ÿ„Ÿ Purpose: Interpolates the electron-phonon coupling constant Lambda.
-!   „    „    „¥„Ÿ„Ÿ Inputs:
-!   „    „    „    - E1: Energy offset from chemical potential.
-!   „    „    „    - T: Temperature.
-!   „    „    „    - I: Energy index.
-!   „    „    „¥„Ÿ„Ÿ Output:
-!   „    „    „    - Lambda: Electron-phonon coupling constant.
-!   „    „    „¤„Ÿ„Ÿ Dependencies:
-!   „    „        - InterpolateLambda(E1, omega_ln, lambdaArray): Performs interpolation.
-!   „    „        - ReadLambdaData(): Loads Lambda and phonon coupling data from 'lambda'.
-!   „    „ 
-!   „    „¥„Ÿ„Ÿ tau_a2Fdos_ET(E1, T)
-!   „    „    „¥„Ÿ„Ÿ Purpose: Computes relaxation time from Eliashberg function (a2F.dos data).
-!   „    „    „¥„Ÿ„Ÿ Inputs:
-!   „    „    „    - E1: Energy offset from chemical potential.
-!   „    „    „    - T: Temperature.
-!   „    „    „¤„Ÿ„Ÿ Output:
-!   „    „        - Relaxation time based on phonon density and Bose-Einstein distribution.
-!   „    „        - Dependencies: read_a2F_dos(), kernel_selection(), integration over a2F_total.
-!   „    „ 
-!   „    „¥„Ÿ„Ÿ tau_phdos_ET(E1, T)
-!   „    „    „¥„Ÿ„Ÿ Purpose: Computes relaxation time based on phonon DOS and n_B (Bose-Einstein).
-!   „    „    „¥„Ÿ„Ÿ Inputs:
-!   „    „    „    - E1: Energy offset from chemical potential.
-!   „    „    „    - T: Temperature.
-!   „    „    „¤„Ÿ„Ÿ Output:
-!   „    „        - Relaxation time derived from phonon density of states (phononDOS.dat).
-!   „    „        - Dependencies: read_phonon_dos(), kernel_selection(), phonon integrals, (GetLambda()).
-!   „    „ 
-!   „    „¥„Ÿ„Ÿ read_a2F_dos()
-!   „    „    „¥„Ÿ„Ÿ Purpose: Reads phonon density of states from a2F.dos.
-!   „    „    „¤„Ÿ„Ÿ Output: Frequency-dependent a2F data.
-!   „    „ 
-!   „    „¥„Ÿ„Ÿ read_phonon_dos()
-!   „    „    „¥„Ÿ„Ÿ Purpose: Reads phonon density of states from phononDOS.dat.
-!   „    „    „¤„Ÿ„Ÿ Output: Frequency-dependent phonon DOS data.
-!   „    „ 
-!   „    „¥„Ÿ„Ÿ kernel_selection(E, omega)
-!   „    „    „¥„Ÿ„Ÿ Purpose: Determines scattering kernel weights based on energy and phonon frequencies.
-!   „    „    „¥„Ÿ„Ÿ Inputs:
-!   „    „    „    - E: Energy.
-!   „    „    „    - omega: Phonon frequency.
-!   „    „    „¤„Ÿ„Ÿ Output: Logical weight applied to scattering integrals.
-!   „    „ 
-!   „    „¤„Ÿ„Ÿ DOS(I)
-!   „        „¥„Ÿ„Ÿ Purpose: Provides the density of states at a given energy index.
-!   „        „¤„Ÿ„Ÿ Dependencies: read_constants() (for grid setup) and external DOS data.
-!   „ 
-!   „¥„Ÿ„Ÿ Integration Techniques Used:
-!   „    - Matthiessenfs rule combines scattering rates (1/tau) for active mechanisms.
-!   „    - Fallback to tau0 if no active scattering mechanisms are enabled.
-!   „ 
+!   â€Â¥â€Å¸â€Å¸ Purpose:
+!   â€Â    Compute the relaxation time tau(E, T) based on multiple scattering 
+!   â€Â    mechanisms combined using Matthiessen's rule.
+!   â€Â 
+!   â€Â¥â€Å¸â€Å¸ Scattering Mechanisms:
+!   â€Â    1. Phonon scattering (tau_ph)      : Dependent on |E - mu|, T, and Lambda.
+!   â€Â    2. Impurity scattering (tau_imp)   : User-defined |E - mu|^n exponent model.
+!   â€Â    3. DOS-based scattering (tau_dos)  : Dependent on DOS(E) * T.
+!   â€Â    4. Phonon DOS-based scattering (tau_phdos): Advanced scattering using phonon data.
+!   â€Â 
+!   â€Â¥â€Å¸â€Å¸ Subroutines and Functions Called:
+!   â€Â    â€Â¥â€Å¸â€Å¸ GetLambda(E1, T, I)
+!   â€Â    â€Â    â€Â¥â€Å¸â€Å¸ Purpose: Interpolates the electron-phonon coupling constant Lambda.
+!   â€Â    â€Â    â€Â¥â€Å¸â€Å¸ Inputs:
+!   â€Â    â€Â    â€Â    - E1: Energy offset from chemical potential.
+!   â€Â    â€Â    â€Â    - T: Temperature.
+!   â€Â    â€Â    â€Â    - I: Energy index.
+!   â€Â    â€Â    â€Â¥â€Å¸â€Å¸ Output:
+!   â€Â    â€Â    â€Â    - Lambda: Electron-phonon coupling constant.
+!   â€Â    â€Â    â€Â¤â€Å¸â€Å¸ Dependencies:
+!   â€Â    â€Â        - InterpolateLambda(E1, omega_ln, lambdaArray): Performs interpolation.
+!   â€Â    â€Â        - ReadLambdaData(): Loads Lambda and phonon coupling data from 'lambda'.
+!   â€Â    â€Â 
+!   â€Â    â€Â¥â€Å¸â€Å¸ tau_a2Fdos_ET(E1, T)
+!   â€Â    â€Â    â€Â¥â€Å¸â€Å¸ Purpose: Computes relaxation time from Eliashberg function (a2F.dos data).
+!   â€Â    â€Â    â€Â¥â€Å¸â€Å¸ Inputs:
+!   â€Â    â€Â    â€Â    - E1: Energy offset from chemical potential.
+!   â€Â    â€Â    â€Â    - T: Temperature.
+!   â€Â    â€Â    â€Â¤â€Å¸â€Å¸ Output:
+!   â€Â    â€Â        - Relaxation time based on phonon density and Bose-Einstein distribution.
+!   â€Â    â€Â        - Dependencies: read_a2F_dos(), kernel_selection(), integration over a2F_total.
+!   â€Â    â€Â 
+!   â€Â    â€Â¥â€Å¸â€Å¸ tau_phdos_ET(E1, T)
+!   â€Â    â€Â    â€Â¥â€Å¸â€Å¸ Purpose: Computes relaxation time based on phonon DOS and n_B (Bose-Einstein).
+!   â€Â    â€Â    â€Â¥â€Å¸â€Å¸ Inputs:
+!   â€Â    â€Â    â€Â    - E1: Energy offset from chemical potential.
+!   â€Â    â€Â    â€Â    - T: Temperature.
+!   â€Â    â€Â    â€Â¤â€Å¸â€Å¸ Output:
+!   â€Â    â€Â        - Relaxation time derived from phonon density of states (phononDOS.dat).
+!   â€Â    â€Â        - Dependencies: read_phonon_dos(), kernel_selection(), phonon integrals, (GetLambda()).
+!   â€Â    â€Â 
+!   â€Â    â€Â¥â€Å¸â€Å¸ read_a2F_dos()
+!   â€Â    â€Â    â€Â¥â€Å¸â€Å¸ Purpose: Reads phonon density of states from a2F.dos.
+!   â€Â    â€Â    â€Â¤â€Å¸â€Å¸ Output: Frequency-dependent a2F data.
+!   â€Â    â€Â 
+!   â€Â    â€Â¥â€Å¸â€Å¸ read_phonon_dos()
+!   â€Â    â€Â    â€Â¥â€Å¸â€Å¸ Purpose: Reads phonon density of states from phononDOS.dat.
+!   â€Â    â€Â    â€Â¤â€Å¸â€Å¸ Output: Frequency-dependent phonon DOS data.
+!   â€Â    â€Â 
+!   â€Â    â€Â¥â€Å¸â€Å¸ kernel_selection(E, omega)
+!   â€Â    â€Â    â€Â¥â€Å¸â€Å¸ Purpose: Determines scattering kernel weights based on energy and phonon frequencies.
+!   â€Â    â€Â    â€Â¥â€Å¸â€Å¸ Inputs:
+!   â€Â    â€Â    â€Â    - E: Energy.
+!   â€Â    â€Â    â€Â    - omega: Phonon frequency.
+!   â€Â    â€Â    â€Â¤â€Å¸â€Å¸ Output: Logical weight applied to scattering integrals.
+!   â€Â    â€Â 
+!   â€Â    â€Â¤â€Å¸â€Å¸ DOS(I)
+!   â€Â        â€Â¥â€Å¸â€Å¸ Purpose: Provides the density of states at a given energy index.
+!   â€Â        â€Â¤â€Å¸â€Å¸ Dependencies: read_constants() (for grid setup) and external DOS data.
+!   â€Â 
+!   â€Â¥â€Å¸â€Å¸ Integration Techniques Used:
+!   â€Â    - MatthiessenÂfs rule combines scattering rates (1/tau) for active mechanisms.
+!   â€Â    - Fallback to tau0 if no active scattering mechanisms are enabled.
+!   â€Â 
 ! Inputs to get_tau:
 !   - E1: Energy offset from chemical potential (E - mu) [eV].
 !   - T: Temperature [K].
@@ -189,10 +189,10 @@
 ! Contents:
 !   - kernel_selection(E, omega)
 !       Applies simplified selection rule: scattering active only when
-!       phonon energy ƒÖ is less than electron energy offset |E|
+!       phonon energy Æ’Ã– is less than electron energy offset |E|
 !
 ! Usage:
-!   - Used by tau_phdos_ET(E,T) for filtering ƒÖ contributions
+!   - Used by tau_phdos_ET(E,T) for filtering Æ’Ã– contributions
 !     based on scattering conditions.
 !   - Easily extendable for symmetry filtering, transition-specific kernels,
 !     or mode-specific selection logic.
@@ -787,7 +787,7 @@ CONTAINS
   !-----------------------------------------------------------------------
   ! Function : get_tau
   ! Purpose  : Compute energy- and temperature-dependent relaxation time tau(E,T)
-  !          : based on Matthiessenfs rule combining multiple scattering mechanisms:
+  !          : based on MatthiessenÂfs rule combining multiple scattering mechanisms:
   !            - Phonon scattering      :  tau is proportional to  1 / (|E - mu| * T)
   !            - Impurity scattering    :  tau is proportional to  |E - mu|^n   (user-defined exponent)
   !            - Electronic DOS-based   :  tau is proportional to  1 / [DOS(E) * T]
@@ -1188,7 +1188,7 @@ CONTAINS
     END IF
     !--------------------------------------------------
 
-    norm_factor = 3.0D0 * N_atom / (sum + 1.0D-12)   ! for exampleF3N = 3 * N_atom
+    norm_factor = 3.0D0 * N_atom / (sum + 1.0D-12)   ! for exampleÂF3N = 3 * N_atom
 
     DO i = 1, NPH
        DOSPH(i) = DOSPH(i) * norm_factor
