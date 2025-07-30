@@ -17,7 +17,7 @@ make
 Our group uses a mixture of operating systems, including Linux, Windows (WSL1 or WLS2), and Mac, so we use "dos2unix" to convert line breaks to Linux format.
 
 
-If you want to recompile it, just type:
+## Recompile
 ```
 make clean
 make
