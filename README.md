@@ -51,6 +51,7 @@ Shift k-mesh (if applicable) [No]
    - **Note**: When the lattice constants (a, b, c) are long or in the case of a supercell, the number of k-points can be reduced in proportion to "1/a x 1/b x 1/c". For example, in the FCC-type 2x2x2 supercell in the paper, Nk=34^3 (i.e., 34 x 34 x 34 k-points).)
 3. Create a file named wien and put the WIEN2k output file into it. (Optional: In QE, for phonon DOS, lambda, and a2F.dos*, put it in the same file as the Fortran code *.f90.) You can use other file names by rewriting run.sh. If you use the "cd" and "ls" commands to look at the contents of the wien directory, you will see the following:
 ```
+# inukai@PC-LAB3:/mnt/c/Users/inukai/sato_program/LBT-TETRA$ cd wien && ls && cd ../
 cd wien && ls && cd ../
 ```
 ```
@@ -59,6 +60,7 @@ Si.dos1  Si.energy  Si.kgen  Si.klist  Si.struct
 ```
    - **Option**: lambda, a2F.dos*, and phononDOS.dat should be placed in the LBT-TETRA directory. Only the necessary files are shown here. (Note: wien contains Si.dos1 Si.energy Si.kgen Si.klist Si.struct.)
 ```
+# inukai@PC-LAB3:/mnt/c/Users/inukai/sato_program/LBT-TETRA$ ls
 ls
 ```
 ```
