@@ -197,11 +197,11 @@ This section focuses on potential improvements to `Seebeck_analysis.f90`. Other 
 - **Main Targets**:  
   The `seebeck_coefficient` and `get_tau` functions at the end of the main program are central.  
   Tracing `get_tau` reveals the part that calculates relaxation time using **Matthiessen's law**.  
-  → *Improving this calculation is highly recommended.*
+  -> *Improving this calculation is highly recommended.*
 
 - **Phonon Data Usage**:  
   Currently, only **Phonon DOS** is used.  
-  → *Further accuracy can be achieved by incorporating data from each q-point in the phonon spectrum.*
+  -> *Further accuracy can be achieved by incorporating data from each q-point in the phonon spectrum.*
 
 - **Alternative Method**:  
   As illustrated in the figure (not included here), another approach is to:
@@ -228,9 +228,5 @@ To make the code compatible with outputs from other DFT packages:
 
 - `generate_stencil.f90` (for HCP systems) has room for improvement.  
   However, due to the complexity and cost of development, modifications are **not recommended** unless you are an experienced developer.
-
----
-
-If you'd like, I can combine this with the previous sections into a full `README.md` file and generate it for download. Would you like that?
 
 ---
