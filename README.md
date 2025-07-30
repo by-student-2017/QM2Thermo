@@ -29,6 +29,11 @@ make
 FLAGS = -O2 -ftree-vectorize -ffp-contract=fast -fno-math-errno -march=native
 ```
 - The "-O3" option is not used here because it is an optimization that, in principle, has side effects. Therefore, "-O3" is not usually recommended, but it may be used in cases where the code has been coded taking side effects into consideration, such as OpenMX. This code prioritizes readability as much as possible to make it easier for others to improve.
+- Use DEBUG when you encounter problems improving your code. For example:
+```
+DEBUG = -g -Wall -fcheck=all -fcheck=bounds -fcheck=pointer -fbacktrace
+```
+- As you can see from the previous examples, you only need to remove the "#". Of course, you can add or remove options.
 
 
 ## Usage
