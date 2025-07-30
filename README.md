@@ -5,6 +5,7 @@
 - Various function expansions will be fully implemented after new project applications are approved.
 - H. Sato et al., J. Phase Equilib. Diffus. 45, 397–415 (2024).: [https://doi.org/10.1007/s11669-024-01086-y](https://doi.org/10.1007/s11669-024-01086-y)
 
+---
 
 ## Preparation: Compilation
 ```
@@ -72,6 +73,7 @@ EF = 0.34363
 As the second line of wien.dos1 states "EF = 0.34363", we can confirm that the same value is specified for EF on line 22 of plot_dos.pgl.   
 - Ref_Si_TB-mBJ_dope shows an advanced use case where the Fermi level is shifted (using DEF in parameter.txt) to simultaneously plot two files: the conduction band (entering a plus value in DEF) and the valence band (entering a minus value in DEF). Note that "_plus" and "_minus" are manually added to the end of the output file (*.dat), and the gnuplot script (*_dope.gpl) also has more text. The VEC value is listed in *.dat.
 
+---
 
 ## Input files
 first-principles codes, particularly for Seebeck coefficient and electron-phonon coupling analysis.
@@ -104,6 +106,8 @@ In reality, fewer files would be sufficient, but this is done for convenience. I
 | `apot.dat`      | The temperature [K] and chemical potential [eV] are listed. |
 - AKK.DATA: AKK.DATA is output by group_velocity.f90, and is important data as it is used later by chemical_potential.f90 and Seebeck_analysis.f90. This information is essential when rewriting the code to calculate various physical quantities in Seebeck_analysis.f90.
 - apot.dat: Since Seebeck_analysis.f90 uses this, the comments are placed at the end. If you want to change the list of temperatures to be calculated, you need to rewrite chemical_potential.f90 and Seebeck_analysis.f90 so that they correspond. This part is not dynamically allocated, so you need to match the number of data and change the array and information in the code.
+
+---
 
 ## Test
 - Ubuntu 18.04 LTS or Later
@@ -189,6 +193,8 @@ This document describes the workflow for computing the Seebeck coefficient using
 ## Troubleshooting
 - The data reading position differs depending on the version of WIEN2k, so the Fortran 90 code needs to be rewritten.
 - Calculations that have data files will be skipped, so if you want to calculate again, delete the file.
+
+---
 
 ## File Deletion Rules for Recalculation
 
