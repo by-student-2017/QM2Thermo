@@ -17,11 +17,13 @@ make
 Our group uses a mixture of operating systems, including Linux, Windows (WSL1 or WLS2), and Mac, so we use "dos2unix" to convert line breaks to Linux format.
 
 
-## Recompile
+## Recompilation
+To recompile after changing the code, use:
 ```
 make clean
 make
 ```
+Simply using "make" is fine, but if you are concerned, please use "make clean", which will also delete modules created with Fortran 90 code. (Note: Everything will be deleted, so do not use it in other directories.)
 
 
 ## Advanced Compilation
