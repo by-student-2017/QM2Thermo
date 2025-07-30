@@ -64,11 +64,14 @@ gnuplot plot_dos.gpl
 
 
 ## Input files
-- parameter.txt
-- phononDOS.dat (option)
-- lambda (option)
-- a2F.dos* (option) from 
-- Note: lambda and a2F.dos: QE format (Data from Abinit, etc. can be used if it matches the QE format.)
+first-principles codes, particularly for Seebeck coefficient and electron-phonon coupling analysis.
+| File Name         | Purpose and Notes                                                                                      |
+|------------------|--------------------------------------------------------------------------------------------------------|
+| `parameter.txt`   | Used by `Seebeck_analysis.f90` to select calculation methods and input parameters. Also used in `chemical_potential.f90` for DEF-related settings. |
+| `phononDOS.dat`   | *(Optional)* Contains phonon density of states (DOS) vs. energy (in eV). Can be sourced from any first-principles code. |
+| `lambda`          | *(Optional)* Currently supported only in Quantum ESPRESSO (QE) format.                                |
+| `a2F.dos*`        | *(Optional)* Currently supported only in QE format. The first column (frequency/energy) and second column (a2Fdos_total) are essential; other columns are read but not used. |
+- lambda and a2F.dos: QE format (Data from Abinit, etc. can be used if it matches the QE format.)
 
 
 ## WIEN2k output files (test: WIEN2k ver.12 and ver.16. LDA, PBE, WC, PBEsol or TB-mBJ)
@@ -80,7 +83,6 @@ This document provides a summary of key files used in WIEN2k calculations and th
 | `wien.kgen`     | Used to retrieve the actual k-points utilized in the calculation.          |
 | `wien.klist`    | Provides detailed information about the k-points (e.g., coordinates).      |
 | `wien.struct`   | Contains lattice constants, angles, and symmetry data of the crystal.      |
-### Notes
 - In reality, fewer files would be sufficient, but this is done for convenience. If wien.klist is available, wien.kgen can actually be coded so that it is not necessary.
 
 
