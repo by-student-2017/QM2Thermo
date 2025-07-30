@@ -43,7 +43,17 @@ As you can see from the previous examples, you only need to remove the "#". Of c
 1. Calculated with symmetry 1 (P1 structure): After the calculation with SCF (either GGA-PBE or TB-mBJ), run the calculation with as many k-points as possible (e.g., Si Nk=34^3 (i.e., 58 x 58 x 58 k-points)) without shifting in DOS.
    - **Note**: When the lattice constants (a, b, c) are long or in the case of a supercell, the number of k-points can be reduced in proportion to "1/a x 1/b x 1/c". For example, in the FCC-type 2x2x2 supercell in the paper, Nk=34^3 (i.e., 34 x 34 x 34 k-points).)
 2. Create a file named wien and put the WIEN2k output file into it. (Optional: In QE, for phonon DOS, lambda, and a2F.dos*, put it in the same file as the Fortran code *.f90.) You can use other file names by rewriting run.sh.
-3. Edit parameter.txt and enter the conditions you want to calculate. (Note: ince this is Fortran, the read position is fixed. Please write the value within the provided range.)
+3. Edit parameter.txt and enter the conditions you want to calculate. (Note: since this is Fortran, the read position is fixed. Please write the value within the provided range.) For example:
+```
+!-----------------------:------------!--Memo---------------------------------------------------------------------------
+DEF (Energy shift)  [eV]:  1.173000  ! This is good !
+
+!-----------------------:------------!--Memo---------------------------------------------------------------------------
+DEF (Energy shift)  [eV]1.173000     ! This is bad !
+
+!-----------------------:------------!--Memo---------------------------------------------------------------------------
+DEF (Energy shift)  [eV]:     1.173000  ! This is bad !
+```
 4. The calculation is performed using the following command:
 ```
 bash ./run.sh
