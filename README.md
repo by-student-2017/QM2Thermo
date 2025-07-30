@@ -72,11 +72,11 @@ gnuplot plot_dos.gpl
 
 
 ## WIEN2k output files (test: WIEN2k ver.12 and ver.16. LDA, PBE, WC, PBEsol or TB-mBJ)
-- wien.dos1
-- wien.energy
+- wien.dos1 (Used to obtain Fermi level data)
+- wien.energy (Used to obtain the energy at each k-point)
 - wien.kgen
-- wien.klist
-- wien.struct
+- wien.klist ()
+- wien.struct (Used to obtain lattice constants, their angles, and symmetry data.)
 
 
 ## Test
