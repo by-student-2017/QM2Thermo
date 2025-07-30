@@ -56,7 +56,8 @@ cd wien && ls && cd ../
 ```
 ```
 Si.dos1  Si.energy  Si.kgen  Si.klist  Si.struct
-# Note: Although the names such as Si.dos1 have "Si" in them, they are renamed to wien by "run.sh" and placed in LBT-TETRA for use in the calculation.
+# Note: Although the names such as Si.dos1 have "Si" in them,
+# they are renamed to wien by "run.sh" and placed in LBT-TETRA for use in the calculation.
 ```
    - **Option**: lambda, a2F.dos*, and phononDOS.dat should be placed in the LBT-TETRA directory. Only the necessary files are shown here. (Note: wien contains Si.dos1 Si.energy Si.kgen Si.klist Si.struct.)
 ```
