@@ -57,28 +57,33 @@
 !
 ! Main Source File:
 !   Seebeck_analysis.f90
+!   +----- Step 0: Load parameters
+!   |    +----- Reads parameters from 'parameter.txt', and shows parameters.
+!   |    +----- Reads lattice parameter from 'wien.struct'.
+!   |    +----- calculate volume and show it.
+!   | 
 !   +----- Step 0: Load Electron-Phonon Coupling Data
 !   |    +----- Reads phonon coupling constants from 'lambda'.
 !   |    +----- Initializes arrays for broadening, lambdaArray, dosEf, and omega_ln.
 !   |    +----- Uses `CALL ReadLambdaData()` for data processing.
 !   | 
-!   +----- Step 1: Load Band Velocity Data
+!   +----- Step 1: Load Chemical Potentials
+!   |    +----- Reads temperature-dependent chemical potentials (AMU) from 'apot.data'.
+!   |    +----- Associates each temperature (TEM) with its corresponding chemical potential.
+!   | 
+!   +----- Step 2: Load Band Velocity Data
 !   |    +----- Reads energy mesh, density of states (DOS), squared group velocity,
 !   |    |    and band energy levels from 'AKK.DATA'.
 !   |    +----- Applies energy shift if necessary.
 !   |    +----- Computes valence electron concentration (VEC) for given energy levels.
 !   | 
-!   +----- Step 2: Load Chemical Potentials
-!   |    +----- Reads temperature-dependent chemical potentials (AMU) from 'apot.data'.
-!   |    +----- Associates each temperature (TEM) with its corresponding chemical potential.
-!   | 
-!   +----- Step 3: Initialize Output File
-!   |    +----- Prepares 'Seebeck_analysis.dat' file for results storage.
-!   |    +----- Includes headers with energy offsets, VEC, and Seebeck coefficient columns.
-!   | 
-!   +----- Step 4: Read Phonon DOS or a2F.dos Data
+!   +----- Step 3: Read Phonon DOS or a2F.dos Data
 !   |    +----- Calls `read_phonon_dos()` if phononDOS is enabled.
 !   |    +----- Calls `read_a2F_dos()` if a2F.dos is enabled.
+!   | 
+!   +----- Step 4: Initialize Output File
+!   |    +----- Prepares 'Seebeck_analysis.dat' file for results storage.
+!   |    +----- Includes headers with energy offsets, VEC, and Seebeck coefficient columns.
 !   | 
 !   +----- Step 5: Compute Seebeck Coefficient
 !   |    +----- Loops through temperatures to calculate Seebeck coefficient.
