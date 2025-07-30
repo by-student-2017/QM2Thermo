@@ -94,6 +94,14 @@ This document provides a summary of key files used in WIEN2k calculations and th
 In reality, fewer files would be sufficient, but this is done for convenience. If wien.klist is available, wien.kgen can actually be coded so that it is not necessary.
 
 
+## Output files
+
+| File Name       | Description                                                                 |
+|----------------|-----------------------------------------------------------------------------|
+| `AKK.DATA`      | Energy [eV], group velocity^2 [(m/s)^2], group velocity^2 * Total DOS [(m/s)^2 * (states/eV)], Total DOS [states/eV], Cumulative DOS [states/eV] are listed. AKK.DATA is output by group_velocity.f90, and is important data as it is used later by chemical_potential.f90 and Seebeck_analysis.f90. This information is particularly necessary when rewriting the code to calculate various physical quantities in Seebeck_analysis.f90. |
+| `apot.dat`      | The temperature [K] and chemical potential [eV] are listed. Since Seebeck_analysis.f90 uses this, the comments are placed at the end. If you want to change the list of temperatures to be calculated, you need to rewrite chemical_potential.f90 and Seebeck_analysis.f90 so that they correspond. This part is not dynamically allocated, so you need to match the number of data and change the array and information in the code. |
+
+
 ## Test
 - Ubuntu 18.04 LTS or Later
 - WSL, Windows 10 or Later
