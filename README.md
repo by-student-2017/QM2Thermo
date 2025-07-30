@@ -22,7 +22,13 @@ make
 make clean
 make
 ```
-- Note: There are compile options in the Makefile. If you want to customize it, remove the # from "FLAGS" or "DEBUG" or add the necessary options.
+
+
+- Note: There are compile options in the Makefile. If you want to customize it, remove the # from "FLAGS" or "DEBUG" or add the necessary options. An example of the optimization option is:
+```
+FLAGS = -O2 -ftree-vectorize -ffp-contract=fast -fno-math-errno -march=native
+```
+- The "-O3" option is not used here because it is an optimization that, in principle, has side effects. Therefore, "-O3" is not usually recommended, but it is recommended when the code is coded to solve side effects, such as OpenMX. This code prioritizes readability as much as possible so that others can easily improve it.
 
 
 ## Usage
