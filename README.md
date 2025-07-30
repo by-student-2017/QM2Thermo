@@ -22,7 +22,7 @@ To recompile after changing the code, use:
 make clean
 make
 ```
-Simply using "make" is fine, but if you are concerned, please use "make clean", which will also delete modules created with Fortran 90 code. (Note: Do not use "make clean" in other directories as it will delete all *.f, *.exe, and *.mod files in the directory.)
+Simply using "make" is fine, but if you are concerned, please use "make clean", which will also delete modules created with Fortran 90 code. (Note: Do not use "make clean" in other directories as it will delete all *.exe and *.mod files in the directory.)
 
 
 ## Advanced Compilation
