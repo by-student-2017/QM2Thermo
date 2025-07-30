@@ -227,6 +227,6 @@ To make the code compatible with outputs from other DFT packages:
 ### Developer Notes
 
 - `generate_stencil.f90` (for HCP systems) has room for improvement.  
-  However, due to the complexity and cost of development, modifications are **not recommended** unless you are an experienced developer.
+  However, due to the complexity and cost of development, modifications are **not recommended** unless you are an experienced developer. In practice, calculations involving element substitution, the introduction of various defects, and distortion result in the P1 symmetry, which is the highest, so there is little benefit to making it an HCP other than for research purposes.
 
 ---
