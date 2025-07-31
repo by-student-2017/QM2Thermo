@@ -418,6 +418,32 @@ This additive inverse relation allows individual mechanisms (phonon, impurity, g
 | Optical phonon         | Step-like or constant above threshold  | Depends on phonon energy       |
 | Constant Approximation | $$\( \tau(\varepsilon) = \tau_0 \)$$       | Simplified CRTA (common fallback) |
 
+## Relaxation Time Approximations for Transport Calculations
+
+| Scattering Type             | Approximate Expression                                                     | Energy Dependence           | Temperature Dependence     | Applicability             |
+|----------------------------|-----------------------------------------------------------------------------|-----------------------------|-----------------------------|---------------------------|
+| **Acoustic phonon**        | $$\( \tau(\varepsilon) \propto \varepsilon^{-1/2} \)$$                         | Weak                        | Mild                        | Metals, high-T            |
+| **Ionized impurity**       | $$\( \tau(\varepsilon) \propto \|\varepsilon - \mu\|^n \)$$                      | Strong (user-defined $$\( n \)$$) | Weak or none               | Doped semiconductors      |
+| **Constant (CRTA)**        | $$\( \tau(\varepsilon) = \tau_0 \)$$                                           | None                        | None                        | Simple models             |
+| **Eliashberg-based**       | See: $$\( \alpha^2F(\omega) \)$$ integration                                   | Fully resolved              | Fully resolved              | First-principles accurate |
+| **$$\( \lambda \)$$-based Allen approx.** | $$\( \tau(T) \approx \frac{1}{\pi \lambda k_B T} \)$$                     | None (Fermi-level only)     | Linear in $$\( T \)$$          | Metals                    |
+| **DOS-based (electronic)** | $$\( \tau(\varepsilon) \propto \frac{1}{g(\varepsilon) T} \)$$                | Moderate                    | Linear in $$\( T \)$$          | Generic materials         |
+| **Phonon scattering**      | $$\( \tau(\varepsilon) \propto \frac{1}{\|\varepsilon - \mu\| \cdot T} \)$$      | Linear near band edges      | Linear                      | Semiconductors, general   |
+| **Phonon DOS-based**       | $$\( \tau^{-1} \propto \int D_{\text{ph}}(\omega) \cdot \frac{1 + n(\omega,T)}{\omega} \, d\omega \)$$ | Indirect via phonons        | Strong via $$\( n(\omega) \)$$ | Full phonon spectrum      |
+
+> Notes:
+> - $$\( g(\varepsilon) \)$$: electronic density of states  
+> - $$\( D_{\text{ph}}(\omega) \)$$: phonon density of states  
+> - $$\( n(\omega, T) \)$$: Bose-Einstein distribution
+
+---
+
+### Implementation Tips
+
+- Use analytical forms or interpolated data to model DOS or phonon spectra.
+- Normalize relaxation time expressions for dimensionless comparison if needed.
+- Numerical integration required for phonon DOS-based model.
+
 > Note: Accurate modeling requires evaluating $$\( \tau(\varepsilon) \)$$ either from first-principles $$\( \alpha^2F(\omega) \)$$, or using fitted functional forms consistent with experimental data.
 
 ---
