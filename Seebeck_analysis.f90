@@ -1517,10 +1517,6 @@ PROGRAM seebeck_analysis
   READ(90, '(25X, E12.6)') Poisson_ratio          ! Poisson_ratio = (3*B-2*G)/(2*(3*B+G))
   READ(90, '(25X, E12.6)') density                ! read [g/cm^3] unit -> density * 1000 [kg/m^3]
   READ(90, '(25X, E12.6)') tau0_phonon            ! For phonons, it is about 10-100 times stronger than for electrons. (If it is 0.0, tau_ph * 100)
-  IF (tau0_phonon < 0.0) THEN
-    tau0_phonon = tau0 * 100.0D0
-    WRITE(*,*) "Base relaxation time (phonon) [s] = Base relaxation time (electron) [s] * 100:", tau0_phonon
-  END IF
   READ(90, *)
   READ(90, '(25X, E12.6)') Nd                     ! Read Doping concentration [cm^-3]
   READ(90, '(25X, E12.6)') m_eff                  ! Effective mass (relative to m_e)
@@ -1557,8 +1553,16 @@ PROGRAM seebeck_analysis
   WRITE(*,*) "Bulk modulus, B    [GPa]:", Bulk_modulus
   WRITE(*,*) "Shear modulus, G   [GPa]:", Shear_modulus
   WRITE(*,*) "Poisson's ratio         :", Poisson_ratio
+  IF (Poisson_ratio == 0.0) THEN
+    Poisson_ratio = 0.30D0
+    WRITE(*,*) "Poisson_ratio (automatically setting):", Poisson_ratio
+  END IF
   WRITE(*,*) "density         [g/cm^3]:", density
   WRITE(*,*) "relaxation time (ph) [s]:", tau0_phonon
+  IF (tau0_phonon < 0.0) THEN
+    tau0_phonon = tau0 * 100.0D0
+    WRITE(*,*) "Base relaxation time (phonon) [s] = Base relaxation time (electron) [s] * 100:", tau0_phonon
+  END IF
   WRITE(*,*) "----- Carrier concentration calclation: optional -----"
   WRITE(*,*) "Nd (Doping conc.)[cm^-3]:", Nd
   WRITE(*,*) "Electron Effective Mass :", m_eff
