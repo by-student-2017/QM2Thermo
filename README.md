@@ -424,7 +424,7 @@ This additive inverse relation allows individual mechanisms (phonon, impurity, g
 |----------------------------|-----------------------------------------------------------------------------|-----------------------------|-----------------------------|---------------------------|
 | **Acoustic phonon**        | $$\( \tau(\varepsilon) \propto \varepsilon^{-1/2} \)$$                         | Weak                        | Mild                        | Metals, high-T            |
 | **Ionized impurity**       | $$\( \tau(\varepsilon) \propto \|\varepsilon - \mu\|^n \)$$                      | Strong (user-defined $$\( n \)$$) | Weak or none               | Doped semiconductors      |
-| **Constant (CRTA)**        | $$\( \tau(\varepsilon) = \tau_0 \)$$                                           | None                        | None                        | Simple models             |
+| **Constant (CRTA)**        | $$\( \tau(\varepsilon) = \tau_0 \)$$                                           | None                        | None                        | Simple models (use 1.0D-14 [s])  |
 | **Eliashberg-based**       | See: $$\( \alpha^2F(\omega) \)$$ integration                                   | Fully resolved              | Fully resolved              | First-principles accurate |
 | **$$\( \lambda \)$$-based Allen approx.** | $$\( \tau(T) \approx \frac{1}{\pi \lambda k_B T} \)$$                     | None (Fermi-level only)     | Linear in $$\( T \)$$          | Metals                    |
 | **DOS-based (electronic)** | $$\( \tau(\varepsilon) \propto \frac{1}{g(\varepsilon) T} \)$$                | Moderate                    | Linear in $$\( T \)$$          | Generic materials         |
