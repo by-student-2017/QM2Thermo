@@ -624,21 +624,6 @@ Where:
 
 ---
 
-## Initialization Logic (Code Reference)
-
-```fortran
-DO i = 1, NPH
-   g_eff_omega(i) = 1.0D0      ! Mode coupling strength (for a2F)
-   w_mode(i)      = 1.0D0      ! Default uniform weight
-END DO
-
-IF (use_selection_filter) THEN
-   CALL generate_w_mode()     ! Applies acoustic/intermediate/optical weighting
-END IF
-```
-
----
-
 ## Reference
 - B. Xu, M. Di Gennaro, M. J. Verstraete, *Phys. Rev. B* **102**, 155128 (2020).: [https://doi.org/10.1103/PhysRevB.102.155128](https://doi.org/10.1103/PhysRevB.102.155128)
 
