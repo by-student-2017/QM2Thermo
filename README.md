@@ -220,7 +220,7 @@ This document describes the workflow for computing the Seebeck coefficient using
 | generate_stencil.f90   | WIEN2k output files                                                                         | cf*.dat                                                    | Convert WIEN2k output into stencil data.              |
 | group_velocity.f90     | cf*.dat, WIEN2k output files                                                                 | AKK.DATA                                                  | Calculate group velocities from stencil data.         |
 | chemical_potential.f90 | AKK.DATA, parameter.txt, WIEN2k output files                                                | apot.dat                                                  | Determine the chemical potential.                     |
-| Seebeck_analysis.f90   | cf*.dat, apot.dat, AKK.DATA, parameter.txt, WIEN2k output files (optional: lambda, a2F.dos*) | Seebeck_analysis.dat                                      | Compute the Seebeck coefficient using Allen's theory. |
+| Seebeck_analysis.f90   | cf*.dat, apot.dat, AKK.DATA, parameter.txt, WIEN2k output files (optional: lambda, a2F.dos*) | Seebeck_analysis.dat, ABGV2D.dat                         | Compute the Seebeck coefficient using Allen's theory. A(E,T), B(E,T), <\|v\|^2 x DOS> are used to calculate the Seebeck coefficient using Allen's theory.|
 
 ### Code Descriptions
 
@@ -246,7 +246,7 @@ This document describes the workflow for computing the Seebeck coefficient using
 #### 5. Seebeck_analysis.f90
 - **Purpose**: Compute the Seebeck coefficient using Allen's theory.
 - **Input**: `cf*.dat`, `apot.dat`, `AKK.DATA`, `parameter.txt`, and WIEN2k output files (optional: `lambda`, `a2F.dos*` in QE format).
-- **Output**: `Seebeck_analysis.dat` with final Seebeck coefficient results.
+- **Output**: `Seebeck_analysis.dat` with final Seebeck coefficient results. `ABGV2D.dat` with the Spectrum A(E,T) and B(E,T), and Electronic structure parameter, <\|v\|^2 x DOS> results.
 
 ---
 
