@@ -329,3 +329,57 @@ END IF
 
 ---
 
+# Allen-Type Seebeck Coefficient with Explicit Group Velocity
+
+## Theoretical Background
+
+The Seebeck coefficient \( S(T) \) is calculated based on energy-dependent transport contributions, including group velocity, relaxation time, and electronic density of states. It is given by:
+
+$$
+S(T) = -\frac{1}{eT} \cdot 
+\frac{
+\int_{-\infty}^{\infty} (\varepsilon - \mu) \tau(\varepsilon) v^2(\varepsilon) g(\varepsilon) 
+\left( -\frac{\partial f}{\partial \varepsilon} \right) d\varepsilon
+}{
+\int_{-\infty}^{\infty} \tau(\varepsilon) v^2(\varepsilon) g(\varepsilon) 
+\left( -\frac{\partial f}{\partial \varepsilon} \right) d\varepsilon
+}
+$$
+
+### Definitions
+
+- $$\( S(T) \)$$: Seebeck coefficient (V/K)  
+- $$\( T \)$$: Absolute temperature (K)  
+- $$\( e \)$$: Elementary charge (C)  
+- $$\( \varepsilon \)$$: Electron energy (eV)  
+- $$\( \mu \)$$: Chemical potential (Fermi level)  
+- $$\( f(\varepsilon) \)$$: Fermi-Dirac distribution  
+- $$\( g(\varepsilon) \)$$: Electronic density of states  
+- $$\( \tau(\varepsilon) \)$$: Energy-dependent relaxation time  
+- $$\( v(\varepsilon) \)$$: Electron group velocity
+
+---
+
+## Group Velocity Definition
+
+The group velocity \( v(\varepsilon) \) is derived from the band structure and defined as:
+
+$$
+v(\varepsilon) = \frac{1}{\hbar} \cdot \frac{d\varepsilon}{dk}
+$$
+
+- $$\( \hbar \)$$: Reduced Planck constant  
+- $$\( \frac{d\varepsilon}{dk} \)$$: Gradient of the energy band dispersion
+
+---
+
+## Reference
+
+- B. Xu, M. Di Gennaro, M. J. Verstraete,  
+  *Phys. Rev. B* **102**, 155128 (2020).  
+  [https://doi.org/10.1103/PhysRevB.102.155128](https://doi.org/10.1103/PhysRevB.102.155128)
+
+---
+
+This format is optimized for Markdown editors with MathJax support, ensuring proper rendering of the equations. Would you like me to help generate a version that includes sample plots or numerical examples as well? 😊
+
