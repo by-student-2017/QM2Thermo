@@ -1561,6 +1561,7 @@ PROGRAM seebeck_analysis
   WRITE(*,*) "relaxation time (ph) [s]:", tau0_phonon
   IF (tau0_phonon < 0.0) THEN
     tau0_phonon = tau0 * 100.0D0
+    WRITE(*,*) "Base relaxation time (phonon) [s] (automatically setting):"
     WRITE(*,*) "Base relaxation time (phonon) [s] = Base relaxation time (electron) [s] * 100:", tau0_phonon
   END IF
   WRITE(*,*) "----- Carrier concentration calclation: optional -----"
