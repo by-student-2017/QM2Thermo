@@ -179,6 +179,7 @@ If a calculation result file already exists, the corresponding calculation will 
 - [8] Y. Katsura, JTSJ (2014): https://doi.org/10.50972/thermoelectrics.10.3_20 (Open Access) (Japanese)
 - [9] Y. Katsura, JTSJ (2014): https://doi.org/10.50972/thermoelectrics.11.1_18 (Open Access) (Japanese)
 - [10] Y. Katsura, JTSJ (2014): https://doi.org/10.50972/thermoelectrics.11.2_19 (Open Access) (Japanese)
+- [11] Empirical estimation of thermal conductivity: https://github.com/houzf/empirical_thermal_conductivity
 
 
 ## Citation
