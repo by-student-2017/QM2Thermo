@@ -373,7 +373,7 @@ $$
 
 ---
 
-## Energy-Dependent Relaxation Time via \( \alpha^2F(\omega) \)
+## Energy-Dependent Relaxation Time via $$\( \alpha^2F(\omega) \)$$
 
 The relaxation time \( \tau(\varepsilon) \) can be calculated from the Eliashberg spectral function \( \alpha^2F(\omega) \) using:
 
