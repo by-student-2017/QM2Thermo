@@ -333,7 +333,7 @@ END IF
 
 ## Theoretical Background
 
-The Seebeck coefficient \( S(T) \) is calculated based on energy-dependent transport contributions, including group velocity, relaxation time, and electronic density of states. It is given by:
+The Seebeck coefficient $$\( S(T) \)$$ is calculated based on energy-dependent transport contributions, including group velocity, relaxation time, and electronic density of states. It is given by:
 
 $$
 S(T) = -\frac{1}{eT} \cdot 
@@ -362,7 +362,7 @@ $$
 
 ## Group Velocity Definition
 
-The group velocity \( v(\varepsilon) \) is derived from the band structure and defined as:
+The group velocity $$\( v(\varepsilon) \)$$ is derived from the band structure and defined as:
 
 $$
 v(\varepsilon) = \frac{1}{\hbar} \cdot \frac{d\varepsilon}{dk}
@@ -390,7 +390,7 @@ Where:
 - $$\( f(\varepsilon \pm \omega) \)$$: Fermi-Dirac distribution  
 - $$\( \omega \)$$: Phonon frequency
 
-The file `a2F.dos` typically contains discretized \( \omega \) vs. \( \alpha^2F(\omega) \) data, used in numerical evaluation of this integral.
+The file `a2F.dos` typically contains discretized $$\( \omega \) vs. \( \alpha^2F(\omega) \)$$ data, used in numerical evaluation of this integral.
 
 ---
 
