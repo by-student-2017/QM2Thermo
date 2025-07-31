@@ -7,7 +7,7 @@ n_impurity              :  3.000     ! 1: Mild energy-dependence, 3.0: high ener
 dos (electron)  (F or T):  F         ! Accounts for scattering probability increasing with available final states
 a2Fdos  (files & lambda):  F         ! a2F.dos (QE) takes precedence over phononDOS. (automatically set phononDOS = F)
 phononDOS       (F or T):  F         ! Lines 1 and 2 are comment lines. Frequency [eV] vs. Total DOS (phonon) data.
-N_atom         (integer):  1         ! Normalize phdos with 3N. (If phononDOS.dat is normalized to 3N = 3, N_atom = 1.)
+N_atom         (integer):  2         ! Normalize phdos with 3N. (If phononDOS.dat is normalized to 3N = 3, N_atom = 1.)
 filter          (F or T):  F         ! Weight: w(acoustic)=1, w(0.01-0.03 eV)=0.5, w(optical)=0. (works: phononDOS = T)
 L_bound       [Angstrom]:  0.0       ! Boundary scattering. (works: phononDOS = T and N_atom)
 b_para                  :  0.0       ! Umklapp (Klemens-Callaway type model) scat. (Ref. 1 - 2) (works: phononDOS = T)
