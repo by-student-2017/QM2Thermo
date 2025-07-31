@@ -360,6 +360,74 @@ $$
 
 ---
 
+# Seebeck Coefficient Calculation with Kernel Filtering
+
+## Overview
+
+This document outlines the theoretical framework for computing the Seebeck coefficient $$\( S(T) \)$$, incorporating energy-dependent transport quantities and a generalized kernel (filter) function $$\( K(\varepsilon) \)$$ to selectively weight contributions across the energy spectrum.
+
+---
+
+## Theoretical Background
+
+The Seebeck coefficient is defined by:
+
+$$
+S_K(T) = -\frac{1}{eT} \cdot 
+\frac{
+\int_{-\infty}^{\infty} (\varepsilon - \mu) \tau(\varepsilon) v^2(\varepsilon) g(\varepsilon) K(\varepsilon) \, d\varepsilon
+}{
+\int_{-\infty}^{\infty} \tau(\varepsilon) v^2(\varepsilon) g(\varepsilon) K(\varepsilon) \, d\varepsilon
+}
+$$
+
+### Definitions
+
+| Symbol                   | Description                             |
+|--------------------------|-----------------------------------------|
+| $$\( S(T) \)$$           | Seebeck coefficient (V/K)               |
+| $$\( T \)$$              | Absolute temperature (K)                |
+| $$\( e \)$$              | Elementary charge (C)                   |
+| $$\( \varepsilon \)$$    | Electron energy (eV)                    |
+| $$\( \mu \)$$            | Chemical potential (Fermi level)        |
+| $$\( \tau(\varepsilon) \)$$ | Energy-dependent relaxation time     |
+| $$\( v(\varepsilon) \)$$ | Electron group velocity                 |
+| $$\( g(\varepsilon) \)$$ | Electronic density of states (DOS)      |
+| $$\( K(\varepsilon) \)$$ | Kernel (filter) function                |
+| $$\( f(\varepsilon) \)$$ | Fermi-Dirac distribution                |
+
+---
+
+## Kernel Function Design
+
+The kernel function $$\( K(\varepsilon) \)$$ modulates the contribution of states to the transport integrals. Examples include:
+
+| Type             | Formula                                              | Purpose                          |
+|------------------|------------------------------------------------------|----------------------------------|
+| Fermi window     | $$\( K(\varepsilon) = -\frac{\partial f}{\partial \varepsilon} \)$$ | Thermal broadening (standard)    |
+| Gaussian         | $$\( K(\varepsilon) = \exp\left[ -\frac{(\varepsilon - \mu)^2}{2\sigma^2} \right] \)$$ | Emphasize local states           |
+| Lorentzian       | $$\( K(\varepsilon) = \frac{1}{(\varepsilon - \mu)^2 + \gamma^2} \)$$ | Quasi-resonant states            |
+| Moment-weighted  | $$\( K(\varepsilon) = (\varepsilon - \mu)^n \cdot \left( -\frac{\partial f}{\partial \varepsilon} \right) \)$$ | Higher-order transport moments   |
+
+---
+
+## Implementation Notes
+
+- Numerical integration can be performed using quadrature schemes (e.g. Gauss-Legendre)
+- Material-specific parameters for $$\( \tau \), \( v \), and \( g \)$$ may be obtained from DFT
+- For custom kernels, normalization may be required for stability
+- Code implementation is available in Python or Mathematica
+
+---
+
+## Use Cases
+
+- Thermoelectric material screening  
+- Quasi-local band contributions in complex oxides  
+- Kernel optimization via machine learning  
+
+---
+
 ## Group Velocity Definition
 
 The group velocity $$\( v(\varepsilon) \)$$ is derived from the band structure and defined as:
