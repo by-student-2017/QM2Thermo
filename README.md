@@ -422,10 +422,54 @@ This additive inverse relation allows individual mechanisms (phonon, impurity, g
 
 ---
 
-## Reference
+## Relaxation Time Estimation Using Coupling Constant $$\( \lambda \)$$
 
-- B. Xu, M. Di Gennaro, M. J. Verstraete  
-  *Phys. Rev. B* **102**, 155128 (2020)  
-  [https://doi.org/10.1103/PhysRevB.102.155128](https://doi.org/10.1103/PhysRevB.102.155128)
+When the full Eliashberg spectral function $$\( \alpha^2F(\omega) \)$$ is unavailable, the energy-averaged **electron-phonon coupling constant** $$\( \lambda \)$$ can be used to estimate scattering rates via simplified models.
+
+The coupling constant is defined as:
+
+$$
+\lambda = 2 \int_0^{\infty} \frac{\alpha^2F(\omega)}{\omega} d\omega
+$$
+
+Once $$\( \lambda \)$$ is known (often extracted from experiments or DFT calculations), the **electron-phonon scattering rate** $$\( \tau^{-1} \)$$ can be approximated using:
+
+### Simplified Allen Formula:
+
+$$
+\frac{1}{\tau(\varepsilon)} \approx \pi \lambda k_B T
+$$
+
+This model assumes:
+
+- Quasiparticles near the Fermi level $$\( \varepsilon \approx \mu \)$$  
+- Weak energy dependence in the scattering  
+- $$\( T \)$$-linear behavior typical in metals
+
+It provides a temperature-dependent relaxation time:
+
+$$
+\tau(T) \approx \frac{1}{\pi \lambda k_B T}
+$$
+
+### Notes:
+
+- This approximation is most valid at **high temperatures** (above Debye temperature) and for **isotropic metals**.
+- It cannot resolve energy-resolved transport and should be avoided if detailed band-dependent scattering rates are needed.
+- Useful for quick estimates or initial screening of thermoelectric candidates.
+
+---
+
+## Coupling Constant vs. Full $$\( \alpha^2F(\omega) \)$$
+
+| Method                        | Input Requirement           | Resolution       | Energy Dependence | Accuracy |
+|------------------------------|-----------------------------|------------------|-------------------|----------|
+| Full Eliashberg Function     | `a2F.dos` from DFPT         | High (fine grid) | Yes               | ⭐⭐⭐⭐     |
+| $$\( \lambda \)$$-based Estimate | Single scalar $$\( \lambda \)$$ | Low      | No                | ⭐⭐       |
+
+---
+
+## Reference
+- B. Xu, M. Di Gennaro, M. J. Verstraete, *Phys. Rev. B* **102**, 155128 (2020).: [https://doi.org/10.1103/PhysRevB.102.155128](https://doi.org/10.1103/PhysRevB.102.155128)
 
 ---
