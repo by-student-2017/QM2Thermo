@@ -83,7 +83,7 @@
 !generate_stencil.f90            <- Main Fortran source file
 !+----+ constants module         <- Defines grid parameters, symmetry type, and utility functions
 !|    +----- SymOp type: rotation matrix + translation vector
-!| ꀀ   +----- Wrap function for periodic index handling
+!|    +----- Wrap function for periodic index handling
 !|
 !+----- read_constants           <- Reads NPX, NPY, NPZ, IMAX, Nsym from WIEN2k files
 !+----- ReadSymmetry             <- Loads symmetry operations from wien.struct
