@@ -306,7 +306,7 @@ MODULE seebeck_data
   REAL(KIND=8), ALLOCATABLE :: a2F_total(:,:)     ! a2F.dos
   REAL(KIND=8), ALLOCATABLE :: a2F_mode(:,:,:)    ! a2F.dos
   !-----------------------------------------------
-  !REAL(KIND=8), SAVE :: WPH(nNPH), DOSPH(nNPH)   ! (old vesion) Phonon frequency [eV], phonon DOS
+  !REAL(KIND=8), SAVE :: WPH(nNPH), DOSPH(nNPH)   ! (old vesion) Phonon frequency [eV], phonon DOS [arb.unit](recommend [states/eV/unitcell] or [states/eV/Angstrom^3]
   REAL(KIND=8), ALLOCATABLE :: WPH(:), DOSPH(:)   ! Phonon frequency [eV], phonon DOS
   !-----------------------------------------------
   !REAL(KIND=8), DIMENSION(nNPH) :: g_eff_omega   ! (old vesion) Mode-dependent electron-phonon coupling strength [(eV)^0.5]
@@ -1163,7 +1163,8 @@ CONTAINS
     READ(iunit,*)
     READ(iunit,*)
     DO i = 1, NPH
-      READ(iunit,*, IOSTAT=ios) WPH(i), DOSPH(i)
+      READ(iunit,*, IOSTAT=ios) WPH(i), DOSPH(i)  ! Frequency = omega [eV], phonon DOS [arb.units]
+      !WRITE(*,*) WPH(i), DOSPH(i)
       IF (WPH(i) >= wmax) THEN
         wmax = WPH(i)
       END IF
@@ -1202,7 +1203,7 @@ CONTAINS
     END IF
     !--------------------------------------------------
 
-    norm_factor = 3.0D0 * N_atom / (sum + 1.0D-12)   ! for exampleﾂ：3N = 3 * N_atom
+    norm_factor = 3.0D0 * N_atom / (sum + 1.0D-12)   ! 3N = 3 * N_atom
 
     DO i = 1, NPH
        DOSPH(i) = DOSPH(i) * norm_factor
@@ -1306,10 +1307,11 @@ CONTAINS
     integer :: i
 
     Cv = 0.0d0
-    d_omega = WPH(2) - WPH(1)
+    d_omega = WPH(2) - WPH(1)  ! [eV]
 
     do i = 1, NPH
-       x = hbar * WPH(i) / (kb * T)
+       ! x = hbar * WPH(i) / (kb * T)
+       x = WPH(i) / (kb * T)
        integrand = x**2 * exp(x) / (exp(x) - 1.0d0 + 1.0e-12)**2 * DOSPH(i)
        IF (i > 1) THEN
          d_omega = MAX(WPH(i) - WPH(i-1), 1.0D-12)
@@ -1355,22 +1357,27 @@ CONTAINS
     real(8), intent(out) :: Theta_D_match, Cv_DOS_out, Cv_Debye_out
     real(8) :: Theta_D_low, Theta_D_high, Theta_D_mid, Cv_Debye_mid, Cv_DOS
     real(8), parameter :: tol = 1.0d-3
+    integer :: i, n_divisions
+    real(8) :: step_size, closest_diff
 
-    Theta_D_low = 100.0d0
-    Theta_D_high = 1000.0d0
+    Theta_D_low = wmax/kb*0.75D0
+    Theta_D_high = wmax/kb*1.25D0
     Cv_DOS = compute_Cv_DOS(T)
+  
+    n_divisions = 2500
+    step_size = (Theta_D_high - Theta_D_low) / real(n_divisions)
+    closest_diff = HUGE(1.0D0) ! Initialize with a large number
 
-    do while (abs(Theta_D_high - Theta_D_low) > tol)
-       Theta_D_mid = 0.5d0 * (Theta_D_low + Theta_D_high)
-       Cv_Debye_mid = compute_Cv_Debye(T, Theta_D_mid)
-       if (Cv_Debye_mid > Cv_DOS) then
-          Theta_D_high = Theta_D_mid
-       else
-          Theta_D_low = Theta_D_mid
-       end if
+    do i = 0, n_divisions
+      Theta_D_mid = Theta_D_low + i * step_size
+      Cv_Debye_mid = compute_Cv_Debye(T, Theta_D_mid)
+      !WRITE(*,*) Theta_D_mid, Cv_Debye_mid, Cv_DOS
+      if (abs(Cv_Debye_mid - Cv_DOS) < closest_diff) then
+         closest_diff = abs(Cv_Debye_mid - Cv_DOS)
+         Theta_D_match = Theta_D_mid
+      end if
     end do
 
-    Theta_D_match = 0.5d0 * (Theta_D_low + Theta_D_high)
     Cv_DOS_out = Cv_DOS
     Cv_Debye_out = compute_Cv_Debye(T, Theta_D_match)
   end subroutine find_matching_Theta_D
@@ -1487,11 +1494,13 @@ PROGRAM seebeck_analysis
   REAL(8) :: effective_mass_hole     ! Meff [kg/kg]
   REAL(8) :: effective_mass_electron ! Meff [kg/kg]
   REAL(8) :: specific_heat           ! Cv [J/(mol K)] (Specific heat at constant volume)
+  REAL(8) :: ZT                      ! ZT
   
-  CHARACTER(LEN=275), PARAMETER :: hdr = "#  T [K]   mu [eV]    <E-mu> [eV] &
+  CHARACTER(LEN=300), PARAMETER :: hdr = "#  T [K]   mu [eV]    <E-mu> [eV] &
     & S [muV/K]    s_all [S/m]  s_hole [S/m] s_elec [S/m] R [Ohm m]    PF [W/m/K^2] ke [W/m/K]  &
     & MFP_hole [A] MFP_elec [A] Nc [cm^-3]   Nc_h [cm^-3] Nc_e [cm^-3] RH [m^3/C]  &
-    & Mh[cm^2/V/s] Me[cm^2/V/s] Meffh[kg/kg] Meffe[kg/kg] Cv [J/(mol K)]"
+    & Mh[cm^2/V/s] Me[cm^2/V/s] Meffh[kg/kg] Meffe[kg/kg] Cv[J/(molK)]&
+    & kp [W/m/K]   ZT"
   
   ! ------------------------------------------------------------------
   ! Step 0: Load "DEF(Energy shift offset)" data from 'parameter.txt'
@@ -1747,8 +1756,6 @@ PROGRAM seebeck_analysis
      
      DOS_hole = 0.0D0
      DOS_electron = 0.0D0
-     
-     Cv_DOS = 0.0D0                              ! Specific heat at constant volume
      
      Nd = 0.0
      Nd_hole  = 0.0
@@ -2018,12 +2025,6 @@ PROGRAM seebeck_analysis
      Nd = Nd_hole + ABS(Nd_electron)
      CALL ComputeCarrierConcentration(m_eff, TEM, T0, alpha, beta, gamma, C, E_C, P, E_ph, N_sat, Delta_E_gap, pinningShift)
      
-     IF (use_phononDOS) THEN
-       Cv_DOS = compute_Cv_DOS(TEM)
-     ELSE
-       Cv_DOS = 0.0
-     END IF
-     
      temperature = TEM
      chemical_potential = CP
      mean_energy = (T1 / T)
@@ -2033,8 +2034,8 @@ PROGRAM seebeck_analysis
      conductivity_electron = T_electron
      resistance = (1.0D0 / conductivity)
      power_factor = seebeck_coefficent**2 * conductivity
-     ! kappa_electron = (Ln * T * TEM)
-     kappa_electron = kappa_electron_term1 / TEM - kappa_electron_term2 / conductivity / TEM
+     ! kappa_electron = (Ln * T * temperature)
+     kappa_electron = kappa_electron_term1 / temperature - kappa_electron_term2 / conductivity / temperature
      mean_free_path          = MFP         *1.0e10  ! [m] -> [Angstrom]
      mean_free_path_hole     = MFP_hole    *1.0e10  ! [m] -> [Angstrom]
      mean_free_path_electron = MFP_electron*1.0e10  ! [m] -> [Angstrom]
@@ -2049,7 +2050,26 @@ PROGRAM seebeck_analysis
        & (mobility_hole * Nd_hole*1.0e6 + mobility_electron * ABS(Nd_electron) * 1.0e6)**2.0D0
      effective_mass_hole     = ABS(m_eff_hole     * ech/ems)
      effective_mass_electron = ABS(m_eff_electron * ech/ems)
-     specific_heat = Cv_DOS                        ! Specific heat at constant volume
+     
+     IF (use_phononDOS) THEN
+       Cv_DOS = compute_Cv_DOS(TEM)
+       specific_heat = Cv_DOS         ! Specific heat at constant volume
+       IF (vl /= 0.0 .and. vt /= 0.0 .and. tau0_phonon > 0.0) THEN
+         kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
+         ZT = power_factor * temperature / (kappa_electron + kappa_phonon)
+       END IF
+     ELSE
+       Cv_DOS = 0.0
+       specific_heat = Cv_DOS         ! Specific heat at constant volume
+       IF (Bulk_modulus /= 0.0 .and. density /= 0.0) THEN
+         kappa_phonon_min = (1.0D0/2.0D0) * (PI/6.0D0)**(1.0D0/3.0D0) * kb * (volume/N_atom)**(2.0D0/3.0D0) * (vl + 2.0D0*vt)
+         kappa_phonon = kappa_phonon_min
+         ZT = power_factor * temperature / (kappa_electron + kappa_phonon)
+       ELSE
+         kappa_phonon = 0.0
+         ZT = 0.0
+       END IF
+     END IF
      
      ! --- Output results (skip if denominator too small) ---
      !=======================================================================
@@ -2076,7 +2096,7 @@ PROGRAM seebeck_analysis
         ! Calculate and output average energy offset <E - mu> and Seebeck coefficient
         ! T1/T is the averaged energy deviation <E - mu>
         ! -T1/T/TEM * CO gives Seebeck coefficient in muV/K
-        WRITE(6,'(F8.1,1X,F10.6, 19(1X,E12.4))') &
+        WRITE(6,'(F8.1,1X,F10.6, 21(1X,E12.4))') &
           &   temperature &
           & , chemical_potential &
           & , mean_energy &
@@ -2097,8 +2117,10 @@ PROGRAM seebeck_analysis
           & , hall_coefficient &
           & , effective_mass_hole &
           & , effective_mass_electron &
-          & , specific_heat
-        WRITE(20,'(F8.1,1X,F10.6, 19(1X,E12.4))') &
+          & , specific_heat &
+          & , kappa_phonon &
+          & , ZT
+        WRITE(20,'(F8.1,1X,F10.6, 21(1X,E12.4))') &
           &   temperature &
           & , chemical_potential &
           & , mean_energy &
@@ -2119,7 +2141,9 @@ PROGRAM seebeck_analysis
           & , hall_coefficient &
           & , effective_mass_hole &
           & , effective_mass_electron &
-          & , specific_heat
+          & , specific_heat &
+          & , kappa_phonon &
+          & , ZT
      ELSE
         ! If denominator T is too small (numerical instability), output placeholders
         WRITE(6,'(F8.1,1X,F10.6,1X,A)') TEM, CP, "-- -- -- -- -- -- -- -- -- -- -- --"
