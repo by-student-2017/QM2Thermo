@@ -325,3 +325,7 @@ When comparing floating-point numbers or checking for convergence, avoid direct 
 IF (ABS(x - y) < 1.0D-14) THEN
     ! x and y are considered approximately equal
 END IF
+```
+
+---
+
