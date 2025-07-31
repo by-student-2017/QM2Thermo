@@ -1,6 +1,6 @@
 !-----------------------------------------------------------------------
 ! Author   : H. Sato and M. Inukai
-! Affiliation : [AUE / Riken]
+! Affiliation : [AUE / ----]
 ! Contact  : [uichiro25@gmail.com] (U. Mizutani: https://doi.org/10.1007/s11669-024-01103-0)
 ! GitHub   : https://github.com/by-student-2017/LBT-TETRA (optional)
 !-----------------------------------------------------------------------
