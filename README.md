@@ -574,7 +574,7 @@ This module implements a refined phonon-mode filtering and scattering kernel des
 
 ---
 
-## ⚙Components
+## Components
 
 ### 1. Phonon Mode Filter: `w_mode`
 
