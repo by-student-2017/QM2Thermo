@@ -12,26 +12,30 @@ if [ ! -s "cfA1.dat" ]; then
     ./generate_stencil.exe
     ./group_velocity.exe
     ./chemical_potential.exe
-    ./plot.gpl
+    gnuplot plot_cp.gpl
     ./seebeck_analysis.exe
-    ./plot_Seebeck.gpl
+    gnuplot plot_Seebeck.gpl
+    gnuplot plot_ABGV2D.gpl
 elif [ ! -s "AKK.DATA" ]; then
     echo "AKK.DATA is not exists. Running asupersi.exe."
     ./group_velocity.exe
     ./chemical_potential.exe
-    ./plot.gpl
+    gnuplot plot_cp.gpl
     ./seebeck_analysis.exe
-    ./plot_Seebeck.gpl
+    gnuplot plot_Seebeck.gpl
+    gnuplot plot_ABGV2D.gpl
 elif [ ! -s "apot.data" ]; then
     echo "AKK.DATA exists. Running asupersi.exe."
     echo "apot.data not found. Running aaacp.exe instead."
     ./chemical_potential.exe
-    ./plot_cp.gpl
+    gnuplot plot_cp.gpl
     ./seebeck_analysis.exe
-    ./plot_Seebeck.gpl
+    gnuplot plot_Seebeck.gpl
+    gnuplot plot_ABGV2D.gpl
 else
     echo "AKK.DATA exists. Running asupersi.exe."
     echo "apot.data exists. Running aaass1.exe instead."
     ./seebeck_analysis.exe
-    ./plot_Seebeck.gpl
+    gnuplot plot_Seebeck.gpl
+    gnuplot plot_ABGV2D.gpl
 fi

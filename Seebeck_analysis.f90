@@ -249,6 +249,8 @@ MODULE seebeck_data
   REAL(KIND=8), PARAMETER :: B2A  = 0.52918       ! convert Bohr to Angstrom unit
   REAL(KIND=8), PARAMETER :: ech = 1.602176565D-19 ! [C]  (Note: 1 [C/m^3] = 1 [Coulomb/m^3] = 1 [J])
   REAL(KIND=8), PARAMETER :: ems = 9.109383713D-31 ! [kg]
+  REAL(KIND=8), PARAMETER :: hbar = 6.582119D-16  ! Planck constant [eV s]
+  REAL(KIND=8), PARAMETER :: kb = 8.617333D-5     ! Boltzmann constant [eV/K]
   !-----------------------------------------------
   REAL(KIND=8) :: DEF = 0.0D0                     ! Energy offset (if needed)
   !-----------------------------------------------
@@ -271,6 +273,16 @@ MODULE seebeck_data
   REAL(KIND=8) :: b_para                          ! Umklapp (Klemens-Callaway type model) scattering (Ref. 1 - 2) (works: phononDOS = T)
   REAL(KIND=8) :: C_phel                          ! Phonon-Electron scattering coefficient (works: a2Fdos = F): (Ref. 2.31e10) [s^-1*eV^-2]
   REAL(KIND=8) :: B_pdef                          ! Point defect scattering coefficient: (Ref. 5.33e15) [s^-1*eV^-4]
+  REAL(KIND=8) :: Bulk_modulus                    ! Bulk_modulus [GPa] (1 [eV/A^3] = 160.2 [GPa]), B = K
+  REAL(KIND=8) :: Shear_modulus                   ! Shear_modulus [GPa] = Bulk_modulus / (2*(1+Poisson_ratio)), G
+  REAL(KIND=8) :: Poisson_ratio                   ! Poisson_ratio = (3*B-2*G)/(2*(3*B+G))
+  REAL(KIND=8) :: density                         ! read [g/cm^3] unit -> density * 1000 [kg/m^3]
+  REAL(KIND=8) :: vl                              ! Sound speed (longitudinal wave) [m/s] = ((Bulk_modulus*1.0D9+(4/3)*Shear Modulus*1.0D9)/(density*1000.0))**(0.5)   ! 1 [GPa] = 1.0e9 [kg/(m*s^2)
+  REAL(KIND=8) :: vt                              ! Sound speed (transverse wave) [m/s] = (Bulk_modulus*1.0D9/(density*1000.0))**(0.5) (vt = vs in this code) (vs = 0.87*vl)   ! 1 [GPa] = 1.0e9 [kg/(m*s^2)
+  REAL(KIND=8) :: MPF_phonon                      ! mean free path of phonon, l = (vl + 2*vt)/3 * tau0_phonon [s]
+  REAL(KIND=8) :: tau0_phonon                     ! For phonons, it is about 10-100 times stronger than for electrons. (If it is 0.0, tau_ph * 100)
+  REAL(KIND=8) :: kappa_phonon_min                ! Cahill molde: (1/2)*(PI/6)**(1/3)*kb*(volume/N_atom)**(2/3)*(vl + 2*vt)
+  REAL(KIND=8) :: kappa_phonon                    ! kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
   !-----------------------------------------------
   REAL(KIND=8) :: Nd                              ! Doping concentration in cm^-3: n-type 1.0e14 - 1.0e18 [cm^-3]
   REAL(KIND=8) :: Nd_hole                         ! hole
@@ -302,9 +314,6 @@ MODULE seebeck_data
   !-----------------------------------------------
   !REAL(KIND=8), DIMENSION(nNPH) :: w_mode        ! (old vesion) Mode selection filter (0.0 - 1.0): symmetry, polarization, activation criteria
   REAL(KIND=8), ALLOCATABLE :: w_mode(:)          ! Mode selection filter (0.0 - 1.0): symmetry, polarization, activation criteria
-  !-----------------------------------------------
-  REAL(KIND=8), PARAMETER :: hbar = 6.582119D-16  ! Planck constant [eV s]
-  REAL(KIND=8), PARAMETER :: kb = 8.617333D-5     ! Boltzmann constant [eV/K]
   !-----------------------------------------------
   
   ! Debye calculation using phonon dos.
@@ -1503,6 +1512,15 @@ PROGRAM seebeck_analysis
   READ(90, '(25X, E12.6)') b_para                 ! Umklapp (Klemens-Callaway type model) scattering. (Ref. 1 - 2) (works: phononDOS = T)
   READ(90, '(25X, E12.6)') C_phel                 ! Phonon-Electron scattering coefficient. (works: a2Fdos = F): (Ref. 2.31e10)
   READ(90, '(25X, E12.6)') B_pdef                 ! Point defect scattering coefficient. (Ref. 5.33e15)
+  READ(90, '(25X, E12.6)') Bulk_modulus           ! Bulk_modulus [GPa] (1 [eV/A^3] = 160.2 [GPa]), B = K
+  READ(90, '(25X, E12.6)') Shear_modulus          ! Shear_modulus [GPa] = Bulk_modulus / (2*(1+Poisson_ratio)), G
+  READ(90, '(25X, E12.6)') Poisson_ratio          ! Poisson_ratio = (3*B-2*G)/(2*(3*B+G))
+  READ(90, '(25X, E12.6)') density                ! read [g/cm^3] unit -> density * 1000 [kg/m^3]
+  READ(90, '(25X, E12.6)') tau0_phonon            ! For phonons, it is about 10-100 times stronger than for electrons. (If it is 0.0, tau_ph * 100)
+  IF (tau0_phonon < 0.0) THEN
+    tau0_phonon = tau0 * 100.0D0
+    WRITE(*,*) "Base relaxation time (phonon) [s] = Base relaxation time (electron) [s] * 100:", tau0_phonon
+  END IF
   READ(90, *)
   READ(90, '(25X, E12.6)') Nd                     ! Read Doping concentration [cm^-3]
   READ(90, '(25X, E12.6)') m_eff                  ! Effective mass (relative to m_e)
@@ -1536,6 +1554,11 @@ PROGRAM seebeck_analysis
   WRITE(*,*) "b_para                  :", b_para
   WRITE(*,*) "C_phel                  :", C_phel
   WRITE(*,*) "B_pdef                  :", B_pdef
+  WRITE(*,*) "Bulk modulus, B    [GPa]:", Bulk_modulus
+  WRITE(*,*) "Shear modulus, G   [GPa]:", Shear_modulus
+  WRITE(*,*) "Poisson's ratio         :", Poisson_ratio
+  WRITE(*,*) "density         [g/cm^3]:", density
+  WRITE(*,*) "relaxation time (ph) [s]:", tau0_phonon
   WRITE(*,*) "----- Carrier concentration calclation: optional -----"
   WRITE(*,*) "Nd (Doping conc.)[cm^-3]:", Nd
   WRITE(*,*) "Electron Effective Mass :", m_eff
@@ -1551,6 +1574,21 @@ PROGRAM seebeck_analysis
   WRITE(*,*) "Delta E gap       [eV/K]:", Delta_E_gap
   WRITE(*,*) "Pinning Shift       [eV]:", pinningShift
   WRITE(*,*) "------------------------------------------------------"
+  IF (Bulk_modulus /= 0.0 .and. density /= 0.0) THEN
+    Shear_modulus = Bulk_modulus / (2.0D0*(1+Poisson_ratio))
+    ! 1 [GPa] = 1.0e9 [kg/(m*s^2)], 1 [g/cm^3] = 1000 [kg/m^3], [GPa]*[kg/m^3] = 1.0e9 [(m/s)^2]
+    vl = ((Bulk_modulus*1.0D9 + (4.0D0/3.0D0)*Shear_modulus*1.0D9) / (density*1000.0D0))**(0.5)
+    vt = (Bulk_modulus*1.0D9 / (density*1000.0D0))**(0.5)
+    WRITE(*,*) "Shear modulus, G [GPa]", Shear_Modulus
+    WRITE(*,*) "Sound speed (longitudinal wave), vl [m/s]:", vl
+    WRITE(*,*) "Sound speed (transverse wave),   vt [m/s]:", vt
+    WRITE(*,*) "vt is nearly equal ot vs = 0.87*vl [m/s]:", 0.87*vl
+    IF (tau0_phonon > 0.0) THEN
+      MPF_phonon = (vl + 2.0D0*vt)/3.0D0 * tau0_phonon * 1.0D10
+      WRITE(*,*) "mean free path of phonon [A]:", MPF_phonon
+    END IF
+    WRITE(*,*) "------------------------------------------------------"
+  END IF
   CLOSE(90)
   ! ------------------------------------------------------------------
   OPEN(UNIT=91, FILE='wien.struct', STATUS='OLD', ACTION='READ')
@@ -1565,6 +1603,12 @@ PROGRAM seebeck_analysis
   !WRITE(6,'(A, f12.5)') " Volume [A^3]: ", volume
   WRITE(*,*) "------------------------------------------------------"
   CLOSE(91)
+  IF (Bulk_modulus /= 0.0 .and. density /= 0.0) THEN
+    ! https://github.com/houzf/empirical_thermal_conductivity
+    kappa_phonon_min = (1.0D0/2.0D0) * (PI/6.0D0)**(1.0D0/3.0D0) * kb * (volume/N_atom)**(2.0D0/3.0D0) * (vl + 2.0D0*vt)
+    WRITE(*,*) "Cahill model: kappa_phonon_min [W/m/K]:", kappa_phonon_min
+    WRITE(*,*) "------------------------------------------------------"
+  END IF
   
   ! ------------------------------------------------------------------
   ! Step 1: Load "Electron-phonon coupling" data from 'lambda'
@@ -1634,6 +1678,10 @@ PROGRAM seebeck_analysis
     WRITE(*, *) "Frequency (Omega) Maximum (wmax)    [K]:", wmax/kb
     WRITE(*, *) "Cv_DOS(T) [J/(mol K)]:", Cv_DOS
     WRITE(*, *) "Cv_Debye(T, Theta_D) [J/(mol K)]:", Cv_Debye
+    IF (vl /= 0.0 .and. vt /= 0.0 .and. tau0_phonon > 0.0) THEN
+      kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
+      WRITE(*, *) "kappa_phonon [W/m/K]: ", kappa_phonon
+    END IF
   ELSE
     WRITE(*, *) "Specific heat at constant volume is not calculated. Cv = 0.0000E+00 [J/(mol K)]"
   END IF

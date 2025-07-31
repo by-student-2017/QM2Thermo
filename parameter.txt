@@ -1,9 +1,9 @@
 !-----------------------:------------!--Memo---------------------------------------------------------------------------
-DEF (Energy shift)  [eV]:  1.173000  ! -0.002700 or  0.000000, etc. Also compare it with the output VEC.
+DEF (Energy shift)  [eV]:  0.000000  ! -0.002700 or 1.173000, etc. Also compare it with the output VEC.
 Base relaxation time [s]:  1.00e-14  ! 1.00000e-14 is often used. tau0 = 1/(1/tau_ph-ph(Alamode) + 1/tau_ph-el(EPW))
 phonon (lambda) (F or T):  F         ! The lambda file output by QE is read and processed.
 impurity        (F or T):  F         ! Impurity scattering. Typically used in heavily doped semiconductors
-n_impurity              :  3.000     ! 1.0: Mild energy-dependence, 3.0: high energy, 4.0: more. (works: impurity = T)
+n_impurity              :  3.000     ! 1: Mild energy-dependence, 3.0: high energy, 4.0: more. (works: impurity = T)
 dos (electron)  (F or T):  F         ! Accounts for scattering probability increasing with available final states
 a2Fdos  (files & lambda):  F         ! a2F.dos (QE) takes precedence over phononDOS. (automatically set phononDOS = F)
 phononDOS       (F or T):  F         ! Lines 1 and 2 are comment lines. Frequency [eV] vs. Total DOS (phonon) data.
@@ -13,6 +13,11 @@ L_bound       [Angstrom]:  0.0       ! Boundary scattering. (works: phononDOS = 
 b_para                  :  0.0       ! Umklapp (Klemens-Callaway type model) scat. (Ref. 1 - 2) (works: phononDOS = T)
 C_phel      [s^-1*eV^-2]:  0.0       ! Phonon-Electron scattering coefficient. (Ref. 2.31e10) (works: a2Fdos = F)
 B_pdef      [s^-1*eV^-4]:  0.0       ! Point defect scattering coefficient. (Ref. 5.33e15)
+Bulk modulus, B    [GPa]:  100.0     ! For example, use Bulk_modulus_from_EOS and get Bulk modulus.
+Shear modulus, G   [GPa]:  0.0       ! If it is 0.0, calculate from Bulk modulus and Poisson's ratio.
+Poisson's ratio         :  0.3       ! General Range: 0.25 - 0.35 (If it is 0.0, set 0.3)
+density         [g/cm^3]:  2.33      ! Please try your best to calculate it from a cif file or something.
+relaxation time (ph) [s]:  1.00e-12  ! About 10-100 times stronger than electrons. (If it is < 0.0, tau_ph * 100 [s])
 !-------optional--------:------------!--optional-----------------------------------------------------------------------
 Doping concent.  [cm^-3]:  0.0       ! General Range: 1.0e14 - 1.0e20 [cm^-3] (If it is 0.0, calculate from VEC/volume)
 Electron Effective Mass :  0.26e0    ! Effective mass (relative to m_e)
