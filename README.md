@@ -167,8 +167,16 @@ If a calculation result file already exists, the corresponding calculation will 
 
 
 ## References
-- [1] lambda and a2F.dos* data: https://github.com/nguyen-group/QE-SSP/tree/master/gr/alpha/reference)
+- [1] lambda and a2F.dos* data: https://github.com/nguyen-group/QE-SSP/tree/master/gr/alpha/reference
 - [2] quantum ESPRESSO tutorial: http://www.cmpt.phys.tohoku.ac.jp/~koretsune/SATL_qe_tutorial/elphon.html
+- [3] T. Takeuchi, JTSJ (2011): https://doi.org/10.50972/thermoelectrics.8.1_17 (Open Access) (Japanese)
+- [4] T. Takeuchi, JTSJ (2011): https://doi.org/10.50972/thermoelectrics.8.2_18 (Open Access) (Japanese)
+- [5] T. Takeuchi, JTSJ (2012): https://doi.org/10.50972/thermoelectrics.8.3_27 (Open Access) (Japanese)
+- [6] T. Takecuhi, JTSJ (2012): https://doi.org/10.50972/thermoelectrics.9.1_21 (Open Access) (Japanese)
+- [7] T. Takeuchi, JTSJ (2012): https://doi.org/10.50972/thermoelectrics.9.2_21 (Open Access) (Japanese)
+- [8] Y. Katsura, JTSJ (2014): https://doi.org/10.50972/thermoelectrics.10.3_20 (Open Access) (Japanese)
+- [9] Y. Katsura, JTSJ (2014): https://doi.org/10.50972/thermoelectrics.11.1_18 (Open Access) (Japanese)
+- [10] Y. Katsura, JTSJ (2014): https://doi.org/10.50972/thermoelectrics.11.2_19 (Open Access) (Japanese)
 
 
 ## Citation
