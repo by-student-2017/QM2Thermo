@@ -459,7 +459,7 @@ $$
 
 ---
 
-## Energy-Dependent Relaxation Time via $$\( \alpha^2F(\omega) \)$$
+## Energy-Dependent Relaxation Time via $$\( \alpha^2F(\omega) \)$$ (Implemented in Seebeck_analysis.f90)
 
 The relaxation time $$\( \tau(\varepsilon) \)$$ can be calculated from the Eliashberg spectral function $$\( \alpha^2F(\omega) \)$$ using:
 
