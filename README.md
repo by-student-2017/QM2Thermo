@@ -600,11 +600,11 @@ This module implements a refined phonon-mode filtering and scattering kernel des
 
 Each phonon mode is assigned a weight $$\( w_{\text{mode}}(\omega_i) \)$$ based on its frequency category:
 
-| Frequency Region (ω in Rydberg)     | Mode Type      | Weight $$\( w_{\text{mode}} \)$$ |
+| Frequency Region (ω in eV)     | Mode Type      | Weight $$\( w_{\text{mode}} \)$$ |
 |-------------------------------------|----------------|-------------------------------|
-| $$\( \omega < 0.01 \)$$             | Acoustic       | 1.0                           |
-| $$\( 0.01 \leq \omega < 0.03 \)$$   | Intermediate   | 0.5                           |
-| $$\( \omega \geq 0.03 \)$$          | Optical        | 0.1                           |
+| $$\( \omega < 0.136058 \)$$             | Acoustic       | 1.0                           |
+| $$\( 0.01 \leq \omega < 0.408174 \)$$   | Intermediate   | 0.5                           |
+| $$\( \omega \geq 0.408174 \)$$          | Optical        | 0.1                           |
 
 These weights are initialized in the `read_phonon_dos` routine and refined in `generate_w_mode()`.
 
