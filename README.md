@@ -373,13 +373,31 @@ $$
 
 ---
 
-## Reference
+## Energy-Dependent Relaxation Time via \( \alpha^2F(\omega) \)
 
-- B. Xu, M. Di Gennaro, M. J. Verstraete,  
-  *Phys. Rev. B* **102**, 155128 (2020).  
-  [https://doi.org/10.1103/PhysRevB.102.155128](https://doi.org/10.1103/PhysRevB.102.155128)
+The relaxation time \( \tau(\varepsilon) \) can be calculated from the Eliashberg spectral function \( \alpha^2F(\omega) \) using:
+
+$$
+\frac{1}{\tau(\varepsilon)} = 2\pi \int_0^{\infty} \alpha^2F(\omega) \left[
+1 + 2n(\omega) + f(\varepsilon - \omega) - f(\varepsilon + \omega)
+\right] d\omega
+$$
+
+Where:
+
+- $$\( \alpha^2F(\omega) \)$$: Electron-phonon spectral function (from `a2F.dos`)  
+- $$\( n(\omega) \)$$: Bose-Einstein distribution  
+- $$\( f(\varepsilon \pm \omega) \)$$: Fermi-Dirac distribution  
+- $$\( \omega \)$$: Phonon frequency
+
+The file `a2F.dos` typically contains discretized \( \omega \) vs. \( \alpha^2F(\omega) \) data, used in numerical evaluation of this integral.
 
 ---
 
-This format is optimized for Markdown editors with MathJax support, ensuring proper rendering of the equations. Would you like me to help generate a version that includes sample plots or numerical examples as well? 😊
+## Reference
 
+- B. Xu, M. Di Gennaro, M. J. Verstraete  
+  *Phys. Rev. B* **102**, 155128 (2020)  
+  [https://doi.org/10.1103/PhysRevB.102.155128](https://doi.org/10.1103/PhysRevB.102.155128)
+
+---
