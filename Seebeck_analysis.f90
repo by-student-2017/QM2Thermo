@@ -188,23 +188,23 @@
 
 !-----------------------------------------------------------------------
 ! MODULE : kernel_model
-! Purpose: Provide kernel functions for energy-dependent scattering models
-!          within Allen-type phonon relaxation time calculations.
+! Purpose:
+!   Provides kernel functions for modeling energy-dependent phonon-electron
+!   scattering in Allen-type relaxation time calculations.
 !
 ! Contents:
-!   - kernel_selection(E, omega)
-!       Applies simplified selection rule: scattering active only when
-!       phonon energy ﾆ丹 is less than electron energy offset |E|
+!   - FUNCTION: kernel_selection(E, omega)
+!     Applies a basic selection rule:
+!       - Scattering is active only when phonon energy omega < electron energy offset |E|
 !
 ! Usage:
-!   - Used by tau_phdos_ET(E,T) for filtering ﾆ丹 contributions
-!     based on scattering conditions.
-!   - Easily extendable for symmetry filtering, transition-specific kernels,
-!     or mode-specific selection logic.
+!   - Used in tau_phdos_ET(E,T) for filtering mode contributions via omega
+!   - Extendable for symmetry-based selection, transition-specific kernels,
+!     or mode-resolved filtering.
 !
-! Extension-ready:
-!   - Add alternate kernel functions (e.g., step, Lorentzian, delta)
-!   - Load kernel behavior from external configuration if needed
+! Extension-ready Features:
+!   - Implement alternative kernel forms (step, Lorentzian, delta)
+!   - Enable kernel loading from external config files or runtime parameters
 !-----------------------------------------------------------------------
 MODULE kernel_model
 IMPLICIT NONE
