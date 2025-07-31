@@ -416,7 +416,6 @@ The kernel function $$\( K(\varepsilon) \)$$ modulates the contribution of state
 - Numerical integration can be performed using quadrature schemes (e.g. Gauss-Legendre)
 - Material-specific parameters for $$\( \tau \), \( v \), and \( g \)$$ may be obtained from DFT
 - For custom kernels, normalization may be required for stability
-- Code implementation is available in Python or Mathematica
 
 ---
 
