@@ -58,41 +58,41 @@
 ! Main Source File:
 !   Seebeck_analysis.f90
 !   +----- Step 0: Load parameters
-!   |    +----- Reads parameters from 'parameter.txt', and shows parameters.
-!   |    +----- Reads lattice parameter from 'wien.struct', and shows lattice parameters.
-!   |    +----- calculate volume and show its value.
-!   | 
+!   |      +----- Reads parameters from 'parameter.txt', and shows parameters.
+!   |      +----- Reads lattice parameter from 'wien.struct', and shows lattice parameters.
+!   |      +----- calculate volume and show its value.
+!   |   
 !   +----- Step 1: Load Electron-Phonon Coupling Data
-!   |    +----- Reads phonon coupling constants from 'lambda'.
-!   |    +----- Initializes arrays for broadening, lambdaArray, dosEf, and omega_ln.
-!   |    +----- Uses `CALL ReadLambdaData()` for data processing.
-!   | 
+!   |      +----- Reads phonon coupling constants from 'lambda'.
+!   |      +----- Initializes arrays for broadening, lambdaArray, dosEf, and omega_ln.
+!   |      +----- Uses `CALL ReadLambdaData()` for data processing.
+!   |   
 !   +----- Step 2: Load Chemical Potentials
-!   |    +----- Reads temperature-dependent chemical potentials (AMU) from 'apot.data'.
-!   |    +----- Associates each temperature (TEM) with its corresponding chemical potential.
-!   | 
+!   |      +----- Reads temperature-dependent chemical potentials (AMU) from 'apot.data'.
+!   |      +----- Associates each temperature (TEM) with its corresponding chemical potential.
+!   |   
 !   +----- Step 3: Load Band Velocity Data
-!   |    +----- Reads energy mesh, density of states (DOS), squared group velocity,
-!   |    |    and band energy levels from 'AKK.DATA'.
-!   |    +----- Applies energy shift if necessary.
-!   |    +----- Computes valence electron concentration (VEC) for given energy levels.
-!   | 
+!   |      +----- Reads energy mesh, density of states (DOS), squared group velocity,
+!   |      |      and band energy levels from 'AKK.DATA'.
+!   |      +----- Applies energy shift if necessary.
+!   |      +----- Computes valence electron concentration (VEC) for given energy levels.
+!   |   
 !   +----- Step 4: Read Phonon DOS or a2F.dos Data
-!   |    +----- Calls `read_phonon_dos()` if phononDOS is enabled.
-!   |    +----- Calls `read_a2F_dos()` if a2F.dos is enabled.
-!   | 
+!   |      +----- Calls `read_phonon_dos()` if phononDOS is enabled.
+!   |      +----- Calls `read_a2F_dos()` if a2F.dos is enabled.
+!   |   
 !   +----- Step 5: Initialize Output File
-!   |    +----- Prepares 'Seebeck_analysis.dat' file for results storage.
-!   |    +----- Includes headers with energy offsets, VEC, and Seebeck coefficient columns.
-!   | 
+!   |      +----- Prepares 'Seebeck_analysis.dat' file for results storage.
+!   |      +----- Includes headers with energy offsets, VEC, and Seebeck coefficient columns.
+!   |   
 !   +----- Step 6: Compute Seebeck Coefficient
-!   |    +----- Loops through temperatures to calculate Seebeck coefficient.
-!   |    +----- Computes Fermi-Dirac distribution and its derivative at each energy level.
-!   |    +----- Multiplies by group velocity squared and energy-dependent scattering rate.
-!   |    +----- Accumulates numerator and denominator using integration techniques:
-!   |    |    +----- Options for Riemann sum, trapezoidal rule, or Simpson's rule.
-!   |    +----- Outputs averaged energy deviation <E - mu>, Seebeck coefficient, and Nc.
-!   | 
+!   |      +----- Loops through temperatures to calculate Seebeck coefficient.
+!   |      +----- Computes Fermi-Dirac distribution and its derivative at each energy level.
+!   |      +----- Multiplies by group velocity squared and energy-dependent scattering rate.
+!   |      +----- Accumulates numerator and denominator using integration techniques:
+!   |      |      +----- Options for Riemann sum, trapezoidal rule, or Simpson's rule.
+!   |      +----- Outputs averaged energy deviation <E - mu>, Seebeck coefficient, and Nc.
+!   |   
 !   +----- Finalize:
 !       +----- Closes output files.
 !       +----- Deallocates arrays for phonon and scattering data if used.
@@ -113,69 +113,69 @@
 ! Main Function:
 !   get_tau(E1, T, I)
 !   +----- Purpose:
-!   |    Compute the relaxation time tau(E, T) based on multiple scattering 
-!   |    mechanisms combined using Matthiessen's rule.
-!   | 
+!   |      Compute the relaxation time tau(E, T) based on multiple scattering 
+!   |      mechanisms combined using Matthiessen's rule.
+!   |   
 !   +----- Scattering Mechanisms:
-!   |    1. Phonon scattering (tau_ph)      : Dependent on |E - mu|, T, and Lambda.
-!   |    2. Impurity scattering (tau_imp)   : User-defined |E - mu|^n exponent model.
-!   |    3. DOS-based scattering (tau_dos)  : Dependent on DOS(E) * T.
-!   |    4. Phonon DOS-based scattering (tau_phdos): Advanced scattering using phonon data.
-!   | 
+!   |      1. Phonon scattering (tau_ph)      : Dependent on |E - mu|, T, and Lambda.
+!   |      2. Impurity scattering (tau_imp)   : User-defined |E - mu|^n exponent model.
+!   |      3. DOS-based scattering (tau_dos)  : Dependent on DOS(E) * T.
+!   |      4. Phonon DOS-based scattering (tau_phdos): Advanced scattering using phonon data.
+!   |   
 !   +----- Subroutines and Functions Called:
-!   |    +----- GetLambda(E1, T, I)
-!   |    |    +----- Purpose: Interpolates the electron-phonon coupling constant Lambda.
-!   |    |    +----- Inputs:
-!   |    |    |    - E1: Energy offset from chemical potential.
-!   |    |    |    - T: Temperature.
-!   |    |    |    - I: Energy index.
-!   |    |    +----- Output:
-!   |    |    |    - Lambda: Electron-phonon coupling constant.
-!   |    |    +----- Dependencies:
-!   |    |        - InterpolateLambda(E1, omega_ln, lambdaArray): Performs interpolation.
-!   |    |        - ReadLambdaData(): Loads Lambda and phonon coupling data from 'lambda'.
-!   |    | 
-!   |    +----- tau_a2Fdos_ET(E1, T)
-!   |    |    +----- Purpose: Computes relaxation time from Eliashberg function (a2F.dos data).
-!   |    |    +----- Inputs:
-!   |    |    |    - E1: Energy offset from chemical potential.
-!   |    |    |    - T: Temperature.
-!   |    |    +----- Output:
-!   |    |        - Relaxation time based on phonon density and Bose-Einstein distribution.
-!   |    |        - Dependencies: read_a2F_dos(), kernel_selection(), integration over a2F_total.
-!   |    | 
-!   |    +----- tau_phdos_ET(E1, T)
-!   |    |    +----- Purpose: Computes relaxation time based on phonon DOS and n_B (Bose-Einstein).
-!   |    |    +----- Inputs:
-!   |    |    |    - E1: Energy offset from chemical potential.
-!   |    |    |    - T: Temperature.
-!   |    |    +----- Output:
-!   |    |        - Relaxation time derived from phonon density of states (phononDOS.dat).
-!   |    |        - Dependencies: read_phonon_dos(), kernel_selection(), phonon integrals, (GetLambda()).
-!   |    | 
-!   |    +----- read_a2F_dos()
-!   |    |    +----- Purpose: Reads phonon density of states from a2F.dos.
-!   |    |    +----- Output: Frequency-dependent a2F data.
-!   |    | 
-!   |    +----- read_phonon_dos()
-!   |    |    +----- Purpose: Reads phonon density of states from phononDOS.dat.
-!   |    |    +----- Output: Frequency-dependent phonon DOS data.
-!   |    | 
-!   |    +----- kernel_selection(E, omega)
-!   |    |    +----- Purpose: Determines scattering kernel weights based on energy and phonon frequencies.
-!   |    |    +----- Inputs:
-!   |    |    |    - E: Energy.
-!   |    |    |    - omega: Phonon frequency.
-!   |    |    +----- Output: Logical weight applied to scattering integrals.
-!   |    | 
-!   |    +----- DOS(I)
-!   |        +----- Purpose: Provides the density of states at a given energy index.
-!   |        +----- Dependencies: read_constants() (for grid setup) and external DOS data.
-!   | 
+!   |      +----- GetLambda(E1, T, I)
+!   |      |      +----- Purpose: Interpolates the electron-phonon coupling constant Lambda.
+!   |      |      +----- Inputs:
+!   |      |      |      - E1: Energy offset from chemical potential.
+!   |      |      |      - T: Temperature.
+!   |      |      |      - I: Energy index.
+!   |      |      +----- Output:
+!   |      |      |      - Lambda: Electron-phonon coupling constant.
+!   |      |      +----- Dependencies:
+!   |      |          - InterpolateLambda(E1, omega_ln, lambdaArray): Performs interpolation.
+!   |      |          - ReadLambdaData(): Loads Lambda and phonon coupling data from 'lambda'.
+!   |      |   
+!   |      +----- tau_a2Fdos_ET(E1, T)
+!   |      |      +----- Purpose: Computes relaxation time from Eliashberg function (a2F.dos data).
+!   |      |      +----- Inputs:
+!   |      |      |      - E1: Energy offset from chemical potential.
+!   |      |      |      - T: Temperature.
+!   |      |      +----- Output:
+!   |      |          - Relaxation time based on phonon density and Bose-Einstein distribution.
+!   |      |          - Dependencies: read_a2F_dos(), kernel_selection(), integration over a2F_total.
+!   |      |   
+!   |      +----- tau_phdos_ET(E1, T)
+!   |      |      +----- Purpose: Computes relaxation time based on phonon DOS and n_B (Bose-Einstein).
+!   |      |      +----- Inputs:
+!   |      |      |      - E1: Energy offset from chemical potential.
+!   |      |      |      - T: Temperature.
+!   |      |      +----- Output:
+!   |      |          - Relaxation time derived from phonon density of states (phononDOS.dat).
+!   |      |          - Dependencies: read_phonon_dos(), kernel_selection(), phonon integrals, (GetLambda()).
+!   |      |   
+!   |      +----- read_a2F_dos()
+!   |      |      +----- Purpose: Reads phonon density of states from a2F.dos.
+!   |      |      +----- Output: Frequency-dependent a2F data.
+!   |      |   
+!   |      +----- read_phonon_dos()
+!   |      |      +----- Purpose: Reads phonon density of states from phononDOS.dat.
+!   |      |      +----- Output: Frequency-dependent phonon DOS data.
+!   |      |   
+!   |      +----- kernel_selection(E, omega)
+!   |      |      +----- Purpose: Determines scattering kernel weights based on energy and phonon frequencies.
+!   |      |      +----- Inputs:
+!   |      |      |      - E: Energy.
+!   |      |      |      - omega: Phonon frequency.
+!   |      |      +----- Output: Logical weight applied to scattering integrals.
+!   |      |   
+!   |      +----- DOS(I)
+!   |          +----- Purpose: Provides the density of states at a given energy index.
+!   |          +----- Dependencies: read_constants() (for grid setup) and external DOS data.
+!   |   
 !   +----- Integration Techniques Used:
-!   |    - Matthiessen's rule combines scattering rates (1/tau) for active mechanisms.
-!   |    - Fallback to tau0 if no active scattering mechanisms are enabled.
-!   | 
+!   |      - Matthiessen's rule combines scattering rates (1/tau) for active mechanisms.
+!   |      - Fallback to tau0 if no active scattering mechanisms are enabled.
+!   |   
 ! Inputs to get_tau:
 !   - E1: Energy offset from chemical potential (E - mu) [eV].
 !   - T: Temperature [K].
@@ -194,10 +194,10 @@
 ! Contents:
 !   - kernel_selection(E, omega)
 !       Applies simplified selection rule: scattering active only when
-!       phonon energy ƒÖ is less than electron energy offset |E|
+!       phonon energy ﾆ丹 is less than electron energy offset |E|
 !
 ! Usage:
-!   - Used by tau_phdos_ET(E,T) for filtering ƒÖ contributions
+!   - Used by tau_phdos_ET(E,T) for filtering ﾆ丹 contributions
 !     based on scattering conditions.
 !   - Easily extendable for symmetry filtering, transition-specific kernels,
 !     or mode-specific selection logic.
@@ -792,7 +792,7 @@ CONTAINS
   !-----------------------------------------------------------------------
   ! Function : get_tau
   ! Purpose  : Compute energy- and temperature-dependent relaxation time tau(E,T)
-  !          : based on Matthiessenfs rule combining multiple scattering mechanisms:
+  !          : based on Matthiessenﾂ’s rule combining multiple scattering mechanisms:
   !            - Phonon scattering      :  tau is proportional to  1 / (|E - mu| * T)
   !            - Impurity scattering    :  tau is proportional to  |E - mu|^n   (user-defined exponent)
   !            - Electronic DOS-based   :  tau is proportional to  1 / [DOS(E) * T]
@@ -1193,7 +1193,7 @@ CONTAINS
     END IF
     !--------------------------------------------------
 
-    norm_factor = 3.0D0 * N_atom / (sum + 1.0D-12)   ! for exampleF3N = 3 * N_atom
+    norm_factor = 3.0D0 * N_atom / (sum + 1.0D-12)   ! for exampleﾂ：3N = 3 * N_atom
 
     DO i = 1, NPH
        DOSPH(i) = DOSPH(i) * norm_factor
@@ -1403,9 +1403,9 @@ PROGRAM seebeck_analysis
   REAL(KIND=8) :: FDEE_PREV, FDEE_CURR, FDEE_NEXT
   REAL(8) :: FDD_PREV, FDD_NEXT
   REAL(8) :: FDE_PREV, FDE_NEXT
-  REAL(8) :: m_eff_vg2_PREV
-  REAL(8) :: m_eff_vg2_CURR
-  REAL(8) :: m_eff_vg2_NEXT
+  REAL(8) :: m_eff_PREV
+  REAL(8) :: m_eff_CURR
+  REAL(8) :: m_eff_NEXT
   REAL(8) :: MFP_PREV
   REAL(8) :: MFP_CURR
   REAL(8) :: MFP_NEXT
@@ -1415,6 +1415,12 @@ PROGRAM seebeck_analysis
   REAL(8) :: DOS_PREV
   REAL(8) :: DOS_CURR
   REAL(8) :: DOS_NEXT
+  REAL(8) :: kappa_electron_term1_PREV
+  REAL(8) :: kappa_electron_term1_CURR
+  REAL(8) :: kappa_electron_term1_NEXT
+  REAL(8) :: kappa_electron_term2_PREV
+  REAL(8) :: kappa_electron_term2_CURR
+  REAL(8) :: kappa_electron_term2_NEXT
   
   ! --- Variable Initialization (Simpson's Rule) ---
   REAL(8) :: E0, E2                           ! Energy points
@@ -1443,8 +1449,8 @@ PROGRAM seebeck_analysis
   REAL(8) :: MFP                   ! meam free path [A]
   REAL(8) :: MFP_hole              ! meam free path [A]
   REAL(8) :: MFP_electron          ! meam free path [A]
-  REAL(8) :: m_eff_vg2_hole        ! m_eff = 2*E/vg^2 <- E = (1/2)*m*v^2
-  REAL(8) :: m_eff_vg2_electron    ! m_eff = 2*E/vg^2 <- E = (1/2)*m*v^2
+  REAL(8) :: m_eff_hole        ! m_eff = 2*E/vg^2 <- E = (1/2)*m*v^2
+  REAL(8) :: m_eff_electron    ! m_eff = 2*E/vg^2 <- E = (1/2)*m*v^2
   REAL(8) :: DOS_hole
   REAL(8) :: DOS_electron
   
@@ -1458,6 +1464,8 @@ PROGRAM seebeck_analysis
   REAL(8) :: resistance              ! R [Ohm m]
   REAL(8) :: power_factor            ! PF [W/m/K^2]
   REAL(8) :: kappa_electron          ! ke [W/m/K]
+  REAL(8) :: kappa_electron_term1    ! ke [W/m/K]
+  REAL(8) :: kappa_electron_term2    ! ke [W/m/K]
   REAL(8) :: mean_free_path          ! MFP [A]
   REAL(8) :: mean_free_path_hole     ! MFP of hole [A]
   REAL(8) :: mean_free_path_electron ! MFP of electron [A]
@@ -1471,10 +1479,10 @@ PROGRAM seebeck_analysis
   REAL(8) :: effective_mass_electron ! Meff [kg/kg]
   REAL(8) :: specific_heat           ! Cv [J/(mol K)] (Specific heat at constant volume)
   
-  CHARACTER(LEN=260), PARAMETER :: hdr = "#  T [K]   mu [eV]    <E-mu> [eV] &
+  CHARACTER(LEN=275), PARAMETER :: hdr = "#  T [K]   mu [eV]    <E-mu> [eV] &
     & S [muV/K]    s_all [S/m]  s_hole [S/m] s_elec [S/m] R [Ohm m]    PF [W/m/K^2] ke [W/m/K]  &
-    & MFP_hole [A] MFP_elec [A] Nc [cm^-3]   Nc_h [cm^-3] Nc_e [cm^-3] Mh[cm^2/V/s] Me[cm^2/V/s]&
-    & Meffh[kg/kg] Meffe[kg/kg] Cv [J/(mol K)]"
+    & MFP_hole [A] MFP_elec [A] Nc [cm^-3]   Nc_h [cm^-3] Nc_e [cm^-3] RH [m^3/C]  &
+    & Mh[cm^2/V/s] Me[cm^2/V/s] Meffh[kg/kg] Meffe[kg/kg] Cv [J/(mol K)]"
   
   ! ------------------------------------------------------------------
   ! Step 0: Load "DEF(Energy shift offset)" data from 'parameter.txt'
@@ -1651,6 +1659,10 @@ PROGRAM seebeck_analysis
   IF (use_phononDOS) WRITE(20, *) "! Matched Debye Temperature (Theta_D) [K]:", Theta_D
   IF (use_phononDOS .eqv. .FALSE.) WRITE(20, *) "! Specific heat at constant volume is not calculated. Cv = 0.0000E+00 [J/(mol K)]"
   WRITE(20,'(A)') hdr
+  !
+  OPEN(UNIT=21, FILE='ABGV2D.dat')
+  WRITE(21,*) "! A(E,T), B(E,T), GV^2*DOS: [(m/s)^2 * states/eV/unitcell]"
+  WRITE(21,*) "# T [K]    E [eV]       E-mu [eV]    A(E,T)       B(E,T)       GV^2*DOS"
 
   ! ------------------------------------------------------------------
   ! Step 6: Loop over temperatures to compute Seebeck coefficient
@@ -1673,8 +1685,12 @@ PROGRAM seebeck_analysis
      MFP_hole = 0.0D0                            ! meam free path [A]
      MFP_electron = 0.0D0                        ! meam free path [A]
      
-     m_eff_vg2_hole = 0.0D0
-     m_eff_vg2_electron = 0.0D0
+     m_eff_hole = 0.0D0
+     m_eff_electron = 0.0D0
+     
+     kappa_electron = 0.0D0
+     kappa_electron_term1 = 0.0D0
+     kappa_electron_term2 = 0.0D0
      
      DOS_hole = 0.0D0
      DOS_electron = 0.0D0
@@ -1704,9 +1720,17 @@ PROGRAM seebeck_analysis
      MFP_CURR  = 0.0D0
      MFP_NEXT  = 0.0D0
 
-     m_eff_vg2_PREV = 0.0D0
-     m_eff_vg2_CURR = 0.0D0
-     m_eff_vg2_NEXT = 0.0D0
+     m_eff_PREV = 0.0D0
+     m_eff_CURR = 0.0D0
+     m_eff_NEXT = 0.0D0
+     
+     kappa_electron_term1_PREV = 0.0D0
+     kappa_electron_term1_CURR = 0.0D0
+     kappa_electron_term1_NEXT = 0.0D0
+     
+     kappa_electron_term2_PREV = 0.0D0
+     kappa_electron_term2_CURR = 0.0D0
+     kappa_electron_term2_NEXT = 0.0D0
      
      FD_PREV = 0.0D0
      FD_CURR = 0.0D0
@@ -1715,6 +1739,9 @@ PROGRAM seebeck_analysis
      DOS_PREV = 0.0D0
      DOS_CURR = 0.0D0
      DOS_NEXT = 0.0D0
+     
+     WRITE(21,*) 
+     WRITE(21,*) "# Chemical potential [eV]:", CP
 
      IF (MOD(((MM - 2) - 1), 2) /= 0) LOOP_ODD = (MM - 2) - 1
      DO I = 2, MM - 2
@@ -1724,7 +1751,8 @@ PROGRAM seebeck_analysis
 
         ! --- Compute Fermi-Dirac distribution and its derivative ---
         FD = 1.0D0 / (1.0D0 + DEXP(E1 / TEM2))   ! f(E)
-        !FX = MERGE(1.0D0 - FD, FD, E1 < 0.0D0)   ! Adjusted occupancy
+        FX = 1.0D0 - FD
+        IF (E1 >= 0.0) FX = FD
 
         IF ((VEC0 - VEC) >= 0.0 .and. E1 <= 0.0) THEN
           Nd_hole = Nd_hole + DOS(I) * (1.0D0 - FD) * DE
@@ -1738,28 +1766,43 @@ PROGRAM seebeck_analysis
         ! simga(E) = D(E) * v(E)^2 * ta(E): if tau(E) = 1 -> simga(E) = D(E) * v(E)^2
         ! FDD = -df/dE, GV2D(E) = v(E)^2 * DOS(E) (Group velocity squared: [(m/s)^2]) (v(E) [m/s])
         ! Modified conductivity integrand using energy-dependent tau(E)
-        FFOS = FDD * GV2D(I) * get_tau(E1, TEM, I)   ! Denominator: sigma(E) * df/dE with phonon and impurity scattering
-        FDEE = FDE * GV2D(I) * get_tau(E1, TEM, I)   ! Numerator:  (E - mu) * simga(E) * df/dE
+        !
+        ! H. Sato et al., J. Phase Equilib. Diffus. 45, 397-415 (2024).: https://doi.org/10.1007/s11669-024-01086-y
+        ! Note: The appendices are free to read, and the basics are the same, so it's a good idea to use them as reference.
+        ! Theory: Seebeck coefficient, S(T) = -1/T * A(T)/(|e|*B(T)) [Equ. (2)]
+        ! (Theory) A [(m/2)^2*states/unitcell], B [(m/2)^2*states/eV/unitcell], E [eV], and T [K] case: S(T) = -1/(|e|*T) * A(T)/B(T) [V/K]
+        ! (On this code) A and B [(m/2)^2*states/eV/unitcell], E [eV], and T [K] case: S(T) = -1/T * A(T)/B(T)
+        ! (Theory) <|v|^2 * DOS> [Equ. (2)] = (On this code) GV2D [(m/2)^2*states/eV/unitcell]
+        ! In this code: S(T) = -1/TEM * T1/T
+        FFOS = FDD * GV2D(I) * get_tau(E1, TEM, I)   ! Denominator: sigma(E) * df/dE with phonon and impurity scattering: B(E,T)
+        FDEE = FDE * GV2D(I) * get_tau(E1, TEM, I)   ! Numerator:  (E - mu) * simga(E) * df/dE: A(E,T)
+
+        ! Output (ABGV2D.dat): T [K], E [eV], E1 [eV], A(E,T), B(E,T), GV2D including get_tau(E1, TEM, I)
+        IF (MOD(I,50) == 0) THEN
+          WRITE(21,'(F8.1,1X,5(1X,E12.4))') TEM, E, E1, FDEE, FFOS, (GV2D(I) * get_tau(E1, TEM, I))
+        END IF
 
         !---------------------------------------------
         ! Riemann Sum
-        !T  = T  + DE * FFOS  ! Accumulate denominator
-        !T1 = T1 + DE * FDEE  ! Accumulate numerator
-        !MFP = MFP + DE * GV2(I)**(0.5) * DOS(I) * get_tau(E1, TEM, I)  ! [m/s]*[s] = [m]
+        !T  = T  + DE * FFOS  ! Accumulate denominator, B(E1,TEM)
+        !T1 = T1 + DE * FDEE  ! Accumulate numerator, A(E1,TEM)
+        !MFP = MFP + DE * GV2(I)**(0.5) * DOS(I) * FX * get_tau(E1, TEM, I) * FX  ! [m/s]*[s] = [m]
+        !kappa_electron_term1 = kappa_electron_term1 + DE * FDEE * E1
+        !kappa_electron_term2 = kappa_electron_term2 + DE * FDEE**2.0D0
         !
         !IF (E1 <= 0.0) THEN
-        !  T_hole  = T_hole  + DE * FFOS  ! Accumulate denominator
-        !  MFP_hole = MFP_hole + DE * GV2(I)**(0.5) * DOS(I) * (1.0D0 - FD) * get_tau(E1, TEM, I)
-        !  DOS_hole = DOS_hole + DOS(I) * (1.0 - FD)
+        !  T_hole   = T_hole   + DE * FFOS  ! Accumulate denominator
+        !  MFP_hole = MFP_hole + DE * GV2(I)**(0.5) * DOS(I) * get_tau(E1, TEM, I)
+        !  DOS_hole = DOS_hole + DOS(I) * FX
         !  IF (GV2(I) > 1.0E-12) THEN
-        !    m_eff_vg2_hole = m_eff_vg2_hole + ABS(DE * 2.0D0 * E1 / GV2(I)) * DOS(I) * (1.0D0 - FD)
+        !    m_eff_hole = m_eff_hole + ABS(DE * 2.0D0 * E1 / GV2(I)) * DOS(I) * FX
         !  END IF
         !ELSE
-        !  T_electron  = T_electron + DE * FFOS  ! Accumulate denominator
-        !  MFP_electron = MFP_electron + DE * GV2(I)**(0.5) * DOS(I) * FD * get_tau(E1, TEM, I)
-        !  DOS_electron = DOS_electron + DOS(I) * (1.0 - FD)
+        !  T_electron   = T_electron   + DE * FFOS  ! Accumulate denominator
+        !  MFP_electron = MFP_electron + DE * GV2(I)**(0.5) * DOS(I) * FX * get_tau(E1, TEM, I)
+        !  DOS_electron = DOS_electron + DOS(I) * FX
         !  IF (GV2(I) > 1.0E-12) THEN
-        !    m_eff_vg2_electron = m_eff_vg2_electron + ABS(DE * 2.0D0 * E1 / GV2(I)) * DOS(I) * FD
+        !    m_eff_electron = m_eff_electron + ABS(DE * 2.0D0 * E1 / GV2(I)) * DOS(I) * FX
         !  END IF
         !END IF
         !---------------------------------------------
@@ -1768,13 +1811,16 @@ PROGRAM seebeck_analysis
         ! Trapezoidal rule
         !DE = EE(I) - EE(I-1)  ! dE for integration
         !
-        !MFP_CURR = GV2(I)**(0.5) * get_tau(E1, TEM, I) * DOS(I)
-        !DOS_CURR = DOS(I)
+        !MFP_CURR = GV2(I)**(0.5) * get_tau(E1, TEM, I) * DOS(I) * FX
+        !DOS_CURR = DOS(I) * FX
+        !
+        !kappa_electron_term1_CURR = FDEE * E1
+        !kappa_electron_term2_CURR = FDEE**2.0D0
         !
         !IF (GV2(I) > 1.0E-12 .and. DOS(I) /= 0.0) THEN
-        !  m_eff_vg2_CURR = ABS(FDD * 2.0D0 * E1 / GV2(I)) * DOS(I)
+        !  m_eff_CURR = ABS(FDD * 2.0D0 * E1 / GV2(I)) * DOS(I) * FX
         !ELSE
-        !  m_eff_vg2_CURR = 0.0
+        !  m_eff_CURR = 0.0
         !END IF
         !
         !IF (I >= 3) THEN
@@ -1783,25 +1829,27 @@ PROGRAM seebeck_analysis
         !  
         !  MFP  = MFP  + 0.5D0 * (MFP_PREV + MFP_CURR) * ABS(DE)
         !
+        !  kappa_electron_term1 = kappa_electron_term1 + 0.5D0 * (kappa_electron_term1_PREV + kappa_electron_term1_CURR) * ABS(DE)
+        !  kappa_electron_term2 = kappa_electron_term2 + 0.5D0 * (kappa_electron_term2_PREV + kappa_electron_term2_CURR) * ABS(DE)
+        !
         !  IF (E1 <= 0.0) THEN
-        !    T_hole  = T_hole  + 0.5D0 * (FFOS_PREV + FFOS) * DE
-        !    MFP_hole  = MFP_hole + 0.5D0 * (MFP_PREV*(1.0 - FD_PREV) + MFP_CURR*(1.0 - FD)) * ABS(DE)
-        !    DOS_hole = DOS_hole + 0.5D0 * (DOS_PREV*(1.0 - FD_PREV) + DOS_CURR*(1.0 - FD)) * ABS(DE)
-        !    m_eff_vg2_hole = m_eff_vg2_hole + 0.5D0 * (m_eff_vg2_PREV*(1.0 - FD_PREV) + m_eff_vg2_CURR*(1.0 - FD)) * ABS(DE)
+        !    T_hole     = T_hole     + 0.5D0 * (FFOS_PREV  + FFOS      ) * DE
+        !    MFP_hole   = MFP_hole   + 0.5D0 * (MFP_PREV   + MFP_CURR  ) * ABS(DE)
+        !    DOS_hole   = DOS_hole   + 0.5D0 * (DOS_PREV   + DOS_CURR  ) * ABS(DE)
+        !    m_eff_hole = m_eff_hole + 0.5D0 * (m_eff_PREV + m_eff_CURR) * ABS(DE)
         !  ELSE
-        !    T_electron  = T_electron  + 0.5D0 * (FFOS_PREV + FFOS) * DE
-        !    MFP_electron  = MFP_electron + 0.5D0 * (MFP_PREV*FD_PREV + MFP_CURR*FD) * ABS(DE)
-        !    DOS_electron = DOS_electron + 0.5D0 * (DOS_PREV*FD_PREV + DOS_CURR*FD) * ABS(DE)
-        !    m_eff_vg2_electron = m_eff_vg2_electron + 0.5D0 * (m_eff_vg2_PREV*FD_PREV + m_eff_vg2_CURR*FD) * ABS(DE)
+        !    T_electron     = T_electron     + 0.5D0 * (FFOS_PREV  + FFOS      ) * DE
+        !    MFP_electron   = MFP_electron   + 0.5D0 * (MFP_PREV   + MFP_CURR  ) * ABS(DE)
+        !    DOS_electron   = DOS_electron   + 0.5D0 * (DOS_PREV   + DOS_CURR  ) * ABS(DE)
+        !    m_eff_electron = m_eff_electron + 0.5D0 * (m_eff_PREV + m_eff_CURR) * ABS(DE)
         !  END IF
         !END IF
         !
-        !FDD_PREV = FDD
-        !FDE_PREV = FDE
-        !FD_PREV = FD
         !MFP_PREV = MFP_CURR
-        !m_eff_vg2_PREV = m_eff_vg2_CURR
+        !m_eff_PREV = m_eff_CURR
         !DOS_PREV = DOS_CURR
+        !kappa_electron_term1_PREV = kappa_electron_term1_CURR
+        !kappa_electron_term2_PREV = kappa_electron_term2_CURR
         !---------------------------------------------
         
         !---------------------------------------------
@@ -1810,14 +1858,16 @@ PROGRAM seebeck_analysis
         FFOS_NEXT = FDD * GV2D(I) * get_tau(E1, TEM, I)
         FDEE_NEXT = FDE * GV2D(I) * get_tau(E1, TEM, I)
         
-        MFP_NEXT = GV2(I)**(0.5) * get_tau(E1, TEM, I) * DOS(I)
-        FD_NEXT = FD
-        DOS_NEXT = DOS(I)
+        MFP_NEXT = GV2(I)**(0.5) * get_tau(E1, TEM, I) * DOS(I) * FX
+        DOS_NEXT = DOS(I) * FX
+        
+        kappa_electron_term1_NEXT = FDEE * E1
+        kappa_electron_term2_NEXT = FDEE**2.0D0
         
         IF (GV2(I) > 1.0E-12 .and. DOS(I) /= 0.0) THEN
-          m_eff_vg2_NEXT = ABS(FDD * 2.0D0 * E1 / GV2(I)) * DOS(I)
+          m_eff_NEXT = ABS(FDD * 2.0D0 * E1 / GV2(I)) * DOS(I) * FX
         ELSE
-          m_eff_vg2_NEXT = 0.0
+          m_eff_NEXT = 0.0
         END IF
         
         IF (I >= 4 .and. I <= LOOP_ODD) THEN
@@ -1829,22 +1879,22 @@ PROGRAM seebeck_analysis
           
           MFP  = MFP  + ABS(DE) / 3.0D0 * (MFP_PREV + 4.0D0 * MFP_CURR + MFP_NEXT)
           
+          kappa_electron_term1  = kappa_electron_term1 + ABS(DE) / 3.0D0 * &
+            & (kappa_electron_term1_PREV + 4.0D0 * kappa_electron_term1_CURR + kappa_electron_term1_NEXT)
+            
+          kappa_electron_term2  = kappa_electron_term2 + ABS(DE) / 3.0D0 * &
+            & (kappa_electron_term2_PREV + 4.0D0 * kappa_electron_term2_CURR + kappa_electron_term2_NEXT)
+          
           IF (E1 <= 0.0) THEN
-            T_hole  = T_hole  + DE / 3.0D0 * (FFOS_PREV + 4.0D0 * FFOS_CURR + FFOS_NEXT)
-            MFP_hole  = MFP_hole  + ABS(DE) / 3.0D0 * &
-              & (MFP_PREV*(1.0 - FD_PREV) + 4.0D0 * MFP_CURR*(1.0 - FD_CURR) + MFP_NEXT*(1.0 - FD_NEXT))
-            DOS_hole  = DOS_hole  + ABS(DE) / 3.0D0 * &
-              & (DOS_PREV*(1.0 - FD_PREV) + 4.0D0 * DOS_CURR*(1.0 - FD_CURR) + DOS_NEXT*(1.0 - FD_NEXT))
-            m_eff_vg2_hole = m_eff_vg2_hole +  ABS(DE) / 3.0D0 * &
-              & (m_eff_vg2_PREV*(1.0 - FD_PREV) + 4.0D0* m_eff_vg2_CURR*(1.0 - FD_CURR) + m_eff_vg2_NEXT*(1.0 - FD_NEXT))
+            T_hole     = T_hole     +      DE / 3.0D0 * (FFOS_PREV  + 4.0D0 * FFOS_CURR  + FFOS_NEXT)
+            MFP_hole   = MFP_hole   + ABS(DE) / 3.0D0 * (MFP_PREV   + 4.0D0 * MFP_CURR   + MFP_NEXT)
+            DOS_hole   = DOS_hole   + ABS(DE) / 3.0D0 * (DOS_PREV   + 4.0D0 * DOS_CURR   + DOS_NEXT)
+            m_eff_hole = m_eff_hole + ABS(DE) / 3.0D0 * (m_eff_PREV + 4.0D0 * m_eff_CURR + m_eff_NEXT)
           ELSE
-            T_electron  = T_electron  + DE / 3.0D0 * (FFOS_PREV + 4.0D0 * FFOS_CURR + FFOS_NEXT)
-            MFP_electron  = MFP_electron  + ABS(DE) / 3.0D0 * &
-              & (MFP_PREV*FD_PREV + 4.0D0 * MFP_CURR*FD_CURR + MFP_NEXT*FD_NEXT)
-            DOS_electron  = DOS_electron  + ABS(DE) / 3.0D0 * &
-              & (DOS_PREV*FD_PREV + 4.0D0 * DOS_CURR*FD_CURR + DOS_NEXT*FD_NEXT)
-            m_eff_vg2_electron = m_eff_vg2_electron +  ABS(DE) / 3.0D0 * &
-              & (m_eff_vg2_PREV*FD_PREV + 4.0D0* m_eff_vg2_CURR*FD_CURR + m_eff_vg2_NEXT*FD_NEXT)
+            T_electron     = T_electron     +      DE / 3.0D0 * (FFOS_PREV  + 4.0D0 * FFOS_CURR  + FFOS_NEXT)
+            MFP_electron   = MFP_electron   + ABS(DE) / 3.0D0 * (MFP_PREV   + 4.0D0 * MFP_CURR   + MFP_NEXT)
+            DOS_electron   = DOS_electron   + ABS(DE) / 3.0D0 * (DOS_PREV   + 4.0D0 * DOS_CURR   + DOS_NEXT)
+            m_eff_electron = m_eff_electron + ABS(DE) / 3.0D0 * (m_eff_PREV + 4.0D0 * m_eff_CURR + m_eff_NEXT)
           END IF
         ELSE IF (I > LOOP_ODD) THEN
           ! Riemann Sum
@@ -1856,31 +1906,33 @@ PROGRAM seebeck_analysis
           MFP  = MFP  + 0.5D0 * (MFP_CURR + MFP_NEXT) * ABS(DE)
           
           IF (E1 <= 0.0) THEN
-            T_hole  = T_hole + 0.5D0 * (FFOS_CURR + FFOS_NEXT) * DE
-            MFP_hole  = MFP_hole + 0.5D0 * (MFP_CURR*(1.0 - FD_CURR) + MFP_NEXT*(1.0 - FD_NEXT)) * ABS(DE)
-            DOS_hole = DOS_hole + DOS(I) * (1.0 - FD)
-            m_eff_vg2_hole = m_eff_vg2_hole + 0.5D0 * (m_eff_vg2_CURR*(1.0 - FD_CURR) + m_eff_vg2_NEXT*(1.0 - FD_NEXT)) * ABS(DE)
+            T_hole     = T_hole     + 0.5D0 * (FFOS_CURR  + FFOS_NEXT ) * DE
+            MFP_hole   = MFP_hole   + 0.5D0 * (MFP_CURR   + MFP_NEXT  ) * ABS(DE)
+            DOS_hole   = DOS_hole   + 0.5D0 * (DOS_CURR   + DOS_NEXT  ) * ABS(DE)
+            m_eff_hole = m_eff_hole + 0.5D0 * (m_eff_CURR + m_eff_NEXT) * ABS(DE)
           ELSE
-            T_electron  = T_electron + 0.5D0 * (FFOS_CURR + FFOS_NEXT) * DE
-            MFP_electron = MFP_electron + 0.5D0 * (MFP_CURR*FD_CURR + MFP_NEXT*FD_NEXT) * ABS(DE)
-            DOS_electron = DOS_electron + DOS(I) * (1.0 - FD)
-            m_eff_vg2_electron = m_eff_vg2_electron + 0.5D0 * (m_eff_vg2_CURR*FD_CURR + m_eff_vg2_NEXT*FD_NEXT) * ABS(DE)
+            T_electron     = T_electron     + 0.5D0 * (FFOS_CURR  + FFOS_NEXT ) * DE
+            MFP_electron   = MFP_electron   + 0.5D0 * (MFP_CURR   + MFP_NEXT  ) * ABS(DE)
+            DOS_electron   = DOS_electron   + 0.5D0 * (DOS_CURR   + DOS_NEXT  ) * ABS(DE)
+            m_eff_electron = m_eff_electron + 0.5D0 * (m_eff_CURR + m_eff_NEXT) * ABS(DE)
           END IF
         END IF
         
         FFOS_PREV = FFOS_CURR
         FDEE_PREV = FDEE_CURR
         MFP_PREV  = MFP_CURR
-        m_eff_vg2_PREV = m_eff_vg2_CURR
-        FD_PREV = FD_CURR
+        m_eff_PREV = m_eff_CURR
         DOS_PREV = DOS_CURR
+        kappa_electron_term1_PREV = kappa_electron_term1_CURR
+        kappa_electron_term2_PREV = kappa_electron_term2_CURR
         
         FFOS_CURR = FFOS_NEXT
         FDEE_CURR = FDEE_NEXT
         MFP_CURR  = MFP_NEXT
-        m_eff_vg2_CURR = m_eff_vg2_NEXT
-        FD_CURR = FD_NEXT
+        m_eff_CURR = m_eff_NEXT
         DOS_CURR = DOS_NEXT
+        kappa_electron_term1_CURR = kappa_electron_term1_NEXT
+        kappa_electron_term2_CURR = kappa_electron_term2_NEXT
         !---------------------------------------------
      END DO
      
@@ -1888,26 +1940,26 @@ PROGRAM seebeck_analysis
      MFP = MFP / (EE(MM - 2) - EE(2)) ! [m/s]*[s] = [m]
      IF (DOS_hole /= 0.0) THEN
        MFP_hole = MFP_hole / (EE(MM - 2) - EE(2)) / DOS_hole ! [m/s]*[s] = [m]
-       m_eff_vg2_hole = m_eff_vg2_hole / ABS(EE(MM - 2) - EE(2)) / DOS_hole
+       m_eff_hole = m_eff_hole / ABS(EE(MM - 2) - EE(2)) / DOS_hole
      ELSE
        MFP_hole = 0.0D0
-       m_eff_vg2_hole = HUGE(0.0D0)
+       m_eff_hole = HUGE(0.0D0)
      END IF
      IF (DOS_electron /= 0.0) THEN
        MFP_electron = MFP_electron / (EE(MM - 2) - EE(2)) / DOS_electron ! [m/s]*[s] = [m]
      ELSE
        MFP_electron = 0.0D0
-       m_eff_vg2_electron = HUGE(0.0D0)
+       m_eff_electron = HUGE(0.0D0)
      END IF
      
      IF ((VEC0 - VEC) >= 0.0 .and. Nd_hole /= 0.0) THEN
        Nd_hole = Nd_hole / volume * 1.0e24
        Nd_electron = -Nd_hole
-       Nd_hole = Nd_hole + (VEC0 - VEC) / volume * 1.0e24
+       Nd_hole     =  Nd_hole + (VEC0 - VEC) / volume * 1.0e24
      ELSE IF ((VEC0 - VEC) <= 0.0 .and. Nd_electron /= 0.0) THEN
        Nd_electron = Nd_electron / volume * 1.0e24
-       Nd_hole = -Nd_electron
-       Nd_electron = Nd_electron + (VEC0 - VEC) / volume * 1.0e24
+       Nd_hole     = -Nd_electron
+       Nd_electron =  Nd_electron + (VEC0 - VEC) / volume * 1.0e24
      END IF
      
      Nd = Nd_hole + ABS(Nd_electron)
@@ -1928,18 +1980,22 @@ PROGRAM seebeck_analysis
      conductivity_electron = T_electron
      resistance = (1.0D0 / conductivity)
      power_factor = seebeck_coefficent**2 * conductivity
-     kappa_electron = (Ln * T * TEM)
-     mean_free_path = MFP*1.0e10                   ! [m] -> [Angstrom]
-     mean_free_path_hole = MFP_hole*1.0e10         ! [m] -> [Angstrom]
-     mean_free_path_electron = MFP_electron*1.0e10 ! [m] -> [Angstrom]
+     ! kappa_electron = (Ln * T * TEM)
+     kappa_electron = kappa_electron_term1 / TEM - kappa_electron_term2 / conductivity / TEM
+     mean_free_path          = MFP         *1.0e10  ! [m] -> [Angstrom]
+     mean_free_path_hole     = MFP_hole    *1.0e10  ! [m] -> [Angstrom]
+     mean_free_path_electron = MFP_electron*1.0e10  ! [m] -> [Angstrom]
      carrier_concentration = Nc
      carrier_concentration_hole     = Nd_hole
      carrier_concentration_electron = Nd_electron
-     hall_coefficient = (1.0D0 / (ech * (Nd_hole - ABS(Nd_electron)) * 1.0e6))
-     mobility_hole     = (conductivity_hole * (1.0D0 / (ech * Nd_hole * 1.0e6)))
+     mobility_hole     = (conductivity_hole     * (1.0D0 / (ech * Nd_hole          * 1.0e6)))
      mobility_electron = (conductivity_electron * (1.0D0 / (ech * ABS(Nd_electron) * 1.0e6)))
-     effective_mass_hole     = ABS(m_eff_vg2_hole     * ech/ems)
-     effective_mass_electron = ABS(m_eff_vg2_electron * ech/ems)
+     ! hall_coefficient = (1.0D0 / (ech * (Nd_hole - ABS(Nd_electron)) * 1.0e6))
+     hall_coefficient = (1.0D0 / ech) * &
+       & (mobility_hole**2.0D0 * Nd_hole * 1.0e6 - mobility_electron**2.0D0 * ABS(Nd_electron) * 1.0e6 ) / &
+       & (mobility_hole * Nd_hole*1.0e6 + mobility_electron * ABS(Nd_electron) * 1.0e6)**2.0D0
+     effective_mass_hole     = ABS(m_eff_hole     * ech/ems)
+     effective_mass_electron = ABS(m_eff_electron * ech/ems)
      specific_heat = Cv_DOS                        ! Specific heat at constant volume
      
      ! --- Output results (skip if denominator too small) ---
@@ -1947,7 +2003,7 @@ PROGRAM seebeck_analysis
      ! Note: Precision considerations for REAL(8) (double precision)
      !-----------------------------------------------------------------------
      ! REAL(8) corresponds to IEEE 754 double precision, which provides
-     ! approximately 15–17 significant decimal digits (typically 16 digits).
+     ! approximately 15 - 17 significant decimal digits (typically 16 digits).
      !
      ! The machine epsilon (smallest distinguishable difference from 1.0D0)
      ! is approximately 2.220D-16. This means that differences smaller than
@@ -1967,7 +2023,7 @@ PROGRAM seebeck_analysis
         ! Calculate and output average energy offset <E - mu> and Seebeck coefficient
         ! T1/T is the averaged energy deviation <E - mu>
         ! -T1/T/TEM * CO gives Seebeck coefficient in muV/K
-        WRITE(6,'(F8.1,1X,F10.6, 18(1X,E12.4))') &
+        WRITE(6,'(F8.1,1X,F10.6, 19(1X,E12.4))') &
           &   temperature &
           & , chemical_potential &
           & , mean_energy &
@@ -1985,10 +2041,11 @@ PROGRAM seebeck_analysis
           & , carrier_concentration_electron &
           & , mobility_hole &
           & , mobility_electron &
+          & , hall_coefficient &
           & , effective_mass_hole &
           & , effective_mass_electron &
           & , specific_heat
-        WRITE(20,'(F8.1,1X,F10.6, 18(1X,E12.4))') &
+        WRITE(20,'(F8.1,1X,F10.6, 19(1X,E12.4))') &
           &   temperature &
           & , chemical_potential &
           & , mean_energy &
@@ -2006,6 +2063,7 @@ PROGRAM seebeck_analysis
           & , carrier_concentration_electron &
           & , mobility_hole &
           & , mobility_electron &
+          & , hall_coefficient &
           & , effective_mass_hole &
           & , effective_mass_electron &
           & , specific_heat

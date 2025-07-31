@@ -1,0 +1,44 @@
+#!/usr/bin/gnuplot
+
+# === Display on screen ===
+set terminal win font "Arial,12"
+#set xlabel "Energy, {/Italic E} - {/Symbol m} / eV"
+set xlabel "Energy, {/Italic E} / eV"
+set ylabel  "Spectrum, I / m^2 s^{-2} states eV^{-1} unitcell^{-1}"
+set y2label "Electronic structure parameter, <|v|^2 x DOS> / m^2 s^{-2} states eV^{-1} unitcell^{-1}"
+
+#set xrange [-1.5:1.5]
+
+set xzeroaxis
+set yzeroaxis
+
+set grid
+
+# Add minor ticks
+set xtics 0.2
+set y2tics
+set ytics nomirror
+set y2tics nomirror
+
+set mxtics 5
+set mytics 5
+set my2tics 5
+
+# Line style: Blue line with points
+set style line 1 lt 1 lw 2 lc rgb "#0072BD" pt 7 ps 1.2
+
+# Plot to screen
+TEMP = 300
+mu = 0.588953
+set arrow 1 from mu, -1.0e-12 to mu, 1.0e-12 nohead dashtype 2 lw 2 lc "green"
+set title sprintf("The green wavy line represents the chemical potential, {/Symbol m} [eV], at %d [K]", TEMP)
+plot "ABGV2D.dat" using ($1==TEMP?$2:1/0):($1==TEMP?$4:1/0) axis x1y1 with lines linestyle 1 lc "blue"  title sprintf("Spectrum, A(E,T) at T = %dK", TEMP), \
+     "ABGV2D.dat" using ($1==TEMP?$2:1/0):($1==TEMP?$5:1/0) axis x1y1 with lines linestyle 1 lc "red"   title sprintf("Spectrum, B(E,T) at T = %dK", TEMP), \
+     "ABGV2D.dat" using ($1==TEMP?$2:1/0):($1==TEMP?$6:1/0) axis x1y2 with lines linestyle 1 lc "black" title sprintf("Electronic structure parameter, <|v|^2 x DOS> at T = %dK", TEMP)
+#splot 'ABGV2D.dat' using 1:2:3 with lines
+
+# === Save as PNG (publication ready) ===
+set terminal pngcairo size 800,600 font "Times New Roman,12"
+set output "ABGV2D.png"
+replot
+unset output
