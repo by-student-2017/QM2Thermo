@@ -357,6 +357,8 @@ $$
 - $$\( g(\varepsilon) \)$$: Electronic density of states  
 - $$\( \tau(\varepsilon) \)$$: Energy-dependent relaxation time  
 - $$\( v(\varepsilon) \)$$: Electron group velocity
+- $$\( v(\varepsilon) \)$$: Group velocity  
+  (defined by $$\( v(\varepsilon) = \frac{1}{\hbar} \cdot \frac{d\varepsilon}{dk} \)$$)
 
 ---
 
@@ -391,6 +393,34 @@ Where:
 - $$\( \omega \)$$: Phonon frequency
 
 The file `a2F.dos` typically contains discretized $$\( \omega \) vs. \( \alpha^2F(\omega) \)$$ data, used in numerical evaluation of this integral.
+
+---
+
+## Matthiessen’s Rule
+
+If multiple scattering mechanisms contribute to relaxation, the total scattering rate is approximated via Matthiessen’s rule:
+
+$$
+\frac{1}{\tau_{\text{total}}(\varepsilon)} = 
+\frac{1}{\tau_{\text{phonon}}(\varepsilon)} +
+\frac{1}{\tau_{\text{impurity}}(\varepsilon)} +
+\frac{1}{\tau_{\text{boundary}}(\varepsilon)} + \cdots
+$$
+
+This additive inverse relation allows individual mechanisms (phonon, impurity, grain boundaries, etc.) to be independently modeled and summed.
+
+---
+
+## Common Relaxation Time Approximations
+
+| Scattering Type        | Approximation                          | Energy Dependence              |
+|------------------------|----------------------------------------|--------------------------------|
+| Acoustic phonon        | $$\( \tau(\varepsilon) \propto \varepsilon^{-1/2} \)$$ | Typical at high $$\( T \)$$        |
+| Ionized impurity       | $$\( \tau(\varepsilon) \propto \varepsilon^{3/2} \)$$  | Relevant in doped semiconductors |
+| Optical phonon         | Step-like or constant above threshold  | Depends on phonon energy       |
+| Constant Approximation | $$\( \tau(\varepsilon) = \tau_0 \)$$       | Simplified CRTA (common fallback) |
+
+> Note: Accurate modeling requires evaluating $$\( \tau(\varepsilon) \)$$ either from first-principles $$\( \alpha^2F(\omega) \)$$, or using fitted functional forms consistent with experimental data.
 
 ---
 
