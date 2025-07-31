@@ -33,20 +33,20 @@
 !-----------------------------------------------------------------------
 !   src/
 !   +----+ modules/
-!   | ꀀ   +----- constants              ! Physical constants and size definitions
-!   | ꀀ   +----- band_data              ! AMA1 arrays and shared variable definitions (formerly COMMON)
-!   | ꀀ   +----- tetra_data             ! E(), FK(), CNT() etc. for DOS density
-!   | ꀀ   +----- index_data             ! For group velocity difference such as IP(), IM()
+!   |    +----- constants              ! Physical constants and size definitions
+!   |    +----- band_data              ! AMA1 arrays and shared variable definitions (formerly COMMON)
+!   |    +----- tetra_data             ! E(), FK(), CNT() etc. for DOS density
+!   |    +----- index_data             ! For group velocity difference such as IP(), IM()
 !   |
 !   +----- subroutines/
-!   | ꀀ   +----- read_constants         ! 
-!   | ꀀ   +----- TGEN                   ! Define the tetrahedrons associated with each K point
-!   | ꀀ   +----- VDATA                  ! Load differential points (cf*.dat)
-!   | ꀀ   +----- AEIGEN                 ! Load AMA1 from wien.energy (WIEN2k)
-!   | ꀀ   +----- DENS                   ! PDNS applied to all tetras
-!   | ꀀ   +----- PDNS                   ! Calculate density of states for a single tetra
-!   | ꀀ   +----- SORT                   ! 4-point sort subroutine (S, F, G, O, P)
-!   | ꀀ   +----- GV                     ! Calculate group velocities VX, VY, and VZ using the central difference method  
+!   |    +----- read_constants         ! 
+!   |    +----- TGEN                   ! Define the tetrahedrons associated with each K point
+!   |    +----- VDATA                  ! Load differential points (cf*.dat)
+!   |    +----- AEIGEN                 ! Load AMA1 from wien.energy (WIEN2k)
+!   |    +----- DENS                   ! PDNS applied to all tetras
+!   |    +----- PDNS                   ! Calculate density of states for a single tetra
+!   |    +----- SORT                   ! 4-point sort subroutine (S, F, G, O, P)
+!   |    +----- GV                     ! Calculate group velocities VX, VY, and VZ using the central difference method  
 !   +----- main                        ! Main Program
 !-----------------------------------------------------------------------
 
