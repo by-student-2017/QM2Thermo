@@ -476,7 +476,8 @@ Where:
 - $$\( f(\varepsilon \pm \omega) \)$$: Fermi-Dirac distribution  
 - $$\( \omega \)$$: Phonon frequency
 
-The file `a2F.dos` typically contains discretized $$\( \omega \) vs. \( \alpha^2F(\omega) \)$$ data, used in numerical evaluation of this integral.
+The file `a2F.dos` typically contains discretized $$\( \omega \) vs. \( \alpha^2F(\omega) \)$$ data, used in numerical evaluation of this integral.  
+**Note:** This formulation is consistent with the implementation in [EPW](https://epw.gitlab.io/epw/), and the current code adopts the same theoretical approach to compute \( \tau(\varepsilon) \) based on electron–phonon interactions. The methodology allows direct compatibility with EPW output and facilitates integration with transport models such as the Allen-type Seebeck coefficient.
 
 ---
 
