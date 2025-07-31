@@ -357,8 +357,6 @@ $$
 - $$\( g(\varepsilon) \)$$: Electronic density of states  
 - $$\( \tau(\varepsilon) \)$$: Energy-dependent relaxation time  
 - $$\( v(\varepsilon) \)$$: Electron group velocity
-- $$\( v(\varepsilon) \)$$: Group velocity  
-  (defined by $$\( v(\varepsilon) = \frac{1}{\hbar} \cdot \frac{d\varepsilon}{dk} \)$$)
 
 ---
 
