@@ -1262,9 +1262,9 @@ CONTAINS
        omega = WPH(j)
 
        ! --- Basic filtering logic for phonon frequencies ---
-       IF (omega < 0.01D0) THEN
+       IF (omega < 0.01D0*EV) THEN
           w_mode(j) = 1.0D0          ! Strong weight for acoustic modes
-       ELSE IF (omega < 0.03D0) THEN
+       ELSE IF (omega < 0.03D0*EV) THEN
           w_mode(j) = 0.5D0          ! Moderate weight for intermediate modes
        ELSE
           w_mode(j) = 0.1D0          ! Suppressed weight for optical modes
@@ -1272,13 +1272,13 @@ CONTAINS
        
        ! --- Refined filtering logic for precise control ---
        ! Uncomment the block below for more granular filtering:
-       !IF (omega < 0.005D0) THEN
+       !IF (omega < 0.005D0*EV) THEN
        !  w_mode(j) = 1.0D0             ! Strong weight (low-frequency acoustic modes)
-       !ELSE IF (omega < 0.01D0) THEN
+       !ELSE IF (omega < 0.01D0*EV) THEN
        !  w_mode(j) = 0.8D0             ! Slightly reduced weight
-       !ELSE IF (omega < 0.02D0) THEN
+       !ELSE IF (omega < 0.02D0*EV) THEN
        !  w_mode(j) = 0.5D0             ! Moderate weight for mid-frequency modes
-       !ELSE IF (omega < 0.04D0) THEN
+       !ELSE IF (omega < 0.04D0*EV) THEN
        !  w_mode(j) = 0.3D0             ! Suppressed weight for higher frequencies
        !ELSE
        !  w_mode(j) = 0.1D0             ! Minimal contribution for optical modes
