@@ -562,6 +562,83 @@ $$
 
 ---
 
+# Mode-Resolved Electron-Phonon Scattering with Kernel Filtering
+
+## Overview
+
+This module implements a refined phonon-mode filtering and scattering kernel designed to improve the accuracy of relaxation time calculations in electron-phonon coupling analysis. It includes:
+
+- **Mode-resolved phonon weighting filter** $$\( w_{\text{mode}}(\omega) \)$$
+- **Kernel-based energy-frequency matching logic** $$\( K(\varepsilon, \omega) \)$$
+- Support for Eliashberg function construction and selection rules
+
+---
+
+## ⚙Components
+
+### 1. Phonon Mode Filter: `w_mode`
+
+Each phonon mode is assigned a weight $$\( w_{\text{mode}}(\omega_i) \)$$ based on its frequency category:
+
+| Frequency Region (ω in Rydberg)     | Mode Type      | Weight $$\( w_{\text{mode}} \)$$ |
+|-------------------------------------|----------------|-------------------------------|
+| $$\( \omega < 0.01 \)$$             | Acoustic       | 1.0                           |
+| $$\( 0.01 \leq \omega < 0.03 \)$$   | Intermediate   | 0.5                           |
+| $$\( \omega \geq 0.03 \)$$          | Optical        | 0.1                           |
+
+These weights are initialized in the `read_phonon_dos` routine and refined in `generate_w_mode()`.
+
+> **Note**: Additional logic for more granular filtering is available and can be toggled for precise control over modal contributions.
+
+---
+
+### 2. Kernel Function: `kernel_selection(E, ω)`
+
+This logical kernel enforces an energy–frequency matching rule in scattering calculations:
+
+$$
+K(\varepsilon, \omega) = 
+\begin{cases}
+1.0 & \text{if } \omega < |\varepsilon| \\
+0.0 & \text{otherwise}
+\end{cases}
+$$
+
+**Purpose**: Ensures that only phonon modes with energy below the electronic excitation $$\( \varepsilon \)$$ participate in scattering.
+
+---
+
+## Relaxation Time Evaluation
+
+The relaxation time $$\( \tau(\varepsilon) \)$$ is computed as:
+
+$$
+\frac{1}{\tau(\varepsilon)} = \sum_{i = 1}^{N_{\text{ph}}} g_{\text{eff}}(\omega_i) \cdot w_{\text{mode}}(\omega_i) \cdot K(\varepsilon, \omega_i) \cdot F(\omega_i)
+$$
+
+Where:
+
+- $$\( g_{\text{eff}}(\omega_i) \)$$: Mode-resolved coupling strength (default: 1.0)
+- $$\( F(\omega_i) \)$$: Spectral term from phonon DOS or Eliashberg function
+- $$\( K(\varepsilon, \omega_i) \)$$: Kernel selection result (1.0 or 0.0)
+
+---
+
+## Initialization Logic (Code Reference)
+
+```fortran
+DO i = 1, NPH
+   g_eff_omega(i) = 1.0D0      ! Mode coupling strength (for a2F)
+   w_mode(i)      = 1.0D0      ! Default uniform weight
+END DO
+
+IF (use_selection_filter) THEN
+   CALL generate_w_mode()     ! Applies acoustic/intermediate/optical weighting
+END IF
+```
+
+---
+
 ## Reference
 - B. Xu, M. Di Gennaro, M. J. Verstraete, *Phys. Rev. B* **102**, 155128 (2020).: [https://doi.org/10.1103/PhysRevB.102.155128](https://doi.org/10.1103/PhysRevB.102.155128)
 
