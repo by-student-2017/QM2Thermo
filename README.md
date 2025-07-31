@@ -358,6 +358,25 @@ $$
 - $$\( \tau(\varepsilon) \)$$: Energy-dependent relaxation time  
 - $$\( v(\varepsilon) \)$$: Electron group velocity
 
+## Relaxation Time from EPW
+
+To evaluate $$\( \tau(\varepsilon) \)$$ from first-principles, the EPW (Electron-Phonon Wannier) code is used to calculate the Eliashberg spectral function $$\( \alpha^2F(\omega) \)$$. The relaxation time is computed using the following expression:
+
+$$
+\frac{1}{\tau(\varepsilon)} = 2\pi \int_0^\infty \alpha^2F(\omega) \left[ 1 + 2n(\omega) + f(\varepsilon - \omega) - f(\varepsilon + \omega) \right] d\omega
+$$
+
+Where:
+- $$\( \alpha^2F(\omega) \)$$: Electron-phonon spectral function  
+- $$\( n(\omega) \)$$: Bose–Einstein distribution  
+- $$\( f(\varepsilon \pm \omega) \)$$: Fermi–Dirac distribution  
+
+To activate this calculation within `epw.in`, include the directive:
+
+```fortran
+tau_vs_e = .true.
+```
+
 ---
 
 # Seebeck Coefficient Calculation with Kernel Filtering
