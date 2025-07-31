@@ -105,7 +105,7 @@ Graphs are also output in *.png format. If it doesn't work properly on Linux, yo
 | `plot_Seebeck.gpl`  | `Seebeck_analysis.dat`      | Seebeck Coefficient           | Visualizes the temperature dependence of the Seebeck coefficient related to thermoelectric effects. |
 | `plot_cp.gpl`       | `apot.dat`                  | Chemical Potential            | Plots the variation of chemical potential in the material.                 |
 | `plot_dos.gpl`      | `wien.dos1`                 | Density of States (DOS)       | Displays the electronic density of states for band structure analysis.     |
-| `plot_ABGV2D.gpl`   | `ABGV2D.dat`                | A(E,T), B(E,T), <|v|^2 * DOS> | Visualize the energy dependence of spectra A(E,T) and B(E,T) and the electronic structure parameter <abs(v)^2 * DOS> at the temperature specified by TEMP in plot_ABGV2D.gpl. (Corresponds to Figures 13-15 in the paper. However, the components of each band are not separated.)|
+| `plot_ABGV2D.gpl`   | `ABGV2D.dat`                | A(E,T), B(E,T), and <\|v\|^2 * DOS> | Visualize the energy dependence of spectra A(E,T) and B(E,T) and the electronic structure parameter <\|v\|^2 * DOS> at the temperature specified by TEMP in plot_ABGV2D.gpl. (Corresponds to Figures 13-15 in the paper. However, the components of each band are not separated.)|
 
 For DOS, you need to write the EF described in wien.dos1 into the script gnuplot plot_dos.gpl. The EF part is on line 22 of plot_dos.pgl shown below (written in [Ry] units). 
 ```
