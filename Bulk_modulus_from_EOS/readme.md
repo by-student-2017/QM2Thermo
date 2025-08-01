@@ -9,8 +9,28 @@
    - Tip: 1 [eV/Å³] = 160.2 [GPa]
    - The bulk modulus B is useful for calculating sound velocity using the following formula:
 
+
+## Sound Velocity Approximation
+
+The sound velocity $$\( v \)$$ can be approximated using:
+
 $$
 v = \sqrt{ \frac{B}{\rho} }
 $$
 
 where $$\( \rho \)$$ is the density of the crystal. Understanding the bulk modulus helps in analyzing mechanical properties of materials.
+
+$$
+v_l = \sqrt{ \frac{B + \frac{4}{3}G}{\rho} }, \quad
+v_t = \sqrt{ \frac{G}{\rho} }
+$$
+
+$$
+v_a = \left[ \frac{1}{3} \left( \frac{1}{v_l^3} + \frac{2}{v_t^3} \right) \right]^{-1/3}
+$$
+
+$$
+\gamma = \frac{9 - 12 \left( \frac{v_t}{v_l} \right)^2}{2 + 4 \left( \frac{v_t}{v_l} \right)^2}
+$$
+
+
