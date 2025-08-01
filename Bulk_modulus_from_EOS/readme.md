@@ -54,6 +54,8 @@ $$
 E = 2G(1 + \nu)
 $$
 
+Alternatively, you can express $$\( E \)$$ directly from $$\( B \)$$ and $$\( nu \)$$:
+
 $$
 E = \frac{9B(1 - \nu)}{(1 + \nu)(1 - 2\nu)}
 $$
