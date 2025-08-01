@@ -1312,7 +1312,8 @@ CONTAINS
     do i = 1, NPH
        ! x = hbar * WPH(i) / (kb * T)
        x = WPH(i) / (kb * T)
-       integrand = x**2 * exp(x) / (exp(x) - 1.0d0 + 1.0e-12)**2 * DOSPH(i)
+       ! Immediately after reading with read_phonon_dos(), the sum of DOSPH(i) is 3N = 3*N_atom [dimensionless].
+       integrand = x**2 * exp(x) / ((exp(x) - 1.0d0)**2  + 1.0e-12) * DOSPH(i)
        IF (i > 1) THEN
          d_omega = MAX(WPH(i) - WPH(i-1), 1.0D-12)
        ELSE
@@ -1321,7 +1322,8 @@ CONTAINS
        Cv = Cv + integrand * d_omega
     end do
 
-    Cv = Cv * kb
+    ! 1 [eV/K] = 1.60218e-19 * 6.02214e23 = 9.6485e4 [J/(mol K)]
+    Cv = Cv * kb * 9.6485e4
   end function compute_Cv_DOS
 
   !---------------------------------------------------------------
@@ -1334,17 +1336,18 @@ CONTAINS
     real(8) :: Cv, x, integrand, dx
     integer :: i, n_int
 
-    n_int = 1000
+    n_int = 2500
     dx = Theta_D / T / n_int
     Cv = 0.0d0
 
     do i = 1, n_int
        x = i * dx
-       integrand = x**4 * exp(x) / (exp(x) - 1.0d0)**2
+       integrand = x**4 * exp(x) / ((exp(x) - 1.0d0)**2 + 1.0e-12)
        Cv = Cv + integrand * dx
     end do
-
-    Cv = 9.0d0 * kb * (T / Theta_D)**3 * Cv
+    
+    ! 1 [eV/K] = 1.60218e-19 * 6.02214e23 = 9.6485e4 [J/(mol K)]
+    Cv = 9.0D0 * kb * (T / Theta_D)**3.0D0 * Cv * 9.6485e4
   end function compute_Cv_Debye
 
   !---------------------------------------------------------------
@@ -1381,6 +1384,45 @@ CONTAINS
     Cv_DOS_out = Cv_DOS
     Cv_Debye_out = compute_Cv_Debye(T, Theta_D_match)
   end subroutine find_matching_Theta_D
+  
+  !---------------------------------------------------------------
+  ! Function: compute_kappa_Debye
+  ! Purpose: Compute kappa(phonon)_min at temperature T and Debye temp Theta_D
+  !---------------------------------------------------------------
+  function compute_kappa_Debye(T, Theta_D) result(kappa)
+    implicit none
+    real(8), intent(in) :: T, Theta_D
+    real(8) :: Theta_D_t, Theta_D_l
+    real(8) :: kappa, kappa_t, kappa_l 
+    real(8) :: x_t, x_l, integrand_t, integrand_l, dx_t, dx_l
+    real(8) :: new_t, new_l
+    integer :: i, n_int
+
+    n_int = 2500
+    kappa = 0.0d0
+    kappa_t = 0.0d0
+    kappa_l = 0.0d0
+    
+    Theta_D_t = (new_t * hbar / kb) * (6.0 * PI**2.0D0 * N_atom/volume)**(1.0D0/3.0D0)
+    Theta_D_l = (new_l * hbar / kb) * (6.0 * PI**2.0D0 * N_atom/volume)**(1.0D0/3.0D0)
+    
+    dx_t = Theta_D_t / T / n_int
+    dx_l = Theta_D_l / T / n_int
+    do i = 1, n_int
+       x_t = i * dx_t
+       integrand_t = x_t**3 * exp(x_t) / ((exp(x_t) - 1.0d0)**2 + 1.0e-12)
+       kappa_t = kappa_t + integrand_t * dx_t
+       
+       x_l = i * dx_l
+       integrand_l = x_l**3 * exp(x_l) / ((exp(x_l) - 1.0d0)**2 + 1.0e-12)
+       kappa_l = kappa_l + integrand_l * dx_l
+    end do
+    
+    kappa = 3.0D0 * (PI/6.0D0)**(1.0D0/3.0D0) * kb * (N_atom/volume)**(2.0D0/3.0D0)
+    kappa = kappa * ( (T/Theta_D_t)**2.0D0 * kappa_t + 2.0D0*(T/Theta_D_l)**2.0D0 * kappa_l)
+    
+    
+  end function compute_kappa_Debye
 
 END MODULE seebeck_data
 
@@ -1684,23 +1726,30 @@ PROGRAM seebeck_analysis
   IF (use_phononDOS) THEN
     CALL read_phonon_dos()
     WRITE(*,*) "------------------------------------------------------"
-    TEM = 5.0
+    !TEM = 5.0
+    TEM = 300.0
     call find_matching_Theta_D(TEM, Theta_D, Cv_DOS, Cv_Debye)  ! Subroutines defined at the end of MODULE seebeck_data
     WRITE(*, *) "Temperature, T [K]", TEM
-    WRITE(*, *) "The theoretical phonon DOS was calculated at 0 K, so a low value was used."
+    !WRITE(*, *) "The theoretical phonon DOS was calculated at 0 K, so a low value was used."
     WRITE(*, *) "Matched Debye Temperature (Theta_D) [K]:", Theta_D
     WRITE(*, *) "Frequency (Omega) Maximum (wmax)    [K]:", wmax/kb
+    !WRITE(*, *) "(new_l*hbar/kb) * (6*PI^2*n)^(1/3)     [K]:", (new_l*hbar/kb) * (6*PI**2.0D0*N_atom/volume)**(1.0D0/3.0D0)
+    !WRITE(*, *) "(new_t*hbar/kb) * (6*PI^2*n)^(1/3)     [K]:", (new_t*hbar/kb) * (6*PI**2.0D0*N_atom/volume)**(1.0D0/3.0D0)
     WRITE(*, *) "Cv_DOS(T) [J/(mol K)]:", Cv_DOS
     WRITE(*, *) "Cv_Debye(T, Theta_D) [J/(mol K)]:", Cv_Debye
-    IF (vl /= 0.0 .and. vt /= 0.0 .and. tau0_phonon > 0.0) THEN
-      kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
+    IF (vl /= 0.0 .and. vt /= 0.0 .and. tau0_phonon > 0.0 .and. density /= 0.0) THEN
+      ! [J/(mol*K)] * [mol/m^3] * ([m/s])^2 * [s] = [(J*s)/(m*K)] = [W/(m*K)]
+      kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
       WRITE(*, *) "kappa_phonon [W/m/K]: ", kappa_phonon
     END IF
+    WRITE(*, *) "Dulong-Petit approximation is assumed at Temperatre >= Debye Temperature", Theta_D, " or ",  wmax/kb
   ELSE
     WRITE(*, *) "Specific heat at constant volume is not calculated. Cv = 0.0000E+00 [J/(mol K)]"
   END IF
+  WRITE(*, *) "Dulong-Petit approximatio (T >= Debye Temperature): Cv_DP = 3*R [J/(mol K)]:", 3*8.314
+  WRITE(*, *) "Gas constant, R = 8.314 [J/(m K)]"
   WRITE(*,*) "------------------------------------------------------"
-  
+  !
   IF (use_a2Fdos) THEN
     CALL read_a2F_dos()
   END IF
@@ -2055,7 +2104,8 @@ PROGRAM seebeck_analysis
        Cv_DOS = compute_Cv_DOS(TEM)
        specific_heat = Cv_DOS         ! Specific heat at constant volume
        IF (vl /= 0.0 .and. vt /= 0.0 .and. tau0_phonon > 0.0) THEN
-         kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
+         ! [J/(mol*K)] * [mol/m^3] * ([m/s])^2 * [s] = [(J*s)/(m*K)] = [W/(m*K)]
+         kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
          ZT = power_factor * temperature / (kappa_electron + kappa_phonon)
        END IF
      ELSE
