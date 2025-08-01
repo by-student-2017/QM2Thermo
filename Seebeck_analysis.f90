@@ -267,7 +267,7 @@ MODULE seebeck_data
   REAL(KIND=8) :: n_impurity = 3.0D0              ! Impurity scattering exponent (1: Mild Eenergy-dependence, 3.0: high energy, 4.0: more high energy)
   INTEGER :: N_atom = 1                           ! The number of atoms for normalization of phononDOS
   REAL(KIND=8) :: L_bound                         ! Boundary scattering. (works: phononDOS = T and N_atom)
-  REAL(KIND=8) :: sound_velocity                  ! Speed of sound (this code uses an approximation based on the maximum frequency of phononDOS normalized to 3N) [Angstrom]
+  REAL(KIND=8) :: sound_velocity                  ! sound velocity (this code uses an approximation based on the maximum frequency of phononDOS normalized to 3N) [Angstrom]
   REAL(KIND=8) :: wmax                            ! Maximum frequency in phonon DOS normalized to 3N (= 3 * Natom). [eV]
   REAL(KIND=8) :: volume                          ! Volume [A^3]
   REAL(KIND=8) :: b_para                          ! Umklapp (Klemens-Callaway type model) scattering (Ref. 1 - 2) (works: phononDOS = T)
@@ -275,12 +275,17 @@ MODULE seebeck_data
   REAL(KIND=8) :: B_pdef                          ! Point defect scattering coefficient: (Ref. 5.33e15) [s^-1*eV^-4]
   REAL(KIND=8) :: Bulk_modulus                    ! Bulk_modulus [GPa] (1 [eV/A^3] = 160.2 [GPa]), B = K
   REAL(KIND=8) :: Shear_modulus                   ! Shear_modulus [GPa] = Bulk_modulus / (2*(1+Poisson_ratio)), G
+  REAL(KIND=8) :: Young_modulus                   ! Young_modulus [GPa] = 9*B*G/(3*B+G), E
   REAL(KIND=8) :: Poisson_ratio                   ! Poisson_ratio = (3*B-2*G)/(2*(3*B+G))
   REAL(KIND=8) :: density                         ! read [g/cm^3] unit -> density * 1000 [kg/m^3]
-  REAL(KIND=8) :: vl                              ! Sound speed (longitudinal wave) [m/s] = ((Bulk_modulus*1.0D9+(4/3)*Shear Modulus*1.0D9)/(density*1000.0))**(0.5)   ! 1 [GPa] = 1.0e9 [kg/(m*s^2)
-  REAL(KIND=8) :: vt                              ! Sound speed (transverse wave) [m/s] = (Bulk_modulus*1.0D9/(density*1000.0))**(0.5) (vt = vs in this code) (vs = 0.87*vl)   ! 1 [GPa] = 1.0e9 [kg/(m*s^2)
+  REAL(KIND=8) :: vl                              ! sound velocity (longitudinal wave) [m/s] = ((Bulk_modulus*1.0D9+(4/3)*Shear Modulus*1.0D9)/(density*1000.0))**(0.5)   ! 1 [GPa] = 1.0e9 [kg/(m*s^2)
+  REAL(KIND=8) :: vt                              ! sound velocity (transverse wave) [m/s] = (Bulk_modulus*1.0D9/(density*1000.0))**(0.5) (vt = vs in this code) (vs = 0.87*vl)   ! 1 [GPa] = 1.0e9 [kg/(m*s^2)
+  REAL(KIND=8) :: va                              ! The average sound wave velocity (the Harmonic Mean of velocities in this code.)
+  REAL(KIND=8) :: Mavg                            ! The mean atomic mass, density * 1.0D6 [g/m] * (volume/N_atom) [A^3/N] * 1.0D30/6.022D23
   REAL(KIND=8) :: MPF_phonon                      ! mean free path of phonon, l = (vl + 2*vt)/3 * tau0_phonon [s]
   REAL(KIND=8) :: tau0_phonon                     ! For phonons, it is about 10-100 times stronger than for electrons. (If it is 0.0, tau_ph * 100)
+  REAL(KIND=8) :: Gruneisen_parameter             ! It corresponds to the ratio of the second-order elastic constant C to the third-order elastic constant D.
+  REAL(KIND=8) :: Apara                           ! parameter A of Slack model.
   REAL(KIND=8) :: kappa_phonon_min                ! Cahill molde: (1/2)*(PI/6)**(1/3)*kb*(volume/N_atom)**(2/3)*(vl + 2*vt)
   REAL(KIND=8) :: kappa_phonon                    ! kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
   !-----------------------------------------------
@@ -292,6 +297,10 @@ MODULE seebeck_data
   REAL(KIND=8) :: VEC                             ! The valence electron concentration (VEC)
   REAL(KIND=8) :: VEC0                            ! The valence electron concentration (VEC) from parameter.txt
   !-----------------------------------------------
+  
+  !Note: The Gruneisen constant is a quantity that represents the deviation (anharmonicity) of the lattice vibration of a solid from harmonic vibration. 
+  !  It corresponds to the ratio of the second-order elastic constant C to the third-order elastic constant D. 
+  !  The thermal expansion coefficient alpha = Gruneisen parameter * constant-volume specific heat Cv.
   
   ! Electron-phonon coupling constant, lambda
   REAL(KIND=8), ALLOCATABLE, DIMENSION(:) :: broadening, lambdaArray, dosEf, omega_ln
@@ -318,6 +327,7 @@ MODULE seebeck_data
   
   ! Debye calculation using phonon dos.
   real(8) :: Theta_D, Cv_DOS, Cv_Debye
+  real(8) :: Theta_D_va                           ! The Debye temperature is evaluated from the sound velocities.
   
   ! === Temperature list and chemical potentials ===
   REAL(KIND=8), SAVE :: TT(25), AMU(25)
@@ -1487,28 +1497,28 @@ PROGRAM seebeck_analysis
   INTEGER :: LOOP_ODD
   
   ! Carrier concentration
-  REAL(8) :: m_eff = 0.26D0        ! Effective mass (relative to m_e)
-  REAL(8) :: alpha = 1.0D-20       ! Scattering coefficient (material dependent)
-  REAL(8) :: beta = 0.05D0         ! Temperature spread coefficient (adjusted based on experimental values)
-  REAL(8) :: T0 = 300.0D0          ! Standard temperature (e.g. room temperature 300 K)
-  REAL(8) :: gamma = 0.01D0        ! Temperature dependence coefficient
-  REAL(8) :: C = 1.0D0             ! Density of states constant
-  REAL(8) :: E_C = 1.12D0          ! Band edge energy [eV]
-  REAL(8) :: P = 10.0D0            ! Light intensity
-  REAL(8) :: E_ph = 1.5D0          ! Photon energy [eV]
-  REAL(8) :: N_sat = 1.0D19        ! Saturation doping concentration [cm^-3]
-  REAL(8) :: Delta_E_gap = 2.5D-4  ! Bandgap narrowing coefficient [eV/K]
-  REAL(8) :: pinningShift = 0.05D0 ! Fermi level pinning shift [eV]
+  REAL(8) :: m_eff = 0.26D0          ! Effective mass (relative to m_e)
+  REAL(8) :: alpha = 1.0D-20         ! Scattering coefficient (material dependent)
+  REAL(8) :: beta = 0.05D0           ! Temperature spread coefficient (adjusted based on experimental values)
+  REAL(8) :: T0 = 300.0D0            ! Standard temperature (e.g. room temperature 300 K)
+  REAL(8) :: gamma = 0.01D0          ! Temperature dependence coefficient
+  REAL(8) :: C = 1.0D0               ! Density of states constant
+  REAL(8) :: E_C = 1.12D0            ! Band edge energy [eV]
+  REAL(8) :: P = 10.0D0              ! Light intensity
+  REAL(8) :: E_ph = 1.5D0            ! Photon energy [eV]
+  REAL(8) :: N_sat = 1.0D19          ! Saturation doping concentration [cm^-3]
+  REAL(8) :: Delta_E_gap = 2.5D-4    ! Bandgap narrowing coefficient [eV/K]
+  REAL(8) :: pinningShift = 0.05D0   ! Fermi level pinning shift [eV]
   
   ! Lattice parameter
   REAL(8) :: LA, LB, LC, alpha_rad, beta_rad, gamma_rad
   
-  REAL(8) :: Ln = 2.44E-8          ! Lorenz number [W*Ohm/K^2]
-  REAL(8) :: MFP                   ! meam free path [A]
-  REAL(8) :: MFP_hole              ! meam free path [A]
-  REAL(8) :: MFP_electron          ! meam free path [A]
-  REAL(8) :: m_eff_hole        ! m_eff = 2*E/vg^2 <- E = (1/2)*m*v^2
-  REAL(8) :: m_eff_electron    ! m_eff = 2*E/vg^2 <- E = (1/2)*m*v^2
+  REAL(8) :: Ln = 2.44E-8            ! Lorenz number [W*Ohm/K^2]
+  REAL(8) :: MFP                     ! meam free path [A]
+  REAL(8) :: MFP_hole                ! meam free path [A]
+  REAL(8) :: MFP_electron            ! meam free path [A]
+  REAL(8) :: m_eff_hole              ! m_eff = 2*E/vg^2 <- E = (1/2)*m*v^2
+  REAL(8) :: m_eff_electron          ! m_eff = 2*E/vg^2 <- E = (1/2)*m*v^2
   REAL(8) :: DOS_hole
   REAL(8) :: DOS_electron
   
@@ -1565,9 +1575,12 @@ PROGRAM seebeck_analysis
   READ(90, '(25X, E12.6)') B_pdef                 ! Point defect scattering coefficient. (Ref. 5.33e15)
   READ(90, '(25X, E12.6)') Bulk_modulus           ! Bulk_modulus [GPa] (1 [eV/A^3] = 160.2 [GPa]), B = K
   READ(90, '(25X, E12.6)') Shear_modulus          ! Shear_modulus [GPa] = Bulk_modulus / (2*(1+Poisson_ratio)), G
+  READ(90, '(25X, E12.6)') Young_modulus          ! Young_modulus [GPa] = 9*B*G/(3*B+G), E
   READ(90, '(25X, E12.6)') Poisson_ratio          ! Poisson_ratio = (3*B-2*G)/(2*(3*B+G))
   READ(90, '(25X, E12.6)') density                ! read [g/cm^3] unit -> density * 1000 [kg/m^3]
   READ(90, '(25X, E12.6)') tau0_phonon            ! For phonons, it is about 10-100 times stronger than for electrons. (If it is 0.0, tau_ph * 100)
+  READ(90, '(25X, E12.6)') Gruneisen_parameter    ! If it is 0.0, calculate from Bulk modulus and Poisson's ratio (or Shear modulus).
+  READ(90, '(25X, E12.6)') Apara                  ! 
   READ(90, *)
   READ(90, '(25X, E12.6)') Nd                     ! Read Doping concentration [cm^-3]
   READ(90, '(25X, E12.6)') m_eff                  ! Effective mass (relative to m_e)
@@ -1582,6 +1595,11 @@ PROGRAM seebeck_analysis
   READ(90, '(25X, E12.6)') N_sat                  ! Saturation doping concentration [cm^-3]
   READ(90, '(25X, E12.6)') Delta_E_gap            ! Bandgap narrowing coefficient [eV/K]
   READ(90, '(25X, E12.6)') pinningShift           ! Fermi level pinning shift [eV]
+  CLOSE(90)
+  
+  WRITE(*,*)
+  WRITE(*,*) "------------------------------------------------------"
+  WRITE(*,*) "-----   List of loaded data from parameter.txt   -----"
   WRITE(*,*) "------------------------------------------------------"
   WRITE(*,*) "DEF(Energy shift)   [eV]:", DEF
   WRITE(*,*) "Base relaxation time [s]:", tau0
@@ -1603,19 +1621,22 @@ PROGRAM seebeck_analysis
   WRITE(*,*) "B_pdef                  :", B_pdef
   WRITE(*,*) "Bulk modulus, B    [GPa]:", Bulk_modulus
   WRITE(*,*) "Shear modulus, G   [GPa]:", Shear_modulus
+  WRITE(*,*) "Young's modulus, E [GPa]:", Young_modulus
   WRITE(*,*) "Poisson's ratio         :", Poisson_ratio
   IF (Poisson_ratio == 0.0) THEN
     Poisson_ratio = 0.30D0
-    WRITE(*,*) "Poisson_ratio (automatically setting):", Poisson_ratio
+    WRITE(*,*) "(Automatically setting) Poisson_ratio:", Poisson_ratio
   END IF
   WRITE(*,*) "density         [g/cm^3]:", density
   WRITE(*,*) "relaxation time (ph) [s]:", tau0_phonon
   IF (tau0_phonon < 0.0) THEN
     tau0_phonon = tau0 * 100.0D0
-    WRITE(*,*) "Base relaxation time (phonon) [s] (automatically setting):"
-    WRITE(*,*) "Base relaxation time (phonon) [s] = Base relaxation time (electron) [s] * 100:", tau0_phonon
+    WRITE(*,*) "(Automatically setting) Base relaxation time (phonon) [s]:"
+    WRITE(*,*) "  Base relaxation time (electron) [s] * 100:", tau0_phonon
   END IF
-  WRITE(*,*) "----- Carrier concentration calclation: optional -----"
+  WRITE(*,*) "Gruneisen parameter     :", Gruneisen_parameter
+  WRITE(*,*) "Slack model parameter A :", Apara
+  WRITE(*,*) "----- Carrier concentration (Nc) calclation: optional -----"
   WRITE(*,*) "Nd (Doping conc.)[cm^-3]:", Nd
   WRITE(*,*) "Electron Effective Mass :", m_eff
   WRITE(*,*) "alpha (Scattering coef.):", alpha
@@ -1630,22 +1651,12 @@ PROGRAM seebeck_analysis
   WRITE(*,*) "Delta E gap       [eV/K]:", Delta_E_gap
   WRITE(*,*) "Pinning Shift       [eV]:", pinningShift
   WRITE(*,*) "------------------------------------------------------"
-  IF (Bulk_modulus /= 0.0 .and. density /= 0.0) THEN
-    Shear_modulus = Bulk_modulus / (2.0D0*(1+Poisson_ratio))
-    ! 1 [GPa] = 1.0e9 [kg/(m*s^2)], 1 [g/cm^3] = 1000 [kg/m^3], [GPa]*[kg/m^3] = 1.0e9 [(m/s)^2]
-    vl = ((Bulk_modulus*1.0D9 + (4.0D0/3.0D0)*Shear_modulus*1.0D9) / (density*1000.0D0))**(0.5)
-    vt = (Bulk_modulus*1.0D9 / (density*1000.0D0))**(0.5)
-    WRITE(*,*) "Shear modulus, G [GPa]", Shear_Modulus
-    WRITE(*,*) "Sound speed (longitudinal wave), vl [m/s]:", vl
-    WRITE(*,*) "Sound speed (transverse wave),   vt [m/s]:", vt
-    WRITE(*,*) "vt is nearly equal ot vs = 0.87*vl [m/s]:", 0.87*vl
-    IF (tau0_phonon > 0.0) THEN
-      MPF_phonon = (vl + 2.0D0*vt)/3.0D0 * tau0_phonon * 1.0D10
-      WRITE(*,*) "mean free path of phonon [A]:", MPF_phonon
-    END IF
-    WRITE(*,*) "------------------------------------------------------"
-  END IF
-  CLOSE(90)
+
+  WRITE(*,*)
+  WRITE(*,*) "------------------------------------------------------"
+  WRITE(*,*) "----- List of loaded data and caluclated values  -----"
+  WRITE(*,*) "------------------------------------------------------"
+  
   ! ------------------------------------------------------------------
   OPEN(UNIT=91, FILE='wien.struct', STATUS='OLD', ACTION='READ')
   READ(91, '(A)')
@@ -1659,12 +1670,6 @@ PROGRAM seebeck_analysis
   !WRITE(6,'(A, f12.5)') " Volume [A^3]: ", volume
   WRITE(*,*) "------------------------------------------------------"
   CLOSE(91)
-  IF (Bulk_modulus /= 0.0 .and. density /= 0.0) THEN
-    ! https://github.com/houzf/empirical_thermal_conductivity
-    kappa_phonon_min = (1.0D0/2.0D0) * (PI/6.0D0)**(1.0D0/3.0D0) * kb * (volume/N_atom)**(2.0D0/3.0D0) * (vl + 2.0D0*vt)
-    WRITE(*,*) "Cahill model: kappa_phonon_min [W/m/K]:", kappa_phonon_min
-    WRITE(*,*) "------------------------------------------------------"
-  END IF
   
   ! ------------------------------------------------------------------
   ! Step 1: Load "Electron-phonon coupling" data from 'lambda'
@@ -1702,7 +1707,7 @@ PROGRAM seebeck_analysis
        VEC =  EN(LE-1)+(EN(LE) - EN(LE-1))/(EE(LE) - EE(LE-1))
        WRITE(*,*) "The valence electron concentration (VEC):", VEC
        WRITE(*,*) "at DEF =", DEF, "[eV] (for EF = 0.0 -> EF = DEF) and 0 [K]"
-       WRITE(*,*) "------------------------------------------------------"
+       WRITE(*,*) "-------------------------------"
      END IF
      IF(LE > 2 .AND. EE(LE-1) + DEF <= 0.0 .AND. EE(LE) + DEF > 0.0) THEN
        VEC0 =  EN(LE-1)+(EN(LE) - EN(LE-1))/(EE(LE) - EE(LE-1))
@@ -1737,11 +1742,6 @@ PROGRAM seebeck_analysis
     !WRITE(*, *) "(new_t*hbar/kb) * (6*PI^2*n)^(1/3)     [K]:", (new_t*hbar/kb) * (6*PI**2.0D0*N_atom/volume)**(1.0D0/3.0D0)
     WRITE(*, *) "Cv_DOS(T) [J/(mol K)]:", Cv_DOS
     WRITE(*, *) "Cv_Debye(T, Theta_D) [J/(mol K)]:", Cv_Debye
-    IF (vl /= 0.0 .and. vt /= 0.0 .and. tau0_phonon > 0.0 .and. density /= 0.0) THEN
-      ! [J/(mol*K)] * [mol/m^3] * ([m/s])^2 * [s] = [(J*s)/(m*K)] = [W/(m*K)]
-      kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
-      WRITE(*, *) "kappa_phonon [W/m/K]: ", kappa_phonon
-    END IF
     WRITE(*, *) "Dulong-Petit approximation is assumed at Temperatre >= Debye Temperature", Theta_D, " or ",  wmax/kb
   ELSE
     WRITE(*, *) "Specific heat at constant volume is not calculated. Cv = 0.0000E+00 [J/(mol K)]"
@@ -1752,6 +1752,104 @@ PROGRAM seebeck_analysis
   !
   IF (use_a2Fdos) THEN
     CALL read_a2F_dos()
+  END IF
+  
+  IF (Bulk_modulus /= 0.0 .and. density /= 0.0) THEN
+    Shear_modulus = Bulk_modulus / (2.0D0*(1+Poisson_ratio))
+    ! 1 [GPa] = 1.0e9 [kg/(m*s^2)], 1 [g/cm^3] = 1000 [kg/m^3], [GPa]*[kg/m^3] = 1.0e9 [(m/s)^2]
+    vl = ((Bulk_modulus*1.0D9 + (4.0D0/3.0D0)*Shear_modulus*1.0D9) / (density*1.0D3))**(1.0D0/2.0D0)
+    vt = (Bulk_modulus*1.0D9 / (density*1.0D3))**(1.0D0/2.0D0)
+    WRITE(*,*) "Shear modulus, G [GPa]", Shear_Modulus
+    WRITE(*,*) "sound velocity (longitudinal wave) estimated from bulk and shear moduli, vl [m/s]:", vl
+    WRITE(*,*) "sound velocity (transverse   wave) estimated from shear modulus        , vt [m/s]:", vt
+    WRITE(*,*) "vt is nearly equal ot vs = 0.87*vl [m/s]:", 0.87*vl
+    WRITE(*,*) "-------------------------------"
+    
+    MPF_phonon = (vl + 2.0D0*vt)/3.0D0 * tau0_phonon * 1.0D10
+    WRITE(*,*) "mean free path of phonon [A]:", MPF_phonon
+    WRITE(*,*) "-------------------------------"
+    
+    WRITE(*,*)
+    WRITE(*,*) "-------------------------------"
+    WRITE(*,*) "Empirical estimation of thermal conductivity (Ref. https://github.com/houzf/empirical_thermal_conductivity)"
+    WRITE(*,*) "-------------------------------"
+    WRITE(*,*) "Clarke mode: Its main feature is that it estimates thermal conductivity by taking into account"
+    WRITE(*,*) " the elastic modulus and average atomic volume. This model is sensitive to"
+    WRITE(*,*) " the density and elastic properties of the material, and is particularly suitable for"
+    WRITE(*,*) " highly crystalline materials."
+    WRITE(*,*)
+    !
+    IF (Young_modulus == 0.0) THEN
+      Young_modulus = 9.0D0 * Bulk_modulus * Shear_modulus / (3.0*Bulk_modulus + Shear_modulus)
+      WRITE(*,*) "(Automatically setting) Young_modulus [GPa]:", Young_modulus
+      WRITE(*,*) "sound velocity estimated from Young's modulus [m/s]:", (Young_modulus*1.0D9/(density*1.0D3))**(1.0D0/2.0D0)
+    END IF
+    !
+    ! 1 [GPa] = 1.0e9 [kg/(m*s^2)], 1 [g/cm^3] = 1000 [kg/m^3], [kg/(m*s^2)]/[kg/m^3] = [(m/s)^2]
+    ! [eV/K] * [1/m^2] * [m/s] = [(eV/s)/(m*K)] = 1.602e-19 [W/(m*K)] = ech [W/(m*K)]
+    ! kb [eV/K], ech [C], kb * ech [J/K] = [W*s/K]
+    kappa_phonon_min = 0.87 * (kb * ech) * ((volume*1.0D-30)/N_atom)**(-2.0D0/3.0D0) * &
+      & (Young_modulus*1.0D9/(density*1.0D3))**(1.0D0/2.0D0)
+    WRITE(*,*) "Clarke model: kappa_phonon_min [W/m/K]:", kappa_phonon_min
+    
+    WRITE(*,*)
+    WRITE(*,*) "---------- ----------"
+    
+    ! kb [eV/K], ech [C], kb * ech [J/K] = [W*s/K]
+    WRITE(*,*) "Cahill-Pohl model: The model emphasizes the speed of sound waves and calculates how fast longitudinal and"
+    WRITE(*,*) " transverse waves travel. This model is flexible enough to be applied to non-crystalline materials and"
+    WRITE(*,*) " nanoscale structures."
+    WRITE(*,*)
+    !
+    kappa_phonon_min = (1.0D0/2.0D0) * (PI/6.0D0)**(1.0D0/3.0D0) * (kb * ech) * &
+      & (N_atom/(volume*1.0D-30))**(2.0D0/3.0D0) * (vl + 2.0D0*vt)
+    WRITE(*,*) "Cahill-Pohl model: kappa_phonon_min [W/m/K]:", kappa_phonon_min
+    
+    WRITE(*,*)
+    WRITE(*,*) "---------- ----------"
+    
+    WRITE(*,*) "Slack model: Its distinctive feature is that it performs detailed analysis using Debye temperature and"
+    WRITE(*,*) " Gruneisen parameters. This model takes into account temperature changes and the effects of"
+    WRITE(*,*) " interatomic bonds, allowing for highly accurate predictions."
+    WRITE(*,*)
+    !
+    va = ( (1.0D0/3.0D0) * (1.0D0/vl**3.0D0 + 2.0D0/vt**3.0D0) )**(-1.0D0/3.0D0)
+    WRITE(*,*) "average sound velocity, va [m/s]:", va  ! The Harmonic Mean of velocities.
+    !
+    Theta_D_va = (2.0D0*PI*hbar/kb) * ( (3.0D0*N_atom) / (4.0D0*PI*(volume*1.0D-30)) )**(1.0D0/3.0D0) * va
+    WRITE(*, *) "Debye temperature, Theta_D_va [K]:", Theta_D_va
+    !
+    IF (Gruneisen_parameter == 0.0) THEN
+      Gruneisen_parameter = (9.0D0 - 12.0D0*(vt/vl)**2.0D0) / (2.0D0 + 4.0D0*(vt/vl)**2.0D0)
+      WRITE(*,*) "(Automatically setting) Gruneisen_parameter:", Gruneisen_parameter
+    END IF
+    !
+    IF (Apara == 0.0) THEN
+      Apara = 2.43D-8/(1.0-0.514/Gruneisen_parameter + 0.228/(Gruneisen_parameter**2))
+      WRITE(*,*) "(Automatically setting) A estimated from Gruneisen_parameter:", Apara
+    END IF
+    !
+    TEM = 300.0
+    ! 1 [g/cm^3] = 1000 [kg/m^3], 1 [amu] = 1.660538921e-27 [kg]
+    ! 1 [amu] = 1 [g/mol/NA] = 1.0/(6.02214085774e+23) [g] = 1.6605390402231174e-24 [g] = 1.660538921e-27 [kg]
+    !Mavg = density * 1.0D6 / 1.660538921D-24 * volume * 1.0D-30 / N_atom  ! [amu] (atomic mass unit)
+    Mavg = (density * volume / N_atom) / 1.660538921  ! [amu] (atomic mass unit)
+    ! delta = (volume / N_atom)^(1/3) [A]
+    kappa_phonon_min = Apara * Mavg * Theta_D_va**3.0D0 * (volume/N_atom)**(1.0D0/3.0D0) / &
+      & (Gruneisen_parameter**2.0D0 * (N_atom)**(2.0D0/3.0D0) * TEM)
+    WRITE(*,*) "Slack model: kappa_phonon_min [W/m/K]:", kappa_phonon_min, " at ", TEM, " [K]"
+    
+    WRITE(*,*) "-------------------------------"
+    
+    IF (use_phononDOS) THEN
+      ! [J/(mol*K)] * [mol/m^3] * ([m/s])^2 * [s] = [(J*s)/(m*K)] = [W/(m*K)]
+      kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
+      WRITE(*, *) "kappa_phonon [W/m/K]: ", kappa_phonon
+    ELSE
+      WRITE(*, *) "Since phononDOS.dat is not used, the Slack model is used for the phonon thermal conductivity."
+      WRITE(*, *) "And specific heat at constant volume is not calculated. Cv = 0.0000E+00 [J/(mol K)]"
+    END IF
+    WRITE(*,*) "------------------------------------------------------"
   END IF
 
   ! ------------------------------------------------------------------
@@ -1780,6 +1878,10 @@ PROGRAM seebeck_analysis
   ! "I" is the energy index. If E1 is available, it is not required for 
   ! the get_tau() function, but we include it for future expansion.
   ! ------------------------------------------------------------------
+  WRITE(*,*)
+  WRITE(*,*) "------------------------------------------------------"
+  WRITE(*,*) "-----        Calculation and Results             -----"
+  WRITE(*,*) "------------------------------------------------------"
   WRITE(6,'(A)')  hdr
   DO IT = 1, 25
      TEM  = TT(IT)                               ! Temperature [K]
@@ -2112,7 +2214,9 @@ PROGRAM seebeck_analysis
        Cv_DOS = 0.0
        specific_heat = Cv_DOS         ! Specific heat at constant volume
        IF (Bulk_modulus /= 0.0 .and. density /= 0.0) THEN
-         kappa_phonon_min = (1.0D0/2.0D0) * (PI/6.0D0)**(1.0D0/3.0D0) * kb * (volume/N_atom)**(2.0D0/3.0D0) * (vl + 2.0D0*vt)
+         ! Slack model
+         kappa_phonon_min = Apara * Mavg * Theta_D_va**3.0D0 * (volume/N_atom)**(1.0D0/3.0D0) / &
+           & (Gruneisen_parameter**2.0D0 * (N_atom)**(2.0D0/3.0D0) * temperature)
          kappa_phonon = kappa_phonon_min
          ZT = power_factor * temperature / (kappa_electron + kappa_phonon)
        ELSE
@@ -2201,7 +2305,15 @@ PROGRAM seebeck_analysis
      END IF
   END DO
   
+  WRITE(*,*)
+  WRITE(*,*) "------------------------------------------------------"
+  WRITE(*,*) "-----         Calculation Finished               -----"
+  WRITE(*,*) "------------------------------------------------------"
   
+  WRITE(*,*)
+  WRITE(*,*) "------------------------------------------------------"
+  WRITE(*,*) "-----         Unit Conversion Table              -----"
+  WRITE(*,*) "------------------------------------------------------"
   WRITE(*,*) "------------------------------------------------------"
   WRITE(*,*) "1 [eV] = 11604.5 [K]"
   WRITE(*,*) "1 [eV] = 241.8 [THz]"
