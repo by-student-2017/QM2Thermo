@@ -106,7 +106,7 @@
 !   +----- a2F.dos         : Eliashberg function data (optional).
 !
 ! Output Files:
-!   +----- Seebeck_analysis.dat : Results file containing computed Seebeck coefficients.
+!   +----- Seebeck_analysis.dat : Results file containing d Seebeck coefficients.
 !-----------------------------------------------------------------------
 ! Function and Subroutine Relationships for get_tau
 !
@@ -1394,45 +1394,6 @@ CONTAINS
     Cv_DOS_out = Cv_DOS
     Cv_Debye_out = compute_Cv_Debye(T, Theta_D_match)
   end subroutine find_matching_Theta_D
-  
-  !---------------------------------------------------------------
-  ! Function: compute_kappa_Debye
-  ! Purpose: Compute kappa(phonon)_min at temperature T and Debye temp Theta_D
-  !---------------------------------------------------------------
-  function compute_kappa_Debye(T, Theta_D) result(kappa)
-    implicit none
-    real(8), intent(in) :: T, Theta_D
-    real(8) :: Theta_D_t, Theta_D_l
-    real(8) :: kappa, kappa_t, kappa_l 
-    real(8) :: x_t, x_l, integrand_t, integrand_l, dx_t, dx_l
-    real(8) :: new_t, new_l
-    integer :: i, n_int
-
-    n_int = 2500
-    kappa = 0.0d0
-    kappa_t = 0.0d0
-    kappa_l = 0.0d0
-    
-    Theta_D_t = (new_t * hbar / kb) * (6.0 * PI**2.0D0 * N_atom/volume)**(1.0D0/3.0D0)
-    Theta_D_l = (new_l * hbar / kb) * (6.0 * PI**2.0D0 * N_atom/volume)**(1.0D0/3.0D0)
-    
-    dx_t = Theta_D_t / T / n_int
-    dx_l = Theta_D_l / T / n_int
-    do i = 1, n_int
-       x_t = i * dx_t
-       integrand_t = x_t**3 * exp(x_t) / ((exp(x_t) - 1.0d0)**2 + 1.0e-12)
-       kappa_t = kappa_t + integrand_t * dx_t
-       
-       x_l = i * dx_l
-       integrand_l = x_l**3 * exp(x_l) / ((exp(x_l) - 1.0d0)**2 + 1.0e-12)
-       kappa_l = kappa_l + integrand_l * dx_l
-    end do
-    
-    kappa = 3.0D0 * (PI/6.0D0)**(1.0D0/3.0D0) * kb * (N_atom/volume)**(2.0D0/3.0D0)
-    kappa = kappa * ( (T/Theta_D_t)**2.0D0 * kappa_t + 2.0D0*(T/Theta_D_l)**2.0D0 * kappa_l)
-    
-    
-  end function compute_kappa_Debye
 
 END MODULE seebeck_data
 
