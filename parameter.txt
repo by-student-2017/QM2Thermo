@@ -17,7 +17,7 @@ Bulk modulus, B    [GPa]:  100.0     ! For example, use Bulk_modulus_from_EOS an
 Shear modulus, G   [GPa]:  0.0       ! If it is 0.0, calculate from Bulk modulus and Poisson's ratio.
 Young's modulus, E [GPa]:  0.0       ! If it is 0.0, calculate from Bulk modulus and Shear modulus or Poisson's ratio.
 Poisson's ratio         :  0.3       ! General Range: 0.25 - 0.35 (If it is 0.0, set 0.3)
-density         [g/cm^3]:  2.33      ! Please try your best to calculate it from a cif file or something.
+density         [g/cm^3]:  2.33      ! The cif file may contain density information using "_exptl_crystal_density_diffrn".
 relaxation time (ph) [s]:  1.00e-12  ! About 10-100 times stronger than electrons. (If it is < 0.0, tau_ph * 100 [s])
 Gruneisen parameter     :  0.0       ! If it is 0.0, calculate from vt and vl (Bulk modulus and Poisson's ratio).
 Slack model parameter A :  0.0       ! If it is 0.0, calculate from Gruneisen parameter (B and Poisson's ratio.)
