@@ -372,6 +372,16 @@ PROGRAM MAIN
   REAL(KIND=8) :: VX, VY, VZ
   ! VX, VY, VZ: Group velocity components [arbitrary units]
   
+  INTEGER :: start_band_num, end_band_num
+  !=======================
+  ! Get data from select_band_range.txt
+  !=======================
+  OPEN(UNIT=11, FILE='select_band_range.txt', STATUS='UNKNOWN')
+    READ(11,*)
+    READ(11,'(25X, 10A)') start_band_num
+    READ(11,'(25X, 10A)') end_band_num
+  CLOSE(11)
+  
   !=======================
   ! Get data from WIEN2k output files and set arrays
   !=======================
@@ -428,7 +438,20 @@ PROGRAM MAIN
   ! Step 4: Loop over all bands to compute DOS and transport contributions
   !         Each band -> fills energy arrays -> calls DENS (integration over tetrahedra)
   !=======================
-  DO LB = 1, MMIN
+  !DO LB = 1, MMIN
+  IF (start_band_num <= 0 .or. start_band_num > MMIN) THEN
+    start_band_num = 1
+  END IF
+  IF (end_band_num <= 0 .or. end_band_num > MMIN) THEN
+    end_band_num = MMIN
+  ELSE IF (end_band_num < start_band_num) THEN
+    end_band_num = start_band_num
+  END IF
+  WRITE(*,*) "----- calculation band range -----"
+  WRITE(*,*) "start_band_num:", start_band_num
+  WRITE(*,*) "end_band_num  :", end_band_num
+  WRITE(*,*) "----------------------------------"
+  DO LB = start_band_num, end_band_num
     write(6,*) LB                ! print band index
     
     ! Fill tetra_data arrays with energy and velocity info for current band

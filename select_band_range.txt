@@ -1,0 +1,12 @@
+------------------------:----------!
+start_band_num (integer): 0
+  end_band_num (integer): 0
+------------------------:----------!
+
+Note 1: Used to limit bands or data, as shown in Figures 13-15 of the paper.
+Note 2: The first and last numbers can be the same, e.g., 4 and 4, to examine only specific bands.
+Note 3: AKK.DATA will be rewritten to include only the specified bands.
+Note 4: It is a good idea to specify the range of bands to be calculated while comparing it with the VEC results.
+
+Note 5: start_band_num values below 0 will automatically be set to 1. If the maximum number is exceeded, the maximum value will be used. (see "Step 4" on group_velocity.f90)
+Note 6: For end_band_num, values below 0 or exceeding the maximum number will be set to the maximum value. If the value is smaller than start_band_num, it will be set to the same value as start_band_num. (see "Step 4" on group_velocity.f90)
