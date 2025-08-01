@@ -15,12 +15,6 @@
 The sound velocity $$\( v \)$$ can be approximated using:
 
 $$
-v = \sqrt{ \frac{B}{\rho} }
-$$
-
-where $$\( \rho \)$$ is the density of the crystal. Understanding the bulk modulus helps in analyzing mechanical properties of materials.
-
-$$
 v_l = \sqrt{ \frac{B + \frac{4}{3}G}{\rho} }, \quad
 v_t = \sqrt{ \frac{G}{\rho} }
 $$
@@ -33,4 +27,32 @@ $$
 \gamma = \frac{9 - 12 \left( \frac{v_t}{v_l} \right)^2}{2 + 4 \left( \frac{v_t}{v_l} \right)^2}
 $$
 
+where $$\( \rho \)$$ is the density of the crystal. Understanding the bulk modulus helps in analyzing mechanical properties of materials.
+
+
+## Elastic Moduli from Bulk Modulus and Poisson's Ratio
+
+Once the bulk modulus $$\( B \)$$ is obtained from EOS fitting, other mechanical properties such as shear modulus $$\( G \)$$ and Young's modulus $$\( E \)$$ can be estimated using the Poisson's ratio $$\( \nu \)$$.
+
+### Key Equations
+
+Given:
+- $$\( B \)$$: Bulk modulus [GPa]
+- $$\( \nu \)$$: Poisson's ratio (dimensionless)
+
+The following relationships apply:
+
+#### 1. **Shear Modulus** $$\( G \)$$
+
+$$
+G = \frac{3B(1 - 2\nu)}{2(1 + \nu)}
+$$
+
+$$
+E = 2G(1 + \nu)
+$$
+
+$$
+E = \frac{9B(1 - \nu)}{(1 + \nu)(1 - 2\nu)}
+$$
 
