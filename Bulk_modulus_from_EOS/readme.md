@@ -12,4 +12,4 @@ $$
 v = \sqrt{ \frac{B}{\rho} }
 $$
 
-where \( \rho \) is the density of the crystal. Understanding the bulk modulus helps in analyzing mechanical properties of materials.
+where $$\( \rho \)$$ is the density of the crystal. Understanding the bulk modulus helps in analyzing mechanical properties of materials.
