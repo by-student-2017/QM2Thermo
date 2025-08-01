@@ -48,6 +48,8 @@ $$
 G = \frac{3B(1 - 2\nu)}{2(1 + \nu)}
 $$
 
+#### 2. **Young's Modulus ** $$\( E \)$$
+
 $$
 E = 2G(1 + \nu)
 $$
@@ -55,4 +57,28 @@ $$
 $$
 E = \frac{9B(1 - \nu)}{(1 + \nu)(1 - 2\nu)}
 $$
+
+## Typical Values of Poisson's Ratio
+
+Poisson's ratio $$\( \nu \)$$ varies depending on the material type. It describes the ratio of transverse strain to axial strain when a material is stretched or compressed.
+
+### Common Ranges by Material Type
+
+| Material Type       | Typical $$\( \nu \)$$ Range |
+|---------------------|-------------------------|
+| Metals              | 0.25 – 0.35             |
+| Ceramics            | 0.10 – 0.25             |
+| Polymers            | 0.30 – 0.50             |
+| Crystalline Solids  | ~0.20 – 0.35            |
+
+- A commonly used default value is **0.3**, especially when experimental or ab initio data is unavailable.
+- This value provides a reasonable approximation for many metals, semiconductors, and crystalline materials.
+
+### Notes
+
+- Lower Poisson's ratios (e.g., < 0.2) are typical for brittle materials like ceramics.
+- Higher values (e.g., > 0.4) are found in soft, ductile materials such as rubber or certain polymers.
+- Accurate Poisson's ratio is essential for calculating shear modulus, Young's modulus, and sound velocities.
+
+For elastic property calculations using bulk modulus and Poisson's ratio, see the [Elastic Moduli section](#-elastic-moduli-from-bulk-modulus-and-poissons-ratio).
 
