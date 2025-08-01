@@ -124,6 +124,7 @@ first-principles codes, particularly for Seebeck coefficient and electron-phonon
 | `phononDOS.dat`   | *(Optional)* Contains phonon density of states (DOS) vs. energy (in eV). Can be sourced from any first-principles code. |
 | `lambda`          | *(Optional)* Currently supported only in EPW format.                                |
 | `a2F.dos*`        | *(Optional)* Currently supported only in EPW format. The first column (frequency/energy) and second column (a2Fdos_total) are essential; other columns are read but not used. The "*" in a2F.dos* corresponds to the number of data listed in the lambda file (an integer). |
+| `select_band_range.txt` | This is used to limit the range of the bands to be calculated, and is used in analyses such as Figures 13-15 in the paper. |
 
 
 ### WIEN2k output files (test: WIEN2k ver.12 and ver.16. LDA, PBE, WC, PBEsol or TB-mBJ)
@@ -218,7 +219,7 @@ This document describes the workflow for computing the Seebeck coefficient using
 |------------------------|---------------------------------------------------------------------------------------------|-----------------------------------------------------------|-------------------------------------------------------|
 | WIEN2k                 | -                                                                                           | wien.dos1, wien.energ, wien.kgen, wien.klist, wien.struct | Generate electronic structure data for the material.  |
 | generate_stencil.f90   | WIEN2k output files                                                                         | cf*.dat                                                    | Convert WIEN2k output into stencil data.              |
-| group_velocity.f90     | cf*.dat, WIEN2k output files                                                                 | AKK.DATA                                                  | Calculate group velocities from stencil data.         |
+| group_velocity.f90     | cf*.dat, WIEN2k output files, select_band_range.txt                                         | AKK.DATA                                                  | Calculate group velocities from stencil data.         |
 | chemical_potential.f90 | AKK.DATA, parameter.txt, WIEN2k output files                                                | apot.dat                                                  | Determine the chemical potential.                     |
 | Seebeck_analysis.f90   | cf*.dat, apot.dat, AKK.DATA, parameter.txt, WIEN2k output files (optional: lambda, a2F.dos*) | Seebeck_analysis.dat, ABGV2D.dat                         | Compute the Seebeck coefficient using Allen's theory. A(E,T), B(E,T), <\|v\|^2 x DOS> are used to calculate the Seebeck coefficient using Allen's theory.|
 
@@ -235,7 +236,7 @@ This document describes the workflow for computing the Seebeck coefficient using
 
 #### 3. group_velocity.f90
 - **Purpose**: Calculate group velocities from stencil data.
-- **Input**: `cf*.dat` and WIEN2k output files.
+- **Input**: `cf*.dat`, WIEN2k output files, and `select_band_range.txt`.
 - **Output**: `AKK.DATA` containing velocity information.
 
 #### 4. chemical_potential.f90
