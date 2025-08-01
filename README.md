@@ -125,8 +125,6 @@ first-principles codes, particularly for Seebeck coefficient and electron-phonon
 | `lambda`          | *(Optional)* Currently supported only in EPW format.                                |
 | `a2F.dos*`        | *(Optional)* Currently supported only in EPW format. The first column (frequency/energy) and second column (a2Fdos_total) are essential; other columns are read but not used. The "*" in a2F.dos* corresponds to the number of data listed in the lambda file (an integer). |
 
-lambda and a2F.dos: EPW format (Data from Abinit, etc. can be used if it matches the EPW format.)
-
 
 ### WIEN2k output files (test: WIEN2k ver.12 and ver.16. LDA, PBE, WC, PBEsol or TB-mBJ)
 This document provides a summary of key files used in WIEN2k calculations and their respective purposes.
