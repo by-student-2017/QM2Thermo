@@ -80,5 +80,3 @@ Poisson's ratio $$\( \nu \)$$ varies depending on the material type. It describe
 - Higher values (e.g., > 0.4) are found in soft, ductile materials such as rubber or certain polymers.
 - Accurate Poisson's ratio is essential for calculating shear modulus, Young's modulus, and sound velocities.
 
-For elastic property calculations using bulk modulus and Poisson's ratio, see the [Elastic Moduli section](#-elastic-moduli-from-bulk-modulus-and-poissons-ratio).
-
