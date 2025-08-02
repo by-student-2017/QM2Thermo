@@ -1833,10 +1833,13 @@ PROGRAM seebeck_analysis
   WRITE(20,'(A)') hdr
   !
   OPEN(UNIT=21, FILE='ABGV2D.dat')
-  WRITE(21,*) "! A(E,T): [(m/s)^2 * states/eV/unitcell]"
-  WRITE(21,*) "! B(E,T): [(m/s)^2 * states/eV^2/unitcell]"
-  WRITE(21,*) "! <GV^2*DOS>: [(m/s)^2 * states/eV^2/unitcell]"
-  WRITE(21,*) "# T [K]    E [eV]       <E-mu> [eV]  A(E,T)       B(E,T)       <GV^2*DOS>"
+  WRITE(21,*) "! In this code, the relaxation time [s] is multiplied. 
+  WRITE(21,*) "! The dimensions shown below are those when the relaxation time is ignored with tau0 = 1.0 in the paper."
+  WRITE(21,*) "! In reality, [s] is multiplied."
+  WRITE(21,*) "! A(E,T): [(m/s)^2 * states/eV/unitcell] (In reality, [m^2/s * states/eV/unitcell])"
+  WRITE(21,*) "! B(E,T): [(m/s)^2 * states/eV^2/unitcell] (In reality, [m^2/s * states/eV^2/unitcell])"
+  WRITE(21,*) "! GV(E)^2*DOS(E): [(m/s)^2 * states/eV^2/unitcell] (In reality, [m^2/s * states/eV^2/unitcell]"
+  WRITE(21,*) "# T [K]    E [eV]       E-mu [eV]    A(E,T)       B(E,T)       GV^2*DOS"
 
   ! ------------------------------------------------------------------
   ! Step 6: Loop over temperatures to compute Seebeck coefficient
