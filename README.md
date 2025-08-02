@@ -107,10 +107,11 @@ Graphs are also output in *.png format. If it doesn't work properly on Linux, yo
 | `plot_cp.gpl`       | `apot.dat`                  | Chemical Potential            | Plots the variation of chemical potential in the material.                 |
 | `plot_dos.gpl`      | `wien.dos1`                 | Density of States (DOS)       | Displays the electronic density of states for band structure analysis.     |
 | `plot_ABGV2D.gpl`   | `ABGV2D.dat`                | the spectrum A(E,T) and B(E,T), and <\|v\|^2 * DOS> | plot_ABGV2D.gpl visualizes the energy dependence of spectra A(E,T) and B(E,T) at the temperature specified by TEMP, and the electronic structure parameter <\|v\|^2 * DOS> (corresponding to Figures 13-15 in the paper, except that the figures here are not separated into the components of each band). |
-| `plot_AB.gpl`   | `Seebeck_analysis.dat`          | A(T) and B(T) | Plot the numerator A(T) and denominator B(T) as shown in Figure 12 in the paper. To specify the bands as shown in Figure 12, run the calculation in group_velocity.f90 using select_band_range.txt and output AKK.DATA containing only the specified bands. Note that the paper uses tau0 = 1.0 in the calculation. A(T) is the integral of A(E,T) with respect to the energy E, and B(T) is the integral of B(E,T) with respect to the energy E. |
+| `plot_AB.gpl`   | `Seebeck_analysis.dat`          | A(T) and B(T) | Plot the numerator A(T) and denominator B(T) as shown in Figure 12 in the paper. Note that the paper uses tau0 = 1.0 in the calculation. A(T) is the integral of A(E,T) with respect to the energy E, and B(T) is the integral of B(E,T) with respect to the energy E. |
 - **plot_ABGV2D.gpl**: Please note that in this code, the relaxation time is explicitly specified and calculated, so the dimensions are multiplied by [s], unlike Figures 13-15 in the paper.
 - **plot_AB.gpl**: Please note that in this code, the relaxation time is explicitly specified and calculated, so the dimensions are multiplied by [s], unlike Figures 12 in the paper.
-For DOS, you need to write the EF described in wien.dos1 into the script gnuplot plot_dos.gpl. The EF part is on line 22 of plot_dos.pgl shown below (written in [Ry] units). 
+- To specify the bands as shown in Figure 12-15, run the calculation in group_velocity.f90 using select_band_range.txt and output AKK.DATA containing only the specified bands.
+For DOS, you need to write the EF described in wien.dos1 into the script gnuplot plot_dos.gpl. The EF part is on line 22 of plot_dos.pgl shown below (written in [Ry] units).
 ```
 EF = 0.34363
 ```
