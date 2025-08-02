@@ -1,0 +1,36 @@
+#!/usr/bin/gnuplot
+
+# === Display on screen ===
+set terminal win font "Arial,12"
+set xlabel "Temperature, {/Italic T} / K"
+set ylabel "Numerator, A({/Italic T}) / m^2 s^{-2} states eV^{-1} unitcell^{-1}"
+set y2label "Denominator, B({/Italic T}) / m^2 s^{-2} states eV^{-1} unitcell^{-1}"
+set grid
+set xrange [0:*]
+
+# Add minor ticks
+set xtics 100
+#set ytics 100
+#set y2tics 100
+
+set mxtics 5
+set mytics 5
+set my2tics 5
+
+set xzeroaxis
+#set yzeroaxis
+
+# Line style: Blue line with points
+set style line 1 lt 1 lw 2 lc rgb "#0072BD" pt 7 ps 1.2
+
+set title "Temperature dependences of the numerator A({/Italic T}) and the denominator B({/Italic T})"
+
+# Plot to screen
+plot "Seebeck_analysis.dat" using 1:24 axis x1y1 with linespoints linestyle 1 lc "red"  title "A({/Italic T})", \
+     "Seebeck_analysis.dat" using 1:25 axis x1y2 with linespoints linestyle 1 lc "blue" title "B({/Italic T})"
+
+# === Save as PNG (publication ready) ===
+set terminal pngcairo size 800,600 font "Times New Roman,12"
+set output "AB.png"
+replot
+unset output

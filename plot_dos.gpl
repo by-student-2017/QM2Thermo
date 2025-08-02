@@ -3,7 +3,7 @@
 # === Display on screen ===
 set terminal win font "Arial,12"
 set xlabel "Energy, E / eV"
-set ylabel "Density of States, DOS / States eV^{-1} unitcell^{-1}"
+set ylabel "Density of States, DOS / states eV^{-1} unitcell^{-1}"
 set grid
 set xrange [-12:10]
 set yrange [0:*]

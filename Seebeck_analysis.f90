@@ -1508,12 +1508,14 @@ PROGRAM seebeck_analysis
   REAL(8) :: effective_mass_electron ! Meff [kg/kg]
   REAL(8) :: specific_heat           ! Cv [J/(mol K)] (Specific heat at constant volume)
   REAL(8) :: ZT                      ! ZT
+  REAL(8) :: A_T                     ! The numerator A(T) in Fig. 12
+  REAL(8) :: B_T                     ! The denominator B(T)
   
-  CHARACTER(LEN=300), PARAMETER :: hdr = "#  T [K]   mu [eV]    <E-mu> [eV] &
+  CHARACTER(LEN=330), PARAMETER :: hdr = "#  T [K]   mu [eV]    <E-mu> [eV] &
     & S [muV/K]    s_all [S/m]  s_hole [S/m] s_elec [S/m] R [Ohm m]    PF [W/m/K^2] ke [W/m/K]  &
     & MFP_hole [A] MFP_elec [A] Nc [cm^-3]   Nc_h [cm^-3] Nc_e [cm^-3] RH [m^3/C]  &
     & Mh[cm^2/V/s] Me[cm^2/V/s] Meffh[kg/kg] Meffe[kg/kg] Cv[J/(molK)]&
-    & kp [W/m/K]   ZT"
+    & kp [W/m/K]   ZT           A(T)         B(T)"
   
   ! ------------------------------------------------------------------
   ! Step 0: Load "DEF(Energy shift offset)" data from 'parameter.txt'
@@ -2186,6 +2188,10 @@ PROGRAM seebeck_analysis
        END IF
      END IF
      
+     ! A(T) = T1 = mean_energy * conductivity = -1.0D0 * seebeck_coefficent * conductivity * TEM / CO
+     A_T = T1  ! The numerator A(T) in Fig. 12 
+     B_T = T   ! The denominator B(T) = T = conductivity
+     
      ! --- Output results (skip if denominator too small) ---
      !=======================================================================
      ! Note: Precision considerations for REAL(8) (double precision)
@@ -2211,7 +2217,7 @@ PROGRAM seebeck_analysis
         ! Calculate and output average energy offset <E - mu> and Seebeck coefficient
         ! T1/T is the averaged energy deviation <E - mu>
         ! -T1/T/TEM * CO gives Seebeck coefficient in muV/K
-        WRITE(6,'(F8.1,1X,F10.6, 21(1X,E12.4))') &
+        WRITE(6,'(F8.1,1X,F10.6, 23(1X,E12.4))') &
           &   temperature &
           & , chemical_potential &
           & , mean_energy &
@@ -2234,8 +2240,10 @@ PROGRAM seebeck_analysis
           & , effective_mass_electron &
           & , specific_heat &
           & , kappa_phonon &
-          & , ZT
-        WRITE(20,'(F8.1,1X,F10.6, 21(1X,E12.4))') &
+          & , ZT &
+          & , A_T &
+          & , B_T
+        WRITE(20,'(F8.1,1X,F10.6, 23(1X,E12.4))') &
           &   temperature &
           & , chemical_potential &
           & , mean_energy &
@@ -2258,7 +2266,9 @@ PROGRAM seebeck_analysis
           & , effective_mass_electron &
           & , specific_heat &
           & , kappa_phonon &
-          & , ZT
+          & , ZT &
+          & , A_T &
+          & , B_T
      ELSE
         ! If denominator T is too small (numerical instability), output placeholders
         WRITE(6,'(F8.1,1X,F10.6,1X,A)') TEM, CP, "-- -- -- -- -- -- -- -- -- -- -- --"
