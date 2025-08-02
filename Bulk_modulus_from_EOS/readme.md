@@ -10,7 +10,7 @@
    - Tip: 1 [eV/Å³] = 160.2 [GPa]
    - The bulk modulus B is useful for calculating sound velocity using the following formula:
 - To see the difference between spin polarization and non-polarization, see the Zenodo results below.: https://zenodo.org/records/15751889 and https://zenodo.org/records/15743605
-- As the results of this QE show, the bulk modulus is a sufficient value even if we use only five points of total energy. 
+- As the results of this QE show, the bulk modulus is a good value even if you use only 5 points for the total energy (although I didn't have room to include those examples in lattice_cohesive_energy.txt).
 
 ## Sound Velocity Approximation
 
@@ -83,5 +83,6 @@ Poisson's ratio $$\( \nu \)$$ varies depending on the material type. It describe
 - Lower Poisson's ratios (e.g., < 0.2) are typical for brittle materials like ceramics.
 - Higher values (e.g., > 0.4) are found in soft, ductile materials such as rubber or certain polymers.
 - Accurate Poisson's ratio is essential for calculating shear modulus, Young's modulus, and sound velocities.
+
 
 
