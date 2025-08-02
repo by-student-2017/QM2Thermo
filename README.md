@@ -185,6 +185,8 @@ If a calculation result file already exists, the corresponding calculation will 
 - [10] Y. Katsura, JTSJ (2014): https://doi.org/10.50972/thermoelectrics.11.2_19 (Open Access) (Japanese)
 - [11] Empirical estimation of thermal conductivity: https://github.com/houzf/empirical_thermal_conductivity
 - [12] Phonon density of states for Si: https://lampz.tugraz.at/~hadley/ss1/phonons/dos/si_phonon_dos.html
+- [13] Thermal Conductivity of the Elements: https://srd.nist.gov/jpcrdreprint/1.3253100.pdf
+- [14] Thermophysical Properties of Fluids Group: https://webbook.nist.gov/chemistry/fluid/
 
 
 ## Citation
