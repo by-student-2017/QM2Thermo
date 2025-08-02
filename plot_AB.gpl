@@ -4,7 +4,7 @@
 set terminal win font "Arial,12"
 set xlabel "Temperature, {/Italic T} / K"
 set ylabel "Numerator, A({/Italic T}) / m^2 s^{-2} states eV^{-1} unitcell^{-1}"
-set y2label "Denominator, B({/Italic T}) / m^2 s^{-2} states eV^{-1} unitcell^{-1}"
+set y2label "Denominator, B({/Italic T}) / m^2 s^{-2} states eV^{-2} unitcell^{-1}"
 set grid
 set xrange [0:*]
 
