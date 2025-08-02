@@ -107,7 +107,7 @@ Graphs are also output in *.png format. If it doesn't work properly on Linux, yo
 | `plot_cp.gpl`       | `apot.dat`                  | Chemical Potential            | Plots the variation of chemical potential in the material.                 |
 | `plot_dos.gpl`      | `wien.dos1`                 | Density of States (DOS)       | Displays the electronic density of states for band structure analysis.     |
 | `plot_ABGV2D.gpl`   | `ABGV2D.dat`                | the spectrum A(E,T) and B(E,T), and <\|v\|^2 * DOS> | plot_ABGV2D.gpl visualizes the energy dependence of spectra A(E,T) and B(E,T) at the temperature specified by TEMP, and the electronic structure parameter <\|v\|^2 * DOS> (corresponding to Figures 13-15 in the paper, except that the figures here are not separated into the components of each band).|
-| `plot_AB.gpl`   | `Seebeck_analysis.dat`          | Plot the numerator A(T) and the denominator B(T) in Figure 12 of the paper. Figure 12 should be calculated from the AKK.DATA output by group_velocity.f90 using select_band_range.txt. Note also that tau0 = 1.0 in the paper. |
+| `plot_AB.gpl`   | `Seebeck_analysis.dat`          | A(T) and B(T) | Plot the numerator A(T) and denominator B(T) as shown in Figure 12 in the paper. To specify the bands as in Figure 12, you need to perform calculations from group_velocity.f90 to output AKK.DATA with the bands specified in select_band_range.txt. Note that the paper uses tau0 = 1.0 for the illustration. A(T) is the integral with respect to the energy E at A(E,T). B(T) is the integral with respect to the energy E at B(E,T). |
 
 For DOS, you need to write the EF described in wien.dos1 into the script gnuplot plot_dos.gpl. The EF part is on line 22 of plot_dos.pgl shown below (written in [Ry] units). 
 ```
