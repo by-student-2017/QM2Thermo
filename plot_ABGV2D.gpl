@@ -4,7 +4,7 @@
 set terminal win font "Arial,12"
 #set xlabel "Energy, {/Italic E} - {/Symbol m} / eV"
 set xlabel "Energy, {/Italic E} / eV"
-set ylabel "Spectrum, A(E,T) / m^2 s^{-2} states eV^{-1} unitcell^{-1} \n Spectrum, B(E,T) / m^2 s^{-2} states eV^{-2} unitcell^{-1}"
+set ylabel "Spectrum, A(E,T) / m^2 s^{-2} states eV^{-1} unitcell^{-1} \nSpectrum, B(E,T) / m^2 s^{-2} states eV^{-2} unitcell^{-1}"
 set y2label "Electronic structure parameter, <|v|^2 x DOS> / m^2 s^{-2} states eV^{-1} unitcell^{-1}"
 
 #set xrange [-1.5:1.5]
