@@ -1833,7 +1833,8 @@ PROGRAM seebeck_analysis
   WRITE(20,'(A)') hdr
   !
   OPEN(UNIT=21, FILE='ABGV2D.dat')
-  WRITE(21,*) "! A(E,T), B(E,T), GV^2*DOS: [(m/s)^2 * states/eV/unitcell]"
+  WRITE(21,*) "! A(E,T), GV^2*DOS: [(m/s)^2 * states/eV/unitcell]"
+  WRITE(21,*) "! B(E,T): [(m/s)^2 * states/eV^2/unitcell]"
   WRITE(21,*) "# T [K]    E [eV]       E-mu [eV]    A(E,T)       B(E,T)       GV^2*DOS"
 
   ! ------------------------------------------------------------------
