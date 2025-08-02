@@ -110,7 +110,7 @@ Graphs are also output in *.png format. If it doesn't work properly on Linux, yo
 | `plot_AB.gpl`   | `Seebeck_analysis.dat`          | A(T) and B(T) | Plot the numerator A(T) and denominator B(T) as shown in Figure 12 in the paper. Note that the paper uses tau0 = 1.0 in the calculation. A(T) is the integral of A(E,T) with respect to the energy E, and B(T) is the integral of B(E,T) with respect to the energy E. |
 - **plot_ABGV2D.gpl**: Please note that in this code, the relaxation time is explicitly specified and calculated, so the dimensions are multiplied by [s], unlike Figures 13-15 in the paper.
 - **plot_AB.gpl**: Please note that in this code, the relaxation time is explicitly specified and calculated, so the dimensions are multiplied by [s], unlike Figures 12 in the paper.
-- To specify the bands as shown in Figure 12-15, run the calculation in group_velocity.f90 using select_band_range.txt and output AKK.DATA containing only the specified bands.
+- To specify the bands as shown in Figure 12-15, run the calculation in group_velocity.f90 using select_band_range.txt and output AKK.DATA containing only the specified bands.  
 For DOS, you need to write the EF described in wien.dos1 into the script gnuplot plot_dos.gpl. The EF part is on line 22 of plot_dos.pgl shown below (written in [Ry] units).
 ```
 EF = 0.34363
