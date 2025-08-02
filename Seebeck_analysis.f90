@@ -1833,7 +1833,7 @@ PROGRAM seebeck_analysis
   WRITE(20,'(A)') hdr
   !
   OPEN(UNIT=21, FILE='ABGV2D.dat')
-  WRITE(21,*) "! In this code, the relaxation time [s] is multiplied. 
+  WRITE(21,*) "! In this code, the relaxation time [s] is multiplied."
   WRITE(21,*) "! The dimensions shown below are those when the relaxation time is ignored with tau0 = 1.0 in the paper."
   WRITE(21,*) "! In reality, [s] is multiplied."
   WRITE(21,*) "! A(E,T): [(m/s)^2 * states/eV/unitcell] (In reality, [m^2/s * states/eV/unitcell])"
