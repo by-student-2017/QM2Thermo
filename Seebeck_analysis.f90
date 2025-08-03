@@ -287,6 +287,11 @@ MODULE seebeck_data
   REAL(KIND=8) :: Gruneisen_parameter             ! It corresponds to the ratio of the second-order elastic constant C to the third-order elastic constant D.
   REAL(KIND=8) :: Apara                           ! parameter A of Slack model.
   REAL(KIND=8) :: kappa_phonon_min                ! Cahill molde: (1/2)*(PI/6)**(1/3)*kb*(volume/N_atom)**(2/3)*(vl + 2*vt)
+  REAL(KIND=8) :: kappa_phonon_min_Clarke         !
+  REAL(KIND=8) :: kappa_phonon_min_Cahill         !
+  REAL(KIND=8) :: kappa_phonon_min_Slack          !
+  REAL(KIND=8) :: kappa_phonon_min_Slack_xK       !
+  REAL(KIND=8) :: km                              !
   REAL(KIND=8) :: kappa_phonon                    ! kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
   !-----------------------------------------------
   REAL(KIND=8) :: Nd                              ! Doping concentration in cm^-3: n-type 1.0e14 - 1.0e18 [cm^-3]
@@ -1511,7 +1516,7 @@ PROGRAM seebeck_analysis
   REAL(8) :: A_T                     ! The numerator A(T) in Fig. 12
   REAL(8) :: B_T                     ! The denominator B(T)
   
-  CHARACTER(LEN=330), PARAMETER :: hdr = "#  T [K]   mu [eV]    <E-mu> [eV] &
+  CHARACTER(LEN=318), PARAMETER :: hdr = "#  T [K]   mu [eV]    <E-mu> [eV] &
     & S [muV/K]    s_all [S/m]  s_hole [S/m] s_elec [S/m] R [Ohm m]    PF [W/m/K^2] ke [W/m/K]  &
     & MFP_hole [A] MFP_elec [A] Nc [cm^-3]   Nc_h [cm^-3] Nc_e [cm^-3] RH [m^3/C]  &
     & Mh[cm^2/V/s] Me[cm^2/V/s] Meffh[kg/kg] Meffe[kg/kg] Cv[J/(molK)]&
@@ -1687,37 +1692,11 @@ PROGRAM seebeck_analysis
   WRITE(*,*) "Hall coefficient, RH [m^3/C]", (1.0D0 / (ech * Nd * 1.0e6))
   WRITE(*,*) "------------------------------------------------------"
   CLOSE(10)
-
-  ! ------------------------------------------------------------------
-  ! Step 4: Read phonon DOS (phononDOS or a2F.dos)
-  ! ------------------------------------------------------------------
-  IF (use_phononDOS) THEN
-    CALL read_phonon_dos()
-    WRITE(*,*) "------------------------------------------------------"
-    !TEM = 5.0
-    TEM = 300.0
-    call find_matching_Theta_D(TEM, Theta_D, Cv_DOS, Cv_Debye)  ! Subroutines defined at the end of MODULE seebeck_data
-    WRITE(*, *) "Temperature, T [K]", TEM
-    !WRITE(*, *) "The theoretical phonon DOS was calculated at 0 K, so a low value was used."
-    WRITE(*, *) "Matched Debye Temperature (Theta_D) [K]:", Theta_D
-    WRITE(*, *) "Frequency (Omega) Maximum (wmax)    [K]:", wmax/kb
-    !WRITE(*, *) "(new_l*hbar/kb) * (6*PI^2*n)^(1/3)     [K]:", (new_l*hbar/kb) * (6*PI**2.0D0*N_atom/volume)**(1.0D0/3.0D0)
-    !WRITE(*, *) "(new_t*hbar/kb) * (6*PI^2*n)^(1/3)     [K]:", (new_t*hbar/kb) * (6*PI**2.0D0*N_atom/volume)**(1.0D0/3.0D0)
-    WRITE(*, *) "Cv_DOS(T) [J/(mol K)]:", Cv_DOS
-    WRITE(*, *) "Cv_Debye(T, Theta_D) [J/(mol K)]:", Cv_Debye
-    WRITE(*, *) "Dulong-Petit approximation is assumed at Temperatre >= Debye Temperature", Theta_D, " or ",  wmax/kb
-  ELSE
-    WRITE(*, *) "Specific heat at constant volume is not calculated. Cv = 0.0000E+00 [J/(mol K)]"
-  END IF
-  WRITE(*, *) "Dulong-Petit approximatio (T >= Debye Temperature): Cv_DP = 3*R [J/(mol K)]:", 3*8.314
-  WRITE(*, *) "Gas constant, R = 8.314 [J/(m K)]"
-  WRITE(*,*) "------------------------------------------------------"
-  !
-  IF (use_a2Fdos) THEN
-    CALL read_a2F_dos()
-  END IF
   
-  IF (Bulk_modulus /= 0.0 .and. density /= 0.0) THEN
+  ! ------------------------------------------------------------------
+  ! Calculates estimated values of various physical properties
+  ! ------------------------------------------------------------------
+  IF (Bulk_modulus > 0.0 .and. density > 0.0) THEN
     Shear_modulus = Bulk_modulus / (2.0D0*(1+Poisson_ratio))
     ! 1 [GPa] = 1.0e9 [kg/(m*s^2)], 1 [g/cm^3] = 1000 [kg/m^3], [GPa]*[kg/m^3] = 1.0e9 [(m/s)^2]
     vl = ((Bulk_modulus*1.0D9 + (4.0D0/3.0D0)*Shear_modulus*1.0D9) / (density*1.0D3))**(1.0D0/2.0D0)
@@ -1754,19 +1733,21 @@ PROGRAM seebeck_analysis
     kappa_phonon_min = 0.87 * (kb * ech) * ((volume*1.0D-30)/N_atom)**(-2.0D0/3.0D0) * &
       & (Young_modulus*1.0D9/(density*1.0D3))**(1.0D0/2.0D0)
     WRITE(*,*) "Clarke model: kappa_phonon_min [W/m/K]:", kappa_phonon_min
+    kappa_phonon_min_Clarke = kappa_phonon_min
     
     WRITE(*,*)
     WRITE(*,*) "---------- ----------"
     
-    ! kb [eV/K], ech [C], kb * ech [J/K] = [W*s/K]
     WRITE(*,*) "Cahill-Pohl model: The model emphasizes the speed of sound waves and calculates how fast longitudinal and"
     WRITE(*,*) " transverse waves travel. This model is flexible enough to be applied to non-crystalline materials and"
     WRITE(*,*) " nanoscale structures."
     WRITE(*,*)
     !
+    ! kb [eV/K], ech [C], kb * ech [J/K] = [W*s/K]
     kappa_phonon_min = (1.0D0/2.0D0) * (PI/6.0D0)**(1.0D0/3.0D0) * (kb * ech) * &
       & (N_atom/(volume*1.0D-30))**(2.0D0/3.0D0) * (vl + 2.0D0*vt)
     WRITE(*,*) "Cahill-Pohl model: kappa_phonon_min [W/m/K]:", kappa_phonon_min
+    kappa_phonon_min_Cahill = kappa_phonon_min
     
     WRITE(*,*)
     WRITE(*,*) "---------- ----------"
@@ -1801,20 +1782,100 @@ PROGRAM seebeck_analysis
     kappa_phonon_min = Apara * Mavg * Theta_D_va**3.0D0 * (volume/N_atom)**(1.0D0/3.0D0) / &
       & (Gruneisen_parameter**2.0D0 * (N_atom)**(2.0D0/3.0D0) * TEM)
     WRITE(*,*) "Slack model: kappa_phonon_min [W/m/K]:", kappa_phonon_min, " at ", TEM, " [K]"
+    kappa_phonon_min_Slack = kappa_phonon_min
+    kappa_phonon_min_Slack_xK = Apara * Mavg * Theta_D_va**3.0D0 * (volume/N_atom)**(1.0D0/3.0D0) / &
+      & (Gruneisen_parameter**2.0D0 * (N_atom)**(2.0D0/3.0D0))
     
+    WRITE(*,*)
+    WRITE(*,*) "---------- ----------"
+    WRITE(*,*) "Ref.: Thermal Conductivity of the Elements: https://srd.nist.gov/jpcrdreprint/1.3253100.pdf"
+    WRITE(*,*) "Cezairliyan: k/km= [(1/3)*(T/Tm)^2 + 2/(3*(T/Tm))]^-1"
+    WRITE(*,*) "Let Tm = Debye temperature and the thermal conductivity at that time be km."
+    km = kappa_phonon_min_Slack_xK / Theta_D_va
+    WRITE(*,*) "Slack model, km:" , km, " at ", Theta_D_va, " [K]"
+    WRITE(*,*) "Slack model: kappa_phonon_min [W/m/K]:",&
+      & km * ( (1.0D0/3.0D0)*(TEM/Theta_D_va)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D_va)) )**(-1.0D0) ,&
+      & " at ", TEM, " [K]"
+    
+    WRITE(*,*)
     WRITE(*,*) "-------------------------------"
-    
-    IF (use_phononDOS) THEN
-      ! [J/(mol*K)] * [mol/m^3] * ([m/s])^2 * [s] = [(J*s)/(m*K)] = [W/(m*K)]
-      kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
-      WRITE(*, *) "kappa_phonon [W/m/K]: ", kappa_phonon
-    ELSE
-      WRITE(*, *) "Since phononDOS.dat is not used, the Slack model is used for the phonon thermal conductivity."
-      WRITE(*, *) "And specific heat at constant volume is not calculated. Cv = 0.0000E+00 [J/(mol K)]"
-    END IF
+    WRITE(*, *) "Dulong-Petit approximatio (T >= Debye Temperature): Cv_DP = 3*R [J/(mol K)]:", 3*8.314
+    WRITE(*, *) "Gas constant, R = 8.314 [J/(m K)]"
     WRITE(*,*) "------------------------------------------------------"
   END IF
-
+  
+  ! ------------------------------------------------------------------
+  ! Step 4: Read phonon DOS (phononDOS or a2F.dos)
+  ! ------------------------------------------------------------------
+  IF (use_phononDOS) THEN
+    CALL read_phonon_dos()
+    WRITE(*,*) "------------------------------------------------------"
+    TEM = 300.0
+    I = 1
+    DO WHILE( ABS(TEM - Theta_D) > 1.0D-2 .and. I <= 100)
+      call find_matching_Theta_D(TEM, Theta_D, Cv_DOS, Cv_Debye)  ! Subroutines defined at the end of MODULE seebeck_data
+      TEM = TEM * 0.7 + Theta_D * 0.3
+      !WRITE(*,*) I, TEM, Theta_D
+      I = I +1
+    END DO
+    IF (Theta_D > wmax/kb) THEN
+      TEM = 300.0
+      call find_matching_Theta_D(TEM, Theta_D, Cv_DOS, Cv_Debye)  ! Subroutines defined at the end of MODULE seebeck_data
+    END IF
+    WRITE(*, *) "Temperature, T [K]", TEM
+    WRITE(*, *) "Matched Debye Temperature (Theta_D) [K]:", Theta_D
+    WRITE(*, *) "Frequency (Omega) Maximum (wmax)    [K]:", wmax/kb
+    WRITE(*, *) "Cv_DOS(T) [J/(mol K)]:", Cv_DOS
+    WRITE(*, *) "Cv_Debye(T, Theta_D) [J/(mol K)]:", Cv_Debye
+    WRITE(*, *) "Dulong-Petit approximation is assumed at Temperatre >= Debye Temperature", Theta_D, " or ",  wmax/kb
+    !
+    WRITE(*,*)
+    WRITE(*,*) "---------- ----------"
+    IF (Bulk_modulus <= 0.0 .or. density <= 0.0) THEN
+      va = Theta_D / ( (2.0D0*PI*hbar/kb) * ( (3.0D0*N_atom) / (4.0D0*PI*(volume*1.0D-30)) )**(1.0D0/3.0D0) )
+      WRITE(*,*) "average sound velocity, va [m/s]:", va, " from Debye temperature [K]", Theta_D
+      
+      ! [J/(mol*K)] * [mol/m^3] * ([m/s])^2 * [s] = [(J*s)/(m*K)] = [W/(m*K)]
+      kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * va**2.0D0 * tau0_phonon
+      WRITE(*, *) "Calculation results of phonon thermal conductivity using Cv_DOS calculated from data in phononDOS.dat and"
+      WRITE(*, *) " va calculated from Cv_DOS."
+      WRITE(*, *) "kappa_phonon(Cv_DOS) [W/m/K]: ", kappa_phonon
+      
+      WRITE(*,*)
+      WRITE(*,*) "---------- ----------"
+      WRITE(*,*) "Ref.: Thermal Conductivity of the Elements: https://srd.nist.gov/jpcrdreprint/1.3253100.pdf"
+      WRITE(*,*) "Cezairliyan: k/km= [(1/3)*(T/Tm)^2 + 2/(3*(T/Tm))]^-1"
+      WRITE(*,*) "Let Tm = Debye temperature and the thermal conductivity at that time be km."
+      km = kappa_phonon
+      WRITE(*,*) "km:" , km, " at ", Theta_D, " [K]"
+      WRITE(*,*) "kappa_phonon_min [W/m/K]:",&
+        & km * ( (1.0D0/3.0D0)*(TEM/Theta_D)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D)) )**(-1.0D0) ,&
+        & " at ", TEM, " [K]"
+    ELSE
+      ! [J/(mol*K)] * [mol/m^3] * ([m/s])^2 * [s] = [(J*s)/(m*K)] = [W/(m*K)]
+      kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
+      WRITE(*, *) "Calculation results of phonon thermal conductivity using Cv_DOS calculated from data in phononDOS.dat and"
+      WRITE(*, *) " vl and vt calculated from Bulk modulus and Poisson's_ratio, etc."
+      WRITE(*, *) "kappa_phonon(Cv_DOS, vl, vt) [W/m/K]: ", kappa_phonon
+      
+      WRITE(*,*)
+      WRITE(*,*) "---------- ----------"
+      WRITE(*,*) "Ref.: Thermal Conductivity of the Elements: https://srd.nist.gov/jpcrdreprint/1.3253100.pdf"
+      WRITE(*,*) "Cezairliyan: k/km= [(1/3)*(T/Tm)^2 + 2/(3*(T/Tm))]^-1"
+      WRITE(*,*) "Let Tm = Debye temperature and the thermal conductivity at that time be km."
+      km = kappa_phonon
+      WRITE(*,*) "km:" , km, " at ", Theta_D, " [K]"
+      WRITE(*,*) "kappa_phonon_min [W/m/K]:",&
+        & km * ( (1.0D0/3.0D0)*(TEM/Theta_D)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D)) )**(-1.0D0) ,&
+        & " at ", TEM, " [K]"
+    END IF
+  END IF
+  WRITE(*,*) "------------------------------------------------------"
+  !
+  IF (use_a2Fdos) THEN
+    CALL read_a2F_dos()
+  END IF
+  
   ! ------------------------------------------------------------------
   ! Step 5: Initialize output file and print header
   ! ------------------------------------------------------------------
@@ -1829,7 +1890,13 @@ PROGRAM seebeck_analysis
   WRITE(20, *) "! tau mode: phnonDOS", use_phononDOS, ", N_atom", N_atom
   WRITE(20, *) "! tau mode: filter", use_selection_filter
   IF (use_phononDOS) WRITE(20, *) "! Matched Debye Temperature (Theta_D) [K]:", Theta_D
-  IF (use_phononDOS .eqv. .FALSE.) WRITE(20, *) "! Specific heat at constant volume is not calculated. Cv = 0.0000E+00 [J/(mol K)]"
+  IF (use_phononDOS .eqv. .FALSE.) THEN
+    WRITE(20, *) "! Specific heat at constant volume is not calculated. Cv = 0.0000E+00 [J/(mol K)]"
+    WRITE(20, *) "! Since phononDOS.dat is not used, the Slack model + Cezairliyan is used for the phonon thermal conductivity."
+    ! -----
+    WRITE(*, *) "Specific heat at constant volume is not calculated. Cv = 0.0000E+00 [J/(mol K)]"
+    WRITE(*, *) "Since phononDOS.dat is not used, the Slack model + Cezairliyan is used for the phonon thermal conductivity."
+  END IF
   WRITE(20,'(A)') hdr
   !
   OPEN(UNIT=21, FILE='ABGV2D.dat')
@@ -1996,7 +2063,7 @@ PROGRAM seebeck_analysis
         !kappa_electron_term1_CURR = FDEE * E1
         !kappa_electron_term2_CURR = FDEE**2.0D0
         !
-        !IF (GV2(I) > 1.0E-12 .and. DOS(I) /= 0.0) THEN
+        !IF (GV2(I) > 1.0E-12 .and. DOS(I) > 0.0) THEN
         !  m_eff_CURR = ABS(FDD * 2.0D0 * E1 / GV2(I)) * DOS(I) * FX
         !ELSE
         !  m_eff_CURR = 0.0
@@ -2043,7 +2110,7 @@ PROGRAM seebeck_analysis
         kappa_electron_term1_NEXT = FDEE * E1
         kappa_electron_term2_NEXT = FDEE**2.0D0
         
-        IF (GV2(I) > 1.0E-12 .and. DOS(I) /= 0.0) THEN
+        IF (GV2(I) > 1.0E-12 .and. DOS(I) > 0.0) THEN
           m_eff_NEXT = ABS(FDD * 2.0D0 * E1 / GV2(I)) * DOS(I) * FX
         ELSE
           m_eff_NEXT = 0.0
@@ -2117,25 +2184,25 @@ PROGRAM seebeck_analysis
      
      ! Calculation of sum to average
      MFP = MFP / (EE(MM - 2) - EE(2)) ! [m/s]*[s] = [m]
-     IF (DOS_hole /= 0.0) THEN
+     IF (DOS_hole > 0.0) THEN
        MFP_hole = MFP_hole / (EE(MM - 2) - EE(2)) / DOS_hole ! [m/s]*[s] = [m]
        m_eff_hole = m_eff_hole / ABS(EE(MM - 2) - EE(2)) / DOS_hole
      ELSE
        MFP_hole = 0.0D0
        m_eff_hole = HUGE(0.0D0)
      END IF
-     IF (DOS_electron /= 0.0) THEN
+     IF (DOS_electron < 0.0) THEN
        MFP_electron = MFP_electron / (EE(MM - 2) - EE(2)) / DOS_electron ! [m/s]*[s] = [m]
      ELSE
        MFP_electron = 0.0D0
        m_eff_electron = HUGE(0.0D0)
      END IF
      
-     IF ((VEC0 - VEC) >= 0.0 .and. Nd_hole /= 0.0) THEN
+     IF ((VEC0 - VEC) >= 0.0 .and. Nd_hole > 0.0) THEN
        Nd_hole = Nd_hole / volume * 1.0e24
        Nd_electron = -Nd_hole
        Nd_hole     =  Nd_hole + (VEC0 - VEC) / volume * 1.0e24
-     ELSE IF ((VEC0 - VEC) <= 0.0 .and. Nd_electron /= 0.0) THEN
+     ELSE IF ((VEC0 - VEC) <= 0.0 .and. Nd_electron < 0.0) THEN
        Nd_electron = Nd_electron / volume * 1.0e24
        Nd_hole     = -Nd_electron
        Nd_electron =  Nd_electron + (VEC0 - VEC) / volume * 1.0e24
@@ -2173,18 +2240,25 @@ PROGRAM seebeck_analysis
      IF (use_phononDOS) THEN
        Cv_DOS = compute_Cv_DOS(TEM)
        specific_heat = Cv_DOS         ! Specific heat at constant volume
-       IF (vl /= 0.0 .and. vt /= 0.0 .and. tau0_phonon > 0.0) THEN
+       IF (vl >= 0.0 .and. vt >= 0.0 .and. tau0_phonon > 0.0) THEN
          ! [J/(mol*K)] * [mol/m^3] * ([m/s])^2 * [s] = [(J*s)/(m*K)] = [W/(m*K)]
-         kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
+         !kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
+         !
+         ! phononDOS.dat + Cezairliyan
+         kappa_phonon = km * ( (1.0D0/3.0D0)*(TEM/Theta_D)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D)) )**(-1.0D0)
          ZT = power_factor * temperature / (kappa_electron + kappa_phonon)
        END IF
      ELSE
        Cv_DOS = 0.0
        specific_heat = Cv_DOS         ! Specific heat at constant volume
-       IF (Bulk_modulus /= 0.0 .and. density /= 0.0) THEN
+       IF (Bulk_modulus > 0.0 .and. density > 0.0) THEN
          ! Slack model
-         kappa_phonon_min = Apara * Mavg * Theta_D_va**3.0D0 * (volume/N_atom)**(1.0D0/3.0D0) / &
-           & (Gruneisen_parameter**2.0D0 * (N_atom)**(2.0D0/3.0D0) * temperature)
+         !kappa_phonon_min = Apara * Mavg * Theta_D_va**3.0D0 * (volume/N_atom)**(1.0D0/3.0D0) / &
+         !  & (Gruneisen_parameter**2.0D0 * (N_atom)**(2.0D0/3.0D0) * temperature)
+         !
+         ! Slack mode + Cezairliyan
+         kappa_phonon_min = km * ( (1.0D0/3.0D0)*(TEM/Theta_D_va)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D_va)) )**(-1.0D0)
+         !
          kappa_phonon = kappa_phonon_min
          ZT = power_factor * temperature / (kappa_electron + kappa_phonon)
        ELSE
