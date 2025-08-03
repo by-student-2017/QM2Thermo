@@ -9,7 +9,7 @@
 ```
 git clone https://github.com/by-student-2017/LBT-TETRA.git
 cd LBT-TETRA
-sudo apt update && sudo apt -y install gfortran build-essential make dos2unix
+sudo apt update && sudo apt -y install gfortran build-essential make dos2unix gnuplot
 dos2unix *
 make
 ```
