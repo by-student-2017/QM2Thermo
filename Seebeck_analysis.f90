@@ -1699,7 +1699,7 @@ PROGRAM seebeck_analysis
     Shear_modulus = Bulk_modulus / (2.0D0*(1+Poisson_ratio))
     ! 1 [GPa] = 1.0e9 [kg/(m*s^2)], 1 [g/cm^3] = 1000 [kg/m^3], [GPa]*[kg/m^3] = 1.0e9 [(m/s)^2]
     vl = ((Bulk_modulus*1.0D9 + (4.0D0/3.0D0)*Shear_modulus*1.0D9) / (density*1.0D3))**(1.0D0/2.0D0)
-    vt = (Bulk_modulus*1.0D9 / (density*1.0D3))**(1.0D0/2.0D0)
+    vt = (Shear_modulus*1.0D9 / (density*1.0D3))**(1.0D0/2.0D0)
     WRITE(*,*) "Shear modulus, G [GPa]", Shear_Modulus
     WRITE(*,*) "sound velocity (longitudinal wave) estimated from bulk and shear moduli, vl [m/s]:", vl
     WRITE(*,*) "sound velocity (transverse   wave) estimated from shear modulus        , vt [m/s]:", vt
