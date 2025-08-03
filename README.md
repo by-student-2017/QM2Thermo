@@ -187,6 +187,7 @@ If a calculation result file already exists, the corresponding calculation will 
 - [12] Phonon density of states for Si: https://lampz.tugraz.at/~hadley/ss1/phonons/dos/si_phonon_dos.html
 - [13] Thermal Conductivity of the Elements: https://srd.nist.gov/jpcrdreprint/1.3253100.pdf
 - [14] Thermophysical Properties of Fluids Group: https://webbook.nist.gov/chemistry/fluid/
+- [15] eXtremes of heat conduction: https://users.mrl.illinois.edu/cahill/mrs_sympx_f11.pdf
 
 
 ## Citation
