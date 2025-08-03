@@ -73,17 +73,14 @@ a2F.dos10  a2F.dos3  a2F.dos5  a2F.dos7  a2F.dos9  phononDOS.dat
 !-----------------------:------------!--Memo---------------------------------------------------------------------------
 DEF (Energy shift)  [eV]:  1.173000  ! This is good !
 Base relaxation time [s]:  1.0       ! This is good !
-phonon (lambda) (F or T):  F         ! This is good !
 
 !-----------------------:------------!--Memo---------------------------------------------------------------------------
 DEF (Energy shift)  [eV]1.173000     ! This is bad !
-Base relaxation time [s]1.00e-14     ! This is bad !
-phonon (lambda) (F or T): F         ! This is bad !
+Base relaxation time [s]: 1.00e-14  ! This is bad !
 
 !-----------------------:------------!--Memo---------------------------------------------------------------------------
-DEF (Energy shift)  [eV]:     1.173000  ! This is bad !
-Base relaxation time [s]:     1.00e-14  ! This is bad !
-phonon (lambda) (F or T) :  F        ! This is bad !
+DEF (Energy shift)  [eV]:        1.173000  ! This is bad !
+Base relaxation time [s] : 1.00e-14   ! This is bad !
 
 # As an aside, in the paper the basic relaxation time is calculated as 1.0.
 # From this version onwards, the calculation of relaxation time is considered based on Alle's theory.
