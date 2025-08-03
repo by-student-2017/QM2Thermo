@@ -76,11 +76,11 @@ Base relaxation time [s]:  1.0       ! This is good !
 
 !-----------------------:------------!--Memo---------------------------------------------------------------------------
 DEF (Energy shift)  [eV]1.173000     ! This is bad !
-Base relaxation time [s]: 1.00e-14  ! This is bad !
+Base relaxation time [s]: 1.00e-14  ! This is bad ! ("!" is entered and an error occurs.)
 
 !-----------------------:------------!--Memo---------------------------------------------------------------------------
 DEF (Energy shift)  [eV]:        1.173000  ! This is bad !
-Base relaxation time [s] : 1.00e-14   ! This is bad !
+Base relaxation time [s] : 1.00e-14   ! This is bad ! (":" is entered and an error occurs.)
 
 # As an aside, in the paper the basic relaxation time is calculated as 1.0.
 # From this version onwards, the calculation of relaxation time is considered based on Alle's theory.
