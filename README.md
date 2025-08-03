@@ -75,11 +75,11 @@ DEF (Energy shift)  [eV]:  1.173000  ! This is good !
 Base relaxation time [s]:  1.0       ! This is good !
 
 !-----------------------:------------!--Memo---------------------------------------------------------------------------
-DEF (Energy shift)  [eV]1.173000     ! This is bad !
-Base relaxation time [s]: 1.00e-14  ! This is bad ! ("!" is entered and an error occurs.)
+DEF (Energy shift)  [eV]1.173000     ! This is bad ! (Note that it may be read as 0.173000.)
+Base relaxation time [s]: 1.00e-14  !  This is bad ! ("!" is entered and an error occurs.)
 
 !-----------------------:------------!--Memo---------------------------------------------------------------------------
-DEF (Energy shift)  [eV]:        1.173000  ! This is bad !
+DEF (Energy shift)  [eV]:        1.173000  ! This is bad ! (Note that it may be read as 1.17)
 Base relaxation time [s] : 1.00e-14   ! This is bad ! (":" is entered and an error occurs.)
 
 # As an aside, in the paper the basic relaxation time is calculated as 1.0.
