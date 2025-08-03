@@ -1,0 +1,38 @@
+#!/usr/bin/gnuplot
+
+# === Display on screen ===
+set terminal win font "Arial,12"
+set xlabel "Temperature, {/Italic T} / K"
+set ylabel "Power factor, {/Italic PF} / mW m^{-1} K^{-2}"
+set y2label "Electrical Resistivity, {/Symbol r} /  {/Symbol mW} m"
+
+set xrange [0:*]
+set yrange [0:*]
+set y2range [0:20]
+
+set grid
+
+# Add minor ticks
+set xtics 100
+set ytics 0.1
+set y2tics 2.0
+
+set mxtics 5
+set mytics 5
+set my2tics 5
+
+set ytics nomirror
+set y2tics nomirror
+
+# Line style: Blue line with points
+set style line 1 lt 1 lw 2 lc rgb "#0072BD" pt 7 ps 1.2
+
+# Plot to screen
+plot "Seebeck_analysis.dat" using 1:($9*1.0e3) axis x1y1  with linespoints linestyle 1 lc "black" title "PF", \
+     "Seebeck_analysis.dat" using 1:($8*1.0e6) axis x1y2  with linespoints linestyle 1 lc "blue"  title "R"
+
+# === Save as PNG (publication ready) ===
+set terminal pngcairo size 800,600 font "Times New Roman,12"
+set output "PF_and_R.png"
+replot
+unset output
