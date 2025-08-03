@@ -5,7 +5,7 @@ phonon (lambda) (F or T):  F         ! The lambda file output by EPW (QE or Abin
 impurity        (F or T):  F         ! Impurity scattering. Typically used in heavily doped semiconductors
 n_impurity              :  3.000     ! 1: Mild energy-dependence, 3.0: high energy, 4.0: more. (works: impurity = T)
 dos (electron)  (F or T):  F         ! Accounts for scattering probability increasing with available final states
-a2Fdos  (files & lambda):  F         ! a2F.dos (EPW) takes precedence over phononDOS. (automatically set phononDOS = F)
+a2Fdos  (files & lambda):  F         ! a2F.dos takes precedence over phononDOS in calculating relaxation times.
 phononDOS       (F or T):  F         ! Lines 1 and 2 are comment lines. Frequency [eV] vs. Total DOS (phonon) data.
 N_atom         (integer):  2         ! Normalize phdos with 3N. (If phononDOS.dat is normalized to 3N = 3, N_atom = 1.)
 filter          (F or T):  F         ! Weight: w(acoustic)=1, w(0.01-0.03 eV)=0.5, w(optical)=0. (works: phononDOS = T)
@@ -13,11 +13,11 @@ L_bound       [Angstrom]:  0.0       ! Boundary scattering. (works: phononDOS = 
 b_para                  :  0.0       ! Umklapp (Klemens-Callaway type model) scat. (Ref. 1 - 2) (works: phononDOS = T)
 C_phel      [s^-1*eV^-2]:  0.0       ! Phonon-Electron scattering coefficient. (Ref. 2.31e10) (works: a2Fdos = F)
 B_pdef      [s^-1*eV^-4]:  0.0       ! Point defect scattering coefficient. (Ref. 5.33e15)
-Bulk modulus, B    [GPa]:  100.0     ! For example, use Bulk_modulus_from_EOS and get Bulk modulus.
+Bulk modulus, B    [GPa]: 100.0      ! For example, use Bulk_modulus_from_EOS and get Bulk modulus.
 Shear modulus, G   [GPa]:  0.0       ! If it is 0.0, calculate from Bulk modulus and Poisson's ratio.
 Young's modulus, E [GPa]:  0.0       ! If it is 0.0, calculate from Bulk modulus and Shear modulus or Poisson's ratio.
 Poisson's ratio         :  0.3       ! General Range: 0.25 - 0.35 (If it is 0.0, set 0.3)
-density         [g/cm^3]:  2.33      ! The cif file may contain density information at "_exptl_crystal_density_diffrn".
+density         [g/cm^3]:  2.33      ! Please try your best to calculate it from a cif file or something.
 relaxation time (ph) [s]:  1.00e-12  ! About 10-100 times stronger than electrons. (If it is < 0.0, tau_ph * 100 [s])
 Gruneisen parameter     :  0.0       ! If it is 0.0, calculate from vt and vl (Bulk modulus and Poisson's ratio).
 Slack model parameter A :  0.0       ! If it is 0.0, calculate from Gruneisen parameter (B and Poisson's ratio.)

@@ -1576,11 +1576,10 @@ PROGRAM seebeck_analysis
   WRITE(*,*) "n_impurity              :", n_impurity
   WRITE(*,*) "tau, dos                :", use_dos
   WRITE(*,*) "tau, a2Fdos             :", use_a2Fdos
-  IF (use_a2Fdos) THEN
-    use_phononDOS = .FALSE.
-    WRITE(*,*) "a2F.dos (QE output) takes precedence over phononDOS. (automatically set phononDOS = F)"
-  END IF
   WRITE(*,*) "tau, phononDOS          :", use_phononDOS
+  IF (use_a2Fdos .and. use_phononDOS) THEN
+    WRITE(*,*) "a2F.dos takes precedence over phononDOS.dat in calculating relaxation times."
+  END IF
   WRITE(*,*) "N_atom                  :", N_atom
   WRITE(*,*) "tau, filter             :", use_selection_filter
   WRITE(*,*) "L_bound                 :", L_bound
