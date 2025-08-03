@@ -2186,15 +2186,9 @@ PROGRAM seebeck_analysis
      IF (DOS_hole > 0.0) THEN
        MFP_hole = MFP_hole / (EE(MM - 2) - EE(2)) / DOS_hole ! [m/s]*[s] = [m]
        m_eff_hole = m_eff_hole / ABS(EE(MM - 2) - EE(2)) / DOS_hole
-     ELSE
-       MFP_hole = 0.0D0
-       m_eff_hole = HUGE(0.0D0)
      END IF
      IF (DOS_electron < 0.0) THEN
        MFP_electron = MFP_electron / (EE(MM - 2) - EE(2)) / DOS_electron ! [m/s]*[s] = [m]
-     ELSE
-       MFP_electron = 0.0D0
-       m_eff_electron = HUGE(0.0D0)
      END IF
      
      IF ((VEC0 - VEC) >= 0.0 .and. Nd_hole > 0.0) THEN
