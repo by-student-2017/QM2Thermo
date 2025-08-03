@@ -192,6 +192,7 @@ If a calculation result file already exists, the corresponding calculation will 
 - If the bulk modulus and density in parameter.txt are > 0, the sound speed is calculated, and the thermal conductivity is calculated using the formula in "Empirical estimation of thermal conductivity".
 - phononDOS.dat calculates the constant volume specific heat Cv_DOS and Debye temperature. If the bulk modulus and density in parameter.txt are <= 0, it calculates the average sound speed from Cv_DOS and the thermal conductivity.
 - The temperature dependence is calculated using the Cezairliyan treatment, where the code assumes that Tm = Debye temperature and km is the thermal conductivity at the Debye temperature.
+- The constant A in the Slack model is derived from the formula commented in the python code in "Empirical estimation of thermal conductivity." This formula is closer to the thermal conductivity calculated from phonon DOS for Si than A = 3.1e-6, so we decided to use it.
 
 ## Citation
 1. Journal version
