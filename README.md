@@ -195,6 +195,8 @@ If a calculation result file already exists, the corresponding calculation will 
 - [13] Thermal Conductivity of the Elements: https://srd.nist.gov/jpcrdreprint/1.3253100.pdf
 - [14] Thermophysical Properties of Fluids Group: https://webbook.nist.gov/chemistry/fluid/
 - [15] eXtremes of heat conduction: https://users.mrl.illinois.edu/cahill/mrs_sympx_f11.pdf
+- [16] PINK: Physical-Informed Machine Learning for Thermal Conductivity: https://doi.org/10.48550/arXiv.2503.17060
+
 
 ## Citation
 1. Journal version
