@@ -669,7 +669,7 @@ Where:
 
 ## Slack Model Parameter Estimation
 
-When the parameter `Apara` is not explicitly provided (`Apara == 0.0`), it is automatically estimated based on the crystal structure and coordination number using the following expression:
+This README explains the logic used to estimate the empirical parameter `Apara` in the Slack model for thermal conductivity prediction. The estimation adapts based on the availability of crystal structure information, specifically the coordination number (CN).
 
 $$
 A = 3.1 \times 10^{-6} \cdot \left( \frac{V/N_{\text{atom}}}{\frac{3.615^3}{4}} \right)^{1/3} \cdot \left( \frac{a + b + c}{V^{1/3}} \right)^{-0.5} \cdot \left( \frac{\text{CN}}{12} \right)^{0.5}
@@ -684,20 +684,33 @@ Where:
 - $$\( 3.615 \)$$: Reference lattice constant for Cu (FCC structure)  
 - $$\( A_0 = 3.1 \times 10^{-6} \)$$: Empirical constant for cubic systems in the Slack model
 
-### Special Handling:
-
-If the coordination number `CN` is less than or equal to 0.0, it is automatically set to 12.0 to avoid division by zero or undefined behavior. This ensures that the correction term remains physically meaningful and numerically stable.
-
 ### Physical Meaning of Each Term
 
 - **Atomic volume normalization**: Adjusts for packing density differences relative to FCC Cu  
 - **Anisotropy correction**: Accounts for deviations from cubic symmetry  
 - **Coordination number correction**: Reflects the influence of bonding environment on thermal transport, based on second moment approximation
 
-### Runtime Output
+### Gamma-Based Estimation (CN ≤ 0)
 
-When this automatic estimation is triggered, the following message is printed:  
-This formulation ensures that the Slack model adapts to various crystal structures while maintaining physical consistency. For FCC and HCP structures (CN = 12), the coordination number correction term becomes 1.0, meaning no additional scaling is applied.
+If the coordination number is not provided or is less than or equal to zero, `Apara` is estimated using the Grüneisen parameter `γ` [17]:
+
+$$
+A(\\gamma) = \\frac{1.0}{1 + \\frac{1}{\\gamma} + \\frac{8.3 \\times 10^5}{\\gamma^{2.4}}}
+$$
+
+Where:
+- `γ`: Grüneisen parameter
+- `C`: Empirical scaling factor (e.g., 8.3 × 10⁵)
+- `p`: Exponent (e.g., 2.4)
+
+### Physical Meaning:
+- **1/γ term**: Captures linear anharmonic effects.
+- **C / γ^p term**: Captures higher-order anharmonicity.
+- **Overall behavior**: Larger γ (stronger anharmonicity) leads to smaller A, reducing predicted thermal conductivity.
+
+### Notes
+
+This formulation captures the effect of anharmonicity on thermal conductivity. Larger γ values (stronger anharmonicity) result in smaller A values, reducing the predicted thermal conductivity accordingly.
 
 ---
 
