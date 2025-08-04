@@ -302,6 +302,7 @@ MODULE seebeck_data
   REAL(KIND=8) :: km                              ! Cezairliyan
   REAL(KIND=8) :: kappa_phonon                    ! kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
   REAL(KIND=8) :: CN                              ! Coordination number
+  LOGICAL :: use_Apara_gamma                      !
   !-----------------------------------------------
   REAL(KIND=8) :: Nd                              ! Doping concentration in cm^-3: n-type 1.0e14 - 1.0e18 [cm^-3]
   REAL(KIND=8) :: Nd_hole                         ! hole
@@ -1562,8 +1563,8 @@ PROGRAM seebeck_analysis
   READ(90, '(25X, E12.6)') density                ! read [g/cm^3] unit -> density * 1000 [kg/m^3]
   READ(90, '(25X, E12.6)') tau0_phonon            ! For phonons, it is about 10-100 times stronger than for electrons. (If it is 0.0, tau_ph * 100)
   READ(90, '(25X, E12.6)') Gruneisen_parameter    ! If it is 0.0, calculate from Bulk modulus and Poisson's ratio (or Shear modulus).
-  READ(90, '(25X, E12.6)') Apara                  ! 
-  READ(90, '(25X, E12.6)') CN                     ! Coordination number
+  READ(90, '(25X, E12.6)') Apara                  ! A parameter of Slack model
+  READ(90, '(25X, L10)')   use_Apara_gamma        ! T: use Ref:[17] or F: original
   READ(90, *)
   READ(90, '(25X, E12.6)') Nd                     ! Read Doping concentration [cm^-3]
   READ(90, '(25X, E12.6)') m_eff                  ! Effective mass (relative to m_e)
@@ -1623,7 +1624,7 @@ PROGRAM seebeck_analysis
   END IF
   WRITE(*,*) "Gruneisen parameter     :", Gruneisen_parameter
   WRITE(*,*) "Slack model parameter A :", Apara
-  WRITE(*,*) "Coordination number, CN :", CN
+  WRITE(*,*) "Apara_flag (Ref. [15])  :", use_Apara_gamma
   WRITE(*,*) "----- Carrier concentration (Nc) calclation: optional -----"
   WRITE(*,*) "Nd (Doping conc.)[cm^-3]:", Nd
   WRITE(*,*) "Electron Effective Mass :", m_eff
@@ -1859,12 +1860,12 @@ PROGRAM seebeck_analysis
     END IF
     !
     IF (Apara == 0.0) THEN
-      IF (CN <= 0.0) THEN
-      ! Apara = 2.43D-8/(1.0-0.514/Gruneisen_parameter + 0.228/(Gruneisen_parameter**2.0D0))
-      Apara = 1.0D0 / (1.0D0 + 1.0D0/Gruneisen_parameter + 8.3D5/Gruneisen_parameter**2.4D0)
+      IF (use_Apara_gamma) THEN
+        ! Apara = 2.43D-8/(1.0-0.514/Gruneisen_parameter + 0.228/(Gruneisen_parameter**2.0D0))
+        Apara = 1.0D0 / (1.0D0 + 1.0D0/Gruneisen_parameter + 8.3D5/Gruneisen_parameter**2.4D0)
       ELSE
         Apara = 3.1D-6 * ( (volume/N_atom) / (3.615**3.0D0/4.0D0) )**(1.0D0/3.0D0) * &
-          & ( (LA + LB + LC) / volume**(1.0D0/3.0D0) )**(-1.0D0/2.0D0) * (CN/12.0)**(1.0D0/2.0D0)
+          & ( (LA + LB + LC) / volume**(1.0D0/3.0D0) )**(-1.0D0/2.0D0)
       END IF
       WRITE(*,*) "(Automatically setting) A estimated from Gruneisen_parameter:", Apara
     END IF
