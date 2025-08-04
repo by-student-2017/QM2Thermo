@@ -295,7 +295,7 @@ MODULE seebeck_data
   REAL(KIND=8) :: kappa_phonon_min_Slack_xK       !
   REAL(KIND=8) :: km                              ! Cezairliyan
   REAL(KIND=8) :: kappa_phonon                    ! kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
-  REAL(KIND=8) :: kappa_scale_factor              ! Scale factor to forcibly approach the experiment
+  REAL(KIND=8) :: CN                              ! Coordination number
   !-----------------------------------------------
   REAL(KIND=8) :: Nd                              ! Doping concentration in cm^-3: n-type 1.0e14 - 1.0e18 [cm^-3]
   REAL(KIND=8) :: Nd_hole                         ! hole
@@ -1553,7 +1553,7 @@ PROGRAM seebeck_analysis
   READ(90, '(25X, E12.6)') tau0_phonon            ! For phonons, it is about 10-100 times stronger than for electrons. (If it is 0.0, tau_ph * 100)
   READ(90, '(25X, E12.6)') Gruneisen_parameter    ! If it is 0.0, calculate from Bulk modulus and Poisson's ratio (or Shear modulus).
   READ(90, '(25X, E12.6)') Apara                  ! 
-  READ(90, '(25X, E12.6)') kappa_scale_factor     ! kappa = kappa * kappa_scale_factor
+  READ(90, '(25X, E12.6)') CN                     ! Coordination number
   READ(90, *)
   READ(90, '(25X, E12.6)') Nd                     ! Read Doping concentration [cm^-3]
   READ(90, '(25X, E12.6)') m_eff                  ! Effective mass (relative to m_e)
@@ -1609,10 +1609,10 @@ PROGRAM seebeck_analysis
   END IF
   WRITE(*,*) "Gruneisen parameter     :", Gruneisen_parameter
   WRITE(*,*) "Slack model parameter A :", Apara
-  WRITE(*,*) "kappa scale factor      :", kappa_scale_factor
-  IF (kappa_scale_factor <= 0.0) THEN
-    kappa_scale_factor = 1.0
-    WRITE(*,*) "(Automatically setting) kappa_scale_factor:", kappa_scale_factor
+  WRITE(*,*) "Coordination number, CN :", CN
+  IF (CN <= 0.0) THEN
+    CN = 12.0
+    WRITE(*,*) "(Automatically setting) Coordination number, CN:", CN
   END IF
   WRITE(*,*) "----- Carrier concentration (Nc) calclation: optional -----"
   WRITE(*,*) "Nd (Doping conc.)[cm^-3]:", Nd
@@ -1755,8 +1755,6 @@ PROGRAM seebeck_analysis
       & (Young_modulus*1.0D9/(density*1.0D3))**(1.0D0/2.0D0)
     WRITE(*,*) "Clarke model: kappa_phonon_min [W/m/K]:", kappa_phonon_min
     kappa_phonon_min_Clarke = kappa_phonon_min
-    WRITE(*,*) "Correction with scale factor", kappa_scale_factor
-    WRITE(*,*) "  kappa_phonon_min [W/m/K]:", kappa_phonon_min * kappa_scale_factor
     
     WRITE(*,*)
     va = (Young_modulus*1.0D9/(density*1.0D3))**(1.0D0/2.0D0)
@@ -1771,7 +1769,7 @@ PROGRAM seebeck_analysis
     !WRITE(*,*) "Ref.: Thermal Conductivity of the Elements: https://srd.nist.gov/jpcrdreprint/1.3253100.pdf"
     !WRITE(*,*) "Cezairliyan: k/km= [(1/3)*(T/Tm)^2 + 2/(3*(T/Tm))]^-1"
     !WRITE(*,*) "Let Tm = Debye temperature and the thermal conductivity at that time be km."
-    !km = kappa_phonon_min * kappa_scale_factor
+    !km = kappa_phonon_min
     !WRITE(*,*) "Clarke model, km:" , km, " at ", Theta_D_Cezairliyan_equ, " [K]"
     !TEM = 300.0
     !WRITE(*,*) "Clarke model: kappa_phonon_min [W/m/K]:",&
@@ -1791,8 +1789,6 @@ PROGRAM seebeck_analysis
       & (N_atom/(volume*1.0D-30))**(2.0D0/3.0D0) * (vl + 2.0D0*vt)
     WRITE(*,*) "Cahill-Pohl model: kappa_phonon_min [W/m/K]:", kappa_phonon_min
     kappa_phonon_min_Cahill = kappa_phonon_min
-    WRITE(*,*) "Correction with scale factor", kappa_scale_factor
-    WRITE(*,*) "  kappa_phonon_min [W/m/K]:", kappa_phonon_min * kappa_scale_factor
     
     WRITE(*,*)
     va = ( (1.0D0/3.0D0) * (1.0D0/vl**3.0D0 + 2.0D0/vt**3.0D0) )**(-1.0D0/3.0D0)
@@ -1807,7 +1803,7 @@ PROGRAM seebeck_analysis
     !WRITE(*,*) "Ref.: Thermal Conductivity of the Elements: https://srd.nist.gov/jpcrdreprint/1.3253100.pdf"
     !WRITE(*,*) "Cezairliyan: k/km= [(1/3)*(T/Tm)^2 + 2/(3*(T/Tm))]^-1"
     !WRITE(*,*) "Let Tm = Debye temperature and the thermal conductivity at that time be km."
-    !km = kappa_phonon_min * kappa_scale_factor
+    !km = kappa_phonon_min
     !WRITE(*,*) "Cahill-Pohl model, km:" , km, " at ", Theta_D_Cezairliyan_equ, " [K]"
     !TEM = 300.0
     !WRITE(*,*) "Cahill-Pohl model: kappa_phonon_min [W/m/K]:",&
@@ -1837,10 +1833,8 @@ PROGRAM seebeck_analysis
     !
     IF (Apara == 0.0) THEN
       ! Apara = 2.43D-8/(1.0-0.514/Gruneisen_parameter + 0.228/(Gruneisen_parameter**2))
-      ! A = 3.1D-6 (Cubic), 1.5e-6 (hcp), 2.43e-6 (Diamond)
-      ! Volume_Cu^(1/3) = 3.615
       Apara = 3.1D-6 * ( (volume/N_atom) / (3.615**3.0D0/4.0D0) )**(1.0D0/3.0D0) * &
-        & ( (LA + LB + LC) / volume**(1.0D0/3.0D0) )**(-1.0D0/2.0D0)
+        & ( (LA + LB + LC) / volume**(1.0D0/3.0D0) )**(-1.0D0/2.0D0) * (12.0/CN)**(1.0D0/2.0D0)
       WRITE(*,*) "(Automatically setting) A estimated from Gruneisen_parameter:", Apara
     END IF
     !
@@ -1856,9 +1850,6 @@ PROGRAM seebeck_analysis
     kappa_phonon_min_Slack = kappa_phonon_min
     kappa_phonon_min_Slack_xK = Apara * Mavg * Theta_D_va**3.0D0 * (volume/N_atom)**(1.0D0/3.0D0) / &
       & (Gruneisen_parameter**2.0D0 * (N_atom)**(2.0D0/3.0D0))
-    WRITE(*,*) "Correction with scale factor", kappa_scale_factor
-    WRITE(*,*) "  kappa_phonon_min [W/m/K]:", kappa_phonon_min * kappa_scale_factor, " at ", TEM, " [K]"
-    kappa_phonon_min_Slack_xK = kappa_phonon_min_Slack_xK * kappa_scale_factor
     
     WRITE(*,*)
     WRITE(*,*) "Ref.: Thermal Conductivity of the Elements: https://srd.nist.gov/jpcrdreprint/1.3253100.pdf"
