@@ -166,7 +166,7 @@ If a calculation result file already exists, the corresponding calculation will 
 
 ---
 
-## Treatment of lattice thermal conductivity ($$ k_ph $$) in Seebeck_analysis.f90
+## Treatment of lattice thermal conductivity $$\(k_{ph}\)$$ in Seebeck_analysis.f90
 - If the bulk modulus and density in parameter.txt are > 0, the sound speed is calculated, and the thermal conductivity is calculated using the formula in "Empirical estimation of thermal conductivity [11]".
 - phononDOS.dat calculates the constant volume specific heat Cv_DOS and Debye temperature Theta_D. If the bulk modulus or density in parameter.txt are <= 0, it calculates the average sound speed from Cv_DOS and the thermal conductivity.
 - The temperature dependence of the thermal conductivity is calculated using the Cezairliyan's treatment of "Thermal Conductivity of Elements [13]", where the code assumes that Tm = Debye temperature and km is the thermal conductivity at the Debye temperature.
