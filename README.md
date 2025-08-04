@@ -712,6 +712,39 @@ Where:
 
 This formulation captures the effect of anharmonicity on thermal conductivity. Larger γ values (stronger anharmonicity) result in smaller A values, reducing the predicted thermal conductivity accordingly.
 
+### CN × γ Hybrid Correction for Slack Model Parameter A
+
+This README documents the hybrid correction formula for estimating the empirical parameter **A** in the Slack model for lattice thermal conductivity. The formula integrates both structural and anharmonic effects using coordination number (CN) and Grüneisen parameter (γ).
+
+#### Hybrid Correction Formula
+
+When both crystal structure and anharmonicity information are available, the parameter **A** is estimated using the following expression:
+
+$$
+A = A_0 \cdot \left( \frac{V / N_{\text{atom}}}{V_{\text{Cu}}} \right)^{1/3} \cdot \left( \frac{a + b + c}{V^{1/3}} \right)^{-0.5} \cdot \left( \frac{\text{CN}}{12} \right)^{0.5} \cdot \frac{1}{1 + \frac{1}{\gamma} + \frac{C}{\gamma^p}}
+$$
+
+#### Where:
+- **A₀**: Reference constant (e.g., 3.1 × 10⁻⁶)
+- **V**: Unit cell volume
+- **N_atom**: Number of atoms in the unit cell
+- **V_Cu**: Reference atomic volume for FCC Cu (3.615³ / 4)
+- **a, b, c**: Lattice constants
+- **CN**: Coordination number
+- **γ**: Grüneisen parameter
+- **C, p**: Empirical fitting parameters (e.g., C = 8.3 × 10⁵, p = 2.4)
+
+#### Physical Interpretation
+
+- **Atomic volume normalization**: Adjusts for packing density relative to FCC Cu.
+- **Anisotropy correction**: Accounts for deviations from cubic symmetry.
+- **Coordination number correction**: Reflects bonding environment effects.
+- **Anharmonicity correction**: Captures phonon scattering effects via γ.
+
+#### Future Work
+
+This hybrid formula is designed to unify structural and anharmonic corrections in a physically meaningful way. Future work will involve refitting the parameters **A₀**, **C**, and **p** using high-throughput computational data such as from the Togo group. This will improve the accuracy and generality of the Slack model across diverse crystal structures including BCC, FCC, HCP, and Diamond.
+
 ---
 
 ## Extended Table of Slack Model Parameter $$\( A \)$$ by Material
