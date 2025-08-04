@@ -274,6 +274,10 @@ MODULE seebeck_data
   REAL(KIND=8) :: C_phel                          ! Phonon-Electron scattering coefficient (works: a2Fdos = F): (Ref. 2.31e10) [s^-1*eV^-2]
   REAL(KIND=8) :: B_pdef                          ! Point defect scattering coefficient: (Ref. 5.33e15) [s^-1*eV^-4]
   REAL(KIND=8) :: Bulk_modulus                    ! Bulk_modulus [GPa] (1 [eV/A^3] = 160.2 [GPa]), B = K
+  REAL(KIND=8) :: dB_per_dP                       ! dB/dP from EOS
+  REAL(KIND=8) :: dB_per_dV                       ! dB/dV
+  REAL(KIND=8) :: V0                              ! V0 from EOS
+  REAL(KIND=8) :: dG_per_dV                       ! dG/dV
   REAL(KIND=8) :: Shear_modulus                   ! Shear_modulus [GPa] = 3*Bulk_modulus*(1-2*Poisson_ratio) / (2*(1+Poisson_ratio)), G
   REAL(KIND=8) :: Young_modulus                   ! Young_modulus [GPa] = 9*B*G/(3*B+G), E
   REAL(KIND=8) :: Poisson_ratio                   ! Poisson_ratio = (3*B-2*G)/(2*(3*B+G))
@@ -287,6 +291,8 @@ MODULE seebeck_data
   REAL(KIND=8) :: MPF_phonon                      ! mean free path of phonon, l = (vl + 2*vt)/3 * tau0_phonon [s]
   REAL(KIND=8) :: tau0_phonon                     ! For phonons, it is about 10-100 times stronger than for electrons. (If it is 0.0, tau_ph * 100)
   REAL(KIND=8) :: Gruneisen_parameter             ! It corresponds to the ratio of the second-order elastic constant C to the third-order elastic constant D.
+  REAL(KIND=8) :: Gruneisen_parameter_L           ! 
+  REAL(KIND=8) :: Gruneisen_parameter_S           ! 
   REAL(KIND=8) :: Apara                           ! parameter A of Slack model.
   REAL(KIND=8) :: kappa_phonon_min                ! Cahill molde: (1/2)*(PI/6)**(1/3)*kb*(volume/N_atom)**(2/3)*(vl + 2*vt)
   REAL(KIND=8) :: kappa_phonon_min_Clarke         !
@@ -1545,8 +1551,12 @@ PROGRAM seebeck_analysis
   READ(90, '(25X, E12.6)') b_para                 ! Umklapp (Klemens-Callaway type model) scattering. (Ref. 1 - 2) (works: phononDOS = T)
   READ(90, '(25X, E12.6)') C_phel                 ! Phonon-Electron scattering coefficient. (works: a2Fdos = F): (Ref. 2.31e10)
   READ(90, '(25X, E12.6)') B_pdef                 ! Point defect scattering coefficient. (Ref. 5.33e15)
+  READ(90, *)
   READ(90, '(25X, E12.6)') Bulk_modulus           ! Bulk_modulus [GPa] (1 [eV/A^3] = 160.2 [GPa]), B = K
+  READ(90, '(25X, E12.6)') dB_per_dP              ! dB/dP from EOS
+  READ(90, '(25X, E12.6)') V0                     ! Volume from EOS
   READ(90, '(25X, E12.6)') Shear_modulus          ! Shear_modulus [GPa] = 3*Bulk_modulus*(1-2*Poisson_ratio) / (2*(1+Poisson_ratio)), G
+  READ(90, '(25X, E12.6)') dG_per_dV              ! dG/dV from EOS
   READ(90, '(25X, E12.6)') Young_modulus          ! Young_modulus [GPa] = 9*B*G/(3*B+G), E
   READ(90, '(25X, E12.6)') Poisson_ratio          ! Poisson_ratio = (3*B-2*G)/(2*(3*B+G))
   READ(90, '(25X, E12.6)') density                ! read [g/cm^3] unit -> density * 1000 [kg/m^3]
@@ -1591,8 +1601,12 @@ PROGRAM seebeck_analysis
   WRITE(*,*) "b_para                  :", b_para
   WRITE(*,*) "C_phel                  :", C_phel
   WRITE(*,*) "B_pdef                  :", B_pdef
+  WRITE(*,*) "----- Thermal conductivity from equation of state: optional -----"
   WRITE(*,*) "Bulk modulus, B    [GPa]:", Bulk_modulus
+  WRITE(*,*) "B' (=dB/dP)             :", dB_per_dP
+  WRITE(*,*) "V0                 [A^3]:", V0
   WRITE(*,*) "Shear modulus, G   [GPa]:", Shear_modulus
+  WRITE(*,*) "G' (=dG/dV)             :", dG_per_dV
   WRITE(*,*) "Young's modulus, E [GPa]:", Young_modulus
   WRITE(*,*) "Poisson's ratio         :", Poisson_ratio
   Poisson_ratio_read_value = Poisson_ratio
@@ -1610,10 +1624,6 @@ PROGRAM seebeck_analysis
   WRITE(*,*) "Gruneisen parameter     :", Gruneisen_parameter
   WRITE(*,*) "Slack model parameter A :", Apara
   WRITE(*,*) "Coordination number, CN :", CN
-  IF (CN <= 0.0) THEN
-    CN = 12.0
-    WRITE(*,*) "(Automatically setting) Coordination number, CN:", CN
-  END IF
   WRITE(*,*) "----- Carrier concentration (Nc) calclation: optional -----"
   WRITE(*,*) "Nd (Doping conc.)[cm^-3]:", Nd
   WRITE(*,*) "Electron Effective Mass :", m_eff
@@ -1826,15 +1836,36 @@ PROGRAM seebeck_analysis
     !
     Theta_D_Cezairliyan_equ = Theta_D_va
     !
+    IF (V0 <= 0.0) THEN
+      V0 = volume
+      WRITE(*,*) "V0:", V0
+    END IF
+    !
     IF (Gruneisen_parameter == 0.0) THEN
-      Gruneisen_parameter = (9.0D0 - 12.0D0*(vt/vl)**2.0D0) / (2.0D0 + 4.0D0*(vt/vl)**2.0D0)
+      IF (dB_per_dP > 0.0) THEN
+        dB_per_dV = -1.0D0 * dB_per_dP * Bulk_modulus / V0
+        IF (dG_per_dV <= 0.0) THEN
+          dG_per_dV = 3.0D0*(1.0D0 - 2.0D0 * Poisson_ratio) / (2.0D0 * (1.0D0 + Poisson_ratio)) * dB_per_dV
+          WRITE(*,*) "dG/dV:", dG_per_dV
+        END IF
+        Gruneisen_parameter_L = -(1.0D0/2.0D0) * V0 / (Bulk_modulus + (4.0D0/3.00)*Shear_modulus) * &
+          & dB_per_dV + (4.0D0/3.0D0) * dG_per_dV - (1.0D0/6.0D0)
+        Gruneisen_parameter_S = -(1.0D0/2.0D0) * V0/Shear_modulus * dG_per_dV - (1.0D0/6.0D0)
+        Gruneisen_parameter = ( (Gruneisen_parameter_L**2.0D0 + 2.0D0*Gruneisen_parameter_S**2.0D0)/3.0D0 )**(1.0D0/2.0D0)
+      ELSE
+        Gruneisen_parameter = (9.0D0 - 12.0D0*(vt/vl)**2.0D0) / (2.0D0 + 4.0D0*(vt/vl)**2.0D0)
+      END IF
       WRITE(*,*) "(Automatically setting) Gruneisen_parameter:", Gruneisen_parameter
     END IF
     !
     IF (Apara == 0.0) THEN
-      ! Apara = 2.43D-8/(1.0-0.514/Gruneisen_parameter + 0.228/(Gruneisen_parameter**2))
-      Apara = 3.1D-6 * ( (volume/N_atom) / (3.615**3.0D0/4.0D0) )**(1.0D0/3.0D0) * &
-        & ( (LA + LB + LC) / volume**(1.0D0/3.0D0) )**(-1.0D0/2.0D0) * (CN/12.0)**(1.0D0/2.0D0)
+      IF (CN <= 0.0) THEN
+      ! Apara = 2.43D-8/(1.0-0.514/Gruneisen_parameter + 0.228/(Gruneisen_parameter**2.0D0))
+      Apara = 1.0D0 / (1.0D0 + 1.0D0/Gruneisen_parameter + 8.3D5/Gruneisen_parameter**2.4D0)
+      ELSE
+        Apara = 3.1D-6 * ( (volume/N_atom) / (3.615**3.0D0/4.0D0) )**(1.0D0/3.0D0) * &
+          & ( (LA + LB + LC) / volume**(1.0D0/3.0D0) )**(-1.0D0/2.0D0) * (CN/12.0)**(1.0D0/2.0D0)
+      END IF
       WRITE(*,*) "(Automatically setting) A estimated from Gruneisen_parameter:", Apara
     END IF
     !

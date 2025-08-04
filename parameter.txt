@@ -13,15 +13,19 @@ L_bound       [Angstrom]:  0.0       ! Boundary scattering. (works: phononDOS = 
 b_para                  :  0.0       ! Umklapp (Klemens-Callaway type model) scat. (Ref. 1 - 2) (works: phononDOS = T)
 C_phel      [s^-1*eV^-2]:  0.0       ! Phonon-Electron scattering coefficient. (Ref. 2.31e10) (works: a2Fdos = F)
 B_pdef      [s^-1*eV^-4]:  0.0       ! Point defect scattering coefficient. (Ref. 5.33e15)
+!---EOS data to kappa---:------------!--optional-----------------------------------------------------------------------
 Bulk modulus, B    [GPa]: 100.0      ! For example, use Bulk_modulus_from_EOS and get Bulk modulus.
+B' (=dB/dP)             :  0.0       ! Derivative of bulk modulus with respect to pressure. You can get it from EOS.
+V0                 [A^3]:  0.0       ! Get from EOS. If V0 <= 0.0, use wien.struct data
 Shear modulus, G   [GPa]:  0.0       ! If G <= 0.0, calculate from Bulk modulus and Poisson's ratio.
+G' (=dG/dV)             :  0.0       ! If it is 0.0, calculate from B, B' and Poisson's ratio.
 Young's modulus, E [GPa]:  0.0       ! If E <= 0.0, calculate from Bulk modulus and Shear modulus or Poisson's ratio.
 Poisson's ratio         :  0.3       ! General Range: 0.25 - 0.35 (If it is <= 0.0, set 0.3 and vs = 0.87*vl.)
 density         [g/cm^3]:  2.33      ! Please try your best to calculate it from a cif file or something.
 relaxation time (ph) [s]:  1.00e-12  ! About 10-100 times stronger than electrons. (If it is < 0.0, tau_ph * 100 [s])
 Gruneisen parameter     :  0.0       ! If it is 0.0, calculate from vt and vl (Bulk modulus and Poisson's ratio).
 Slack model parameter A :  0.0       ! If it is 0.0, calculate from Gruneisen parameter (B and Poisson's ratio.)
-Coordination number, CN : 12.0       ! Used in calculating Slack model parameter A. If it is <= 0.0, use 12.0.
+Coordination number, CN :  0.0       ! Used in calculating Slack model parameter A. If it is <= 0.0, use Gruneisen.
 !-------optional--------:------------!--optional-----------------------------------------------------------------------
 Doping concent.  [cm^-3]:  0.0       ! General Range: 1.0e14 - 1.0e20 [cm^-3] (If it is 0.0, calculate from VEC/volume)
 Electron Effective Mass :  0.26e0    ! Effective mass (relative to m_e)
