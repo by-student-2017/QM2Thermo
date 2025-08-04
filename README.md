@@ -712,9 +712,10 @@ Where:
 
 This formulation captures the effect of anharmonicity on thermal conductivity. Larger γ values (stronger anharmonicity) result in smaller A values, reducing the predicted thermal conductivity accordingly.
 
-### CN × γ Hybrid Correction for Slack Model Parameter A
+### CN × γ Hybrid Correction for Slack Model Parameter A (Not implemented in Seebeck_analysis.f90)
+- The parameters have not yet been decided, so it has not been implemented in the code.
 
-This README documents the hybrid correction formula for estimating the empirical parameter **A** in the Slack model for lattice thermal conductivity. The formula integrates both structural and anharmonic effects using coordination number (CN) and Grüneisen parameter (γ).
+This README documents the hybrid correction formula for estimating the empirical parameter **A** in the Slack model for lattice thermal conductivity. The formula integrates both structural and anharmonic effects using coordination number (CN) and Grüneisen parameter (γ). 
 
 #### Hybrid Correction Formula
 
