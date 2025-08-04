@@ -694,24 +694,36 @@ This formulation ensures that the Slack model adapts to various crystal structur
 
 ---
 
-## Known Empirical Values of Slack Model Parameter $$\( A \)$$
+## Extended Table of Slack Model Parameter $$\( A \)$$ by Material
 
-The Slack model uses an empirical parameter $$\( A \)$$ to estimate lattice thermal conductivity. This parameter varies depending on the crystal structure and bonding characteristics of the material. Below is a summary of commonly used values:
+This table summarizes known values of the Slack model empirical parameter $$\( A \)$$, along with key physical properties relevant to lattice thermal conductivity estimation. These include Debye temperature $$\( \theta_D \)$$, Grüneisen parameter $$\( \gamma \)$$, density $$\( \rho \)$$, average sound velocity $$\( v_s \)$$, and lattice constants.
 
-| Crystal Structure       | Coordination Number (CN) | Empirical $$\( A \)$$ Value [W·K/m] | Notes |
-|-------------------------|---------------------------|----------------------------------|-------|
-| Face-Centered Cubic (FCC) | 12                      | $$\( 3.1 \times 10^{-6} \)$$         | Cu, Al — metallic bonding |
-| Hexagonal Close-Packed (HCP) | 12                  | $$\( 1.5 \times 10^{-6} \)$$         | Mg, Zn — anisotropic structure |
-| Diamond / Zincblende    | 4                         | $$\( 2.43 \times 10^{-6} \)$$        | C, Si, Ge — strong covalent bonding |
-| Rocksalt (B1)           | 6                         | $$\( \sim 2.0 \times 10^{-6} \)$$    | NaCl, MgO — ionic bonding |
-| Wurtzite                | 4                         | $$\( \sim 2.2 \times 10^{-6} \)$$    | GaN, ZnO — polar covalent bonding |
-| Graphite (layered)      | —                         | $$\( \sim 1.0 \times 10^{-6} \)$$    | Strong anisotropy, layered bonding |
-| Icosahedral borides     | —                         | $$\( < 1.0 \times 10^{-6} \)$$       | Complex bonding networks |
+| Material       | Structure | CN | $$\( A \)$$ [W·K/m] | $$\( \theta_D \)$$ [K] | $$\( \gamma \)$$ | $$\( \rho \)$$ [g/cm³] | $$\( v_s \)$$ [km/s] | Lattice Const. [Å] | Reference |
+|----------------|-----------|----|------------------|--------------------|--------------|---------------------|------------------|---------------------|-----------|
+| **Cu**         | FCC       | 12 | $$\( 3.1 \times 10^{-6} \)$$ | 343 | 2.0 | 8.96 | 3.57 | a = 3.615 | [Slack, 1973](https://djena.engineering.cornell.edu/hws/slack_high_thermal_conductivity_solids.pdf) |
+| **Al**         | FCC       | 12 | $$\( 3.1 \times 10^{-6} \)$$ | 428 | 2.2 | 2.70 | 6.42 | a = 4.05 | Same as Cu |
+| **Mg**         | HCP       | 12 | $$\( 1.5 \times 10^{-6} \)$$ | 400 | 1.6 | 1.74 | 4.52 | a = 3.21, c = 5.21 | [Slack, 1973](https://djena.engineering.cornell.edu/hws/slack_high_thermal_conductivity_solids.pdf) |
+| **Si**         | Diamond   | 4  | $$\( 2.43 \times 10^{-6} \)$$ | 645 | 0.6 | 2.33 | 6.43 | a = 5.43 | [Morelli & Slack, 2006](https://djena.engineering.cornell.edu/hws/slack_high_thermal_conductivity_solids.pdf) |
+| **Ge**         | Diamond   | 4  | $$\( 2.43 \times 10^{-6} \)$$ | 374 | 0.7 | 5.32 | 3.57 | a = 5.66 | Same as Si |
+| **C (Diamond)**| Diamond   | 4  | $$\( 2.43 \times 10^{-6} \)$$ | 1860 | 0.8 | 3.51 | 12.0 | a = 3.57 | Same as Si |
+| **NaCl**       | Rocksalt  | 6  | $$\( \sim 2.0 \times 10^{-6} \)$$ | 320 | 1.5 | 2.17 | 4.56 | a = 5.64 | [Qin et al., 2022](https://pubs.rsc.org/en/content/articlehtml/2022/ma/d2ma00694d) |
+| **MgO**        | Rocksalt  | 6  | $$\( \sim 2.0 \times 10^{-6} \)$$ | 750 | 1.5 | 3.58 | 7.20 | a = 4.21 | Same as NaCl |
+| **GaN**        | Wurtzite  | 4  | $$\( \sim 2.2 \times 10^{-6} \)$$ | 600 | 0.7 | 6.15 | 7.80 | a = 3.19, c = 5.19 | [Qin et al., 2022](https://pubs.rsc.org/en/content/articlehtml/2022/ma/d2ma00694d) |
+| **ZnO**        | Wurtzite  | 4  | $$\( \sim 2.2 \times 10^{-6} \)$$ | 920 | 1.0 | 5.61 | 6.50 | a = 3.25, c = 5.21 | Same as GaN |
+| **GaAs**       | Zincblende| 4  | $$\( \sim 2.4 \times 10^{-6} \)$$ | 360 | 1.2 | 5.32 | 4.73 | a = 5.65 | [Slack, 1973](https://djena.engineering.cornell.edu/hws/slack_high_thermal_conductivity_solids.pdf) |
+| **Graphite**   | Layered   | —  | $$\( \sim 1.0 \times 10^{-6} \)$$ | 950 (in-plane) | 1.1 | 2.26 | 15.0 (in-plane) | a = 2.46, c = 6.70 | [Slack, 1973](https://djena.engineering.cornell.edu/hws/slack_high_thermal_conductivity_solids.pdf) |
+| **Boron-rich solids** | Icosahedral | — | $$\( < 1.0 \times 10^{-6} \)$$ | 1200–1400 | 1.5–2.0 | 2.35–2.46 | 6.0–8.0 | complex | [Slack, 1973](https://djena.engineering.cornell.edu/hws/slack_high_thermal_conductivity_solids.pdf) |
+
+---
 
 ### Notes
 
-- These values are derived from experimental data and first-principles fitting.
-- The parameter $$\( A \)$$ reflects the bonding strength, atomic packing, and phonon scattering characteristics of each structure.
-- For accurate modeling, it is recommended to use structure-specific corrections (e.g., volume, anisotropy, coordination number) in combination with these base values.
+- $$\( \theta_D \)$$: Debye temperature — cutoff for phonon spectrum.
+- $$\( \gamma \)$$: Grüneisen parameter — measures anharmonicity.
+- $$\( \rho \)$$: Density — affects phonon velocity and scattering.
+- $$\( v_s \)$$: Average sound velocity — influences thermal transport.
+- Lattice constants are given for reference and used in volume calculations.
+
+For high-throughput screening and optimized Slack model applications, see [Qin et al., 2022](https://pubs.rsc.org/en/content/articlehtml/2022/ma/d2ma00694d).
 
 ---
