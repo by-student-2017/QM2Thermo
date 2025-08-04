@@ -684,12 +684,14 @@ Where:
 
 ---
 
+---
+
 ## Slack Model Parameter Estimation
 
-When the parameter `Apara` is not explicitly provided (`Apara == 0.0`), it is automatically estimated based on the crystal structure using the following expression:
+When the parameter `Apara` is not explicitly provided (`Apara == 0.0`), it is automatically estimated based on the crystal structure and coordination number using the following expression:
 
 $$
-A = 3.1 \times 10^{-6} \cdot \left( \frac{V/N_{\text{atom}}}{\frac{3.615^3}{4}} \right)^{1/3} \cdot \left( \frac{a + b + c}{V^{1/3}} \right)^{-0.5}
+A = 3.1 \times 10^{-6} \cdot \left( \frac{V/N_{\text{atom}}}{\frac{3.615^3}{4}} \right)^{1/3} \cdot \left( \frac{a + b + c}{V^{1/3}} \right)^{-0.5} \cdot \left( \frac{12}{\text{CN}} \right)^{0.5}
 $$
 
 Where:
@@ -697,15 +699,20 @@ Where:
 - $$\( V \)$$: Unit cell volume  
 - $$\( N_{\text{atom}} \)$$: Number of atoms in the unit cell  
 - $$\( a, b, c \)$$: Lattice constants (LA, LB, LC)  
+- $$\( \text{CN} \)$$: Coordination number of the structure  
 - $$\( 3.615 \)$$: Reference lattice constant for Cu (FCC structure)  
-- $$\( A = 3.1 \times 10^{-6} \)$$: Empirical constant for cubic systems in the Slack model
+- $$\( A_0 = 3.1 \times 10^{-6} \)$$: Empirical constant for cubic systems in the Slack model
 
-This formulation accounts for:
+### Physical Meaning of Each Term
 
-- **Atomic packing density** via the normalized atomic volume term  
-- **Anisotropy** through the lattice constant ratio  
-- **Reference scaling** based on Cu's FCC structure
+- **Atomic volume normalization**: Adjusts for packing density differences relative to FCC Cu  
+- **Anisotropy correction**: Accounts for deviations from cubic symmetry  
+- **Coordination number correction**: Reflects the influence of bonding environment on thermal transport, based on second moment approximation
 
-The estimated value is printed during runtime as: This dynamic estimation enables the model to adapt to various crystal structures while maintaining physical consistency. For other crystal types, reference values such as $$\( A = 1.5 \times 10^{-6} \)$$ (hcp) or $$\( A = 2.43 \times 10^{-6} \)$$ (diamond) may be used if specified.
+### Runtime Output
+
+When this automatic estimation is triggered, the following message is printed:
+
+This formulation ensures that the Slack model adapts to various crystal structures while maintaining physical consistency. For FCC and HCP structures (CN = 12), the coordination number correction term becomes 1.0, meaning no additional scaling is applied.
 
 ---
