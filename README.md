@@ -666,24 +666,6 @@ Where:
 
 ---
 
----
-
-## Relaxation Time Evaluation
-
-The relaxation time $$\tau(\varepsilon)$$ is computed as:
-
-$$
-\frac{1}{\tau(\varepsilon)} = \sum_{i = 1}^{N_{\text{ph}}} g_{\text{eff}}(\omega_i) \cdot w_{\text{mode}}(\omega_i) \cdot K(\varepsilon, \omega_i) \cdot F(\omega_i)
-$$
-
-Where:
-
-- $$g_{\text{eff}}(\omega_i)$$: Mode-resolved coupling strength (default: 1.0)  
-- $$F(\omega_i)$$: Spectral term from phonon DOS or Eliashberg function  
-- $$K(\varepsilon, \omega_i)$$: Kernel selection result (1.0 or 0.0)
-
----
-
 ## Slack Model Parameter Estimation
 
 When the parameter `Apara` is not explicitly provided (`Apara == 0.0`), it is automatically estimated based on the crystal structure and coordination number using the following expression:
@@ -701,16 +683,13 @@ Where:
 - $$\( 3.615 \)$$: Reference lattice constant for Cu (FCC structure)  
 - $$\( A_0 = 3.1 \times 10^{-6} \)$$: Empirical constant for cubic systems in the Slack model
 
-### Physical Meaning of Each Term
+### Special Handling:
 
-- **Atomic volume normalization**: Adjusts for packing density differences relative to FCC Cu  
-- **Anisotropy correction**: Accounts for deviations from cubic symmetry  
-- **Coordination number correction**: Reflects the influence of bonding environment on thermal transport, based on second moment approximation
+If the coordination number `CN` is less than or equal to 0.0, it is automatically set to 12.0 to avoid division by zero or undefined behavior. This ensures that the correction term remains physically meaningful and numerically stable.
 
 ### Runtime Output
 
-When this automatic estimation is triggered, the following message is printed:
-
+When this automatic estimation is triggered, the following message is printed:  
 This formulation ensures that the Slack model adapts to various crystal structures while maintaining physical consistency. For FCC and HCP structures (CN = 12), the coordination number correction term becomes 1.0, meaning no additional scaling is applied.
 
 ---
