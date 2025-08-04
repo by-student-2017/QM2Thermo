@@ -671,6 +671,8 @@ Where:
 
 This README explains the logic used to estimate the empirical parameter `Apara` in the Slack model for thermal conductivity prediction. The estimation adapts based on the availability of crystal structure information, specifically parameter A flag = F.
 
+Lattice-parameter-Based Estimation (parameter A flag = F)
+
 $$
 A = 3.1 \times 10^{-6} \cdot \left( \frac{V/N_{\text{atom}}}{\frac{3.615^3}{4}} \right)^{1/3} \cdot \left( \frac{a + b + c}{V^{1/3}} \right)^{-0.5}
 $$
