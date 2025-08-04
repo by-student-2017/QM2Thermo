@@ -494,7 +494,7 @@ Where:
 - $$\( \omega \)$$: Phonon frequency
 
 The file `a2F.dos` typically contains discretized $$\( \omega \) vs. \( \alpha^2F(\omega) \)$$ data, used in numerical evaluation of this integral.  
-**Note:** This formulation is consistent with the implementation in [EPW](https://epw.gitlab.io/epw/), and the current code adopts the same theoretical approach to compute \( \tau(\varepsilon) \) based on electron–phonon interactions. The methodology allows direct compatibility with EPW output and facilitates integration with transport models such as the Allen-type Seebeck coefficient.
+**Note:** This formulation is consistent with the implementation in [EPW](https://epw.gitlab.io/epw/), and the current code adopts the same theoretical approach to compute $$\( \tau(\varepsilon) \)$$ based on electron–phonon interactions. The methodology allows direct compatibility with EPW output and facilitates integration with transport models such as the Allen-type Seebeck coefficient.
 
 ---
 
@@ -691,5 +691,27 @@ If the coordination number `CN` is less than or equal to 0.0, it is automaticall
 
 When this automatic estimation is triggered, the following message is printed:  
 This formulation ensures that the Slack model adapts to various crystal structures while maintaining physical consistency. For FCC and HCP structures (CN = 12), the coordination number correction term becomes 1.0, meaning no additional scaling is applied.
+
+---
+
+## Known Empirical Values of Slack Model Parameter $$\( A \)$$
+
+The Slack model uses an empirical parameter $$\( A \)$$ to estimate lattice thermal conductivity. This parameter varies depending on the crystal structure and bonding characteristics of the material. Below is a summary of commonly used values:
+
+| Crystal Structure       | Coordination Number (CN) | Empirical $$\( A \)$$ Value [W·K/m] | Notes |
+|-------------------------|---------------------------|----------------------------------|-------|
+| Face-Centered Cubic (FCC) | 12                      | $$\( 3.1 \times 10^{-6} \)$$         | Cu, Al — metallic bonding |
+| Hexagonal Close-Packed (HCP) | 12                  | $$\( 1.5 \times 10^{-6} \)$$         | Mg, Zn — anisotropic structure |
+| Diamond / Zincblende    | 4                         | $$\( 2.43 \times 10^{-6} \)$$        | C, Si, Ge — strong covalent bonding |
+| Rocksalt (B1)           | 6                         | $$\( \sim 2.0 \times 10^{-6} \)$$    | NaCl, MgO — ionic bonding |
+| Wurtzite                | 4                         | $$\( \sim 2.2 \times 10^{-6} \)$$    | GaN, ZnO — polar covalent bonding |
+| Graphite (layered)      | —                         | $$\( \sim 1.0 \times 10^{-6} \)$$    | Strong anisotropy, layered bonding |
+| Icosahedral borides     | —                         | $$\( < 1.0 \times 10^{-6} \)$$       | Complex bonding networks |
+
+### Notes
+
+- These values are derived from experimental data and first-principles fitting.
+- The parameter $$\( A \)$$ reflects the bonding strength, atomic packing, and phonon scattering characteristics of each structure.
+- For accurate modeling, it is recommended to use structure-specific corrections (e.g., volume, anisotropy, coordination number) in combination with these base values.
 
 ---
