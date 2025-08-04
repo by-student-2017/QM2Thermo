@@ -1834,7 +1834,7 @@ PROGRAM seebeck_analysis
     IF (Apara == 0.0) THEN
       ! Apara = 2.43D-8/(1.0-0.514/Gruneisen_parameter + 0.228/(Gruneisen_parameter**2))
       Apara = 3.1D-6 * ( (volume/N_atom) / (3.615**3.0D0/4.0D0) )**(1.0D0/3.0D0) * &
-        & ( (LA + LB + LC) / volume**(1.0D0/3.0D0) )**(-1.0D0/2.0D0) * (12.0/CN)**(1.0D0/2.0D0)
+        & ( (LA + LB + LC) / volume**(1.0D0/3.0D0) )**(-1.0D0/2.0D0) * (CN/12.0)**(1.0D0/2.0D0)
       WRITE(*,*) "(Automatically setting) A estimated from Gruneisen_parameter:", Apara
     END IF
     !
