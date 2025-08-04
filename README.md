@@ -684,14 +684,12 @@ Where:
 
 ---
 
----
-
 ## Slack Model Parameter Estimation
 
 When the parameter `Apara` is not explicitly provided (`Apara == 0.0`), it is automatically estimated based on the crystal structure and coordination number using the following expression:
 
 $$
-A = 3.1 \times 10^{-6} \cdot \left( \frac{V/N_{\text{atom}}}{\frac{3.615^3}{4}} \right)^{1/3} \cdot \left( \frac{a + b + c}{V^{1/3}} \right)^{-0.5} \cdot \left( \frac{12}{\text{CN}} \right)^{0.5}
+A = 3.1 \times 10^{-6} \cdot \left( \frac{V/N_{\text{atom}}}{\frac{3.615^3}{4}} \right)^{1/3} \cdot \left( \frac{a + b + c}{V^{1/3}} \right)^{-0.5} \cdot \left( \frac{\text{CN}}{12} \right)^{0.5}
 $$
 
 Where:
