@@ -671,7 +671,7 @@ Where:
 
 This README explains the logic used to estimate the empirical parameter `Apara` in the Slack model for thermal conductivity prediction. The estimation adapts based on the availability of crystal structure information, specifically parameter A flag = F.
 
-Lattice-parameter-Based Estimation (parameter A flag = F)
+### Lattice-parameter-Based Estimation (parameter A flag = F)
 
 $$
 A = 3.1 \times 10^{-6} \cdot \left( \frac{V/N_{\text{atom}}}{\frac{3.615^3}{4}} \right)^{1/3} \cdot \left( \frac{a + b + c}{V^{1/3}} \right)^{-0.5}
@@ -685,7 +685,7 @@ Where:
 - $$\( 3.615 \)$$: Reference lattice constant for Cu (FCC structure)  
 - $$\( A_0 = 3.1 \times 10^{-6} \)$$: Empirical constant for cubic systems in the Slack model
 
-### Physical Meaning of Each Term
+#### Physical Meaning of Each Term
 
 - **Atomic volume normalization**: Adjusts for packing density differences relative to FCC Cu  
 - **Anisotropy correction**: Accounts for deviations from cubic symmetry  
@@ -703,12 +703,12 @@ Where:
 - `C`: Empirical scaling factor (e.g., 8.3 × 10⁵)
 - `p`: Exponent (e.g., 2.4)
 
-### Physical Meaning:
+#### Physical Meaning:
 - **1/γ term**: Captures linear anharmonic effects.
 - **C / γ^p term**: Captures higher-order anharmonicity.
 - **Overall behavior**: Larger γ (stronger anharmonicity) leads to smaller A, reducing predicted thermal conductivity.
 
-### Notes
+#### Notes
 
 This formulation captures the effect of anharmonicity on thermal conductivity. Larger γ values (stronger anharmonicity) result in smaller A values, reducing the predicted thermal conductivity accordingly.
 
