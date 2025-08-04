@@ -1610,6 +1610,10 @@ PROGRAM seebeck_analysis
   WRITE(*,*) "Gruneisen parameter     :", Gruneisen_parameter
   WRITE(*,*) "Slack model parameter A :", Apara
   WRITE(*,*) "kappa scale factor      :", kappa_scale_factor
+  IF (kappa_scale_factor <= 0.0) THEN
+    kappa_scale_factor = 1.0
+    WRITE(*,*) "(Automatically setting) kappa_scale_factor:", kappa_scale_factor
+  END IF
   WRITE(*,*) "----- Carrier concentration (Nc) calclation: optional -----"
   WRITE(*,*) "Nd (Doping conc.)[cm^-3]:", Nd
   WRITE(*,*) "Electron Effective Mass :", m_eff
@@ -1751,10 +1755,8 @@ PROGRAM seebeck_analysis
       & (Young_modulus*1.0D9/(density*1.0D3))**(1.0D0/2.0D0)
     WRITE(*,*) "Clarke model: kappa_phonon_min [W/m/K]:", kappa_phonon_min
     kappa_phonon_min_Clarke = kappa_phonon_min
-    IF (kappa_scale_factor > 0.0) THEN
-      WRITE(*,*) "Correction with scale factor", kappa_scale_factor
-      WRITE(*,*) "  kappa_phonon_min [W/m/K]:", kappa_phonon_min * kappa_scale_factor
-    END IF
+    WRITE(*,*) "Correction with scale factor", kappa_scale_factor
+    WRITE(*,*) "  kappa_phonon_min [W/m/K]:", kappa_phonon_min * kappa_scale_factor
     
     WRITE(*,*)
     va = (Young_modulus*1.0D9/(density*1.0D3))**(1.0D0/2.0D0)
@@ -1789,10 +1791,8 @@ PROGRAM seebeck_analysis
       & (N_atom/(volume*1.0D-30))**(2.0D0/3.0D0) * (vl + 2.0D0*vt)
     WRITE(*,*) "Cahill-Pohl model: kappa_phonon_min [W/m/K]:", kappa_phonon_min
     kappa_phonon_min_Cahill = kappa_phonon_min
-    IF (kappa_scale_factor > 0.0) THEN
-      WRITE(*,*) "Correction with scale factor", kappa_scale_factor
-      WRITE(*,*) "  kappa_phonon_min [W/m/K]:", kappa_phonon_min * kappa_scale_factor
-    END IF
+    WRITE(*,*) "Correction with scale factor", kappa_scale_factor
+    WRITE(*,*) "  kappa_phonon_min [W/m/K]:", kappa_phonon_min * kappa_scale_factor
     
     WRITE(*,*)
     va = ( (1.0D0/3.0D0) * (1.0D0/vl**3.0D0 + 2.0D0/vt**3.0D0) )**(-1.0D0/3.0D0)
@@ -1801,18 +1801,18 @@ PROGRAM seebeck_analysis
     Theta_D_va = (2.0D0*PI*hbar/kb) * ( (3.0D0*N_atom) / (4.0D0*PI*(volume*1.0D-30)) )**(1.0D0/3.0D0) * va
     WRITE(*, *) "Debye temperature, Theta_D_va [K]:", Theta_D_va
     
-    Theta_D_Cezairliyan_equ = Theta_D_va
+    !Theta_D_Cezairliyan_equ = Theta_D_va
     
-    WRITE(*,*)
-    WRITE(*,*) "Ref.: Thermal Conductivity of the Elements: https://srd.nist.gov/jpcrdreprint/1.3253100.pdf"
-    WRITE(*,*) "Cezairliyan: k/km= [(1/3)*(T/Tm)^2 + 2/(3*(T/Tm))]^-1"
-    WRITE(*,*) "Let Tm = Debye temperature and the thermal conductivity at that time be km."
-    km = kappa_phonon_min * kappa_scale_factor
-    WRITE(*,*) "Cahill-Pohl model, km:" , km, " at ", Theta_D_Cezairliyan_equ, " [K]"
-    TEM = 300.0
-    WRITE(*,*) "Cahill-Pohl model: kappa_phonon_min [W/m/K]:",&
-      & km * ( (1.0D0/3.0D0)*(TEM/Theta_D_Cezairliyan_equ)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D_Cezairliyan_equ)) )**(-1.0D0) ,&
-      & " at ", TEM, " [K]"
+    !WRITE(*,*)
+    !WRITE(*,*) "Ref.: Thermal Conductivity of the Elements: https://srd.nist.gov/jpcrdreprint/1.3253100.pdf"
+    !WRITE(*,*) "Cezairliyan: k/km= [(1/3)*(T/Tm)^2 + 2/(3*(T/Tm))]^-1"
+    !WRITE(*,*) "Let Tm = Debye temperature and the thermal conductivity at that time be km."
+    !km = kappa_phonon_min * kappa_scale_factor
+    !WRITE(*,*) "Cahill-Pohl model, km:" , km, " at ", Theta_D_Cezairliyan_equ, " [K]"
+    !TEM = 300.0
+    !WRITE(*,*) "Cahill-Pohl model: kappa_phonon_min [W/m/K]:",&
+    !  & km * ( (1.0D0/3.0D0)*(TEM/Theta_D_Cezairliyan_equ)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D_Cezairliyan_equ)) )**(-1.0D0) ,&
+    !  & " at ", TEM, " [K]"
     
     WRITE(*,*)
     WRITE(*,*) "---------- ----------"
@@ -1828,7 +1828,7 @@ PROGRAM seebeck_analysis
     Theta_D_va = (2.0D0*PI*hbar/kb) * ( (3.0D0*N_atom) / (4.0D0*PI*(volume*1.0D-30)) )**(1.0D0/3.0D0) * va
     WRITE(*, *) "Debye temperature, Theta_D_va [K]:", Theta_D_va
     !
-    !Theta_D_Cezairliyan_equ = Theta_D_va
+    Theta_D_Cezairliyan_equ = Theta_D_va
     !
     IF (Gruneisen_parameter == 0.0) THEN
       Gruneisen_parameter = (9.0D0 - 12.0D0*(vt/vl)**2.0D0) / (2.0D0 + 4.0D0*(vt/vl)**2.0D0)
@@ -1836,7 +1836,9 @@ PROGRAM seebeck_analysis
     END IF
     !
     IF (Apara == 0.0) THEN
-      Apara = 2.43D-8/(1.0-0.514/Gruneisen_parameter + 0.228/(Gruneisen_parameter**2))
+      ! Apara = 2.43D-8/(1.0-0.514/Gruneisen_parameter + 0.228/(Gruneisen_parameter**2))
+      Apara = 3.1D-6 * ( (volume/N_atom) / (3.615**3.0D0/4.0D0) )**(1.0D0/3.0D0) * &
+        & ( (LA + LB + LC) / volume**(1.0D0/3.0D0) )**(-1.0D0/2.0D0)
       WRITE(*,*) "(Automatically setting) A estimated from Gruneisen_parameter:", Apara
     END IF
     !
@@ -1852,21 +1854,19 @@ PROGRAM seebeck_analysis
     kappa_phonon_min_Slack = kappa_phonon_min
     kappa_phonon_min_Slack_xK = Apara * Mavg * Theta_D_va**3.0D0 * (volume/N_atom)**(1.0D0/3.0D0) / &
       & (Gruneisen_parameter**2.0D0 * (N_atom)**(2.0D0/3.0D0))
-    IF (kappa_scale_factor > 0.0) THEN
-      WRITE(*,*) "Correction with scale factor", kappa_scale_factor
-      WRITE(*,*) "  kappa_phonon_min [W/m/K]:", kappa_phonon_min * kappa_scale_factor, " at ", TEM, " [K]"
-      kappa_phonon_min_Slack_xK = kappa_phonon_min_Slack_xK * kappa_scale_factor
-    END IF
+    WRITE(*,*) "Correction with scale factor", kappa_scale_factor
+    WRITE(*,*) "  kappa_phonon_min [W/m/K]:", kappa_phonon_min * kappa_scale_factor, " at ", TEM, " [K]"
+    kappa_phonon_min_Slack_xK = kappa_phonon_min_Slack_xK * kappa_scale_factor
     
-    !WRITE(*,*)
-    !WRITE(*,*) "Ref.: Thermal Conductivity of the Elements: https://srd.nist.gov/jpcrdreprint/1.3253100.pdf"
-    !WRITE(*,*) "Cezairliyan: k/km= [(1/3)*(T/Tm)^2 + 2/(3*(T/Tm))]^-1"
-    !WRITE(*,*) "Let Tm = Debye temperature and the thermal conductivity at that time be km."
-    !km = kappa_phonon_min_Slack_xK / Theta_D_Cezairliyan_equ
-    !WRITE(*,*) "Slack model, km:" , km, " at ", Theta_D_Cezairliyan_equ, " [K]"
-    !WRITE(*,*) "Slack model: kappa_phonon_min [W/m/K]:",&
-    !  & km * ( (1.0D0/3.0D0)*(TEM/Theta_D_Cezairliyan_equ)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D_Cezairliyan_equ)) )**(-1.0D0) ,&
-    !  & " at ", TEM, " [K]"
+    WRITE(*,*)
+    WRITE(*,*) "Ref.: Thermal Conductivity of the Elements: https://srd.nist.gov/jpcrdreprint/1.3253100.pdf"
+    WRITE(*,*) "Cezairliyan: k/km= [(1/3)*(T/Tm)^2 + 2/(3*(T/Tm))]^-1"
+    WRITE(*,*) "Let Tm = Debye temperature and the thermal conductivity at that time be km."
+    km = kappa_phonon_min_Slack_xK / Theta_D_Cezairliyan_equ
+    WRITE(*,*) "Slack model, km:" , km, " at ", Theta_D_Cezairliyan_equ, " [K]"
+    WRITE(*,*) "Slack model: kappa_phonon_min [W/m/K]:",&
+      & km * ( (1.0D0/3.0D0)*(TEM/Theta_D_Cezairliyan_equ)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D_Cezairliyan_equ)) )**(-1.0D0) ,&
+      & " at ", TEM, " [K]"
     
     WRITE(*,*)
     WRITE(*,*) "-------------------------------"
