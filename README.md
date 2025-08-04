@@ -666,3 +666,46 @@ Where:
 
 ---
 
+---
+
+## Relaxation Time Evaluation
+
+The relaxation time $$\tau(\varepsilon)$$ is computed as:
+
+$$
+\frac{1}{\tau(\varepsilon)} = \sum_{i = 1}^{N_{\text{ph}}} g_{\text{eff}}(\omega_i) \cdot w_{\text{mode}}(\omega_i) \cdot K(\varepsilon, \omega_i) \cdot F(\omega_i)
+$$
+
+Where:
+
+- $$g_{\text{eff}}(\omega_i)$$: Mode-resolved coupling strength (default: 1.0)  
+- $$F(\omega_i)$$: Spectral term from phonon DOS or Eliashberg function  
+- $$K(\varepsilon, \omega_i)$$: Kernel selection result (1.0 or 0.0)
+
+---
+
+## Slack Model Parameter Estimation
+
+When the parameter `Apara` is not explicitly provided (`Apara == 0.0`), it is automatically estimated based on the crystal structure using the following expression:
+
+$$
+A = 3.1 \times 10^{-6} \cdot \left( \frac{V/N_{\text{atom}}}{\frac{3.615^3}{4}} \right)^{1/3} \cdot \left( \frac{a + b + c}{V^{1/3}} \right)^{-0.5}
+$$
+
+Where:
+
+- $$\( V \)$$: Unit cell volume  
+- $$\( N_{\text{atom}} \)$$: Number of atoms in the unit cell  
+- $$\( a, b, c \)$$: Lattice constants (LA, LB, LC)  
+- $$\( 3.615 \)$$: Reference lattice constant for Cu (FCC structure)  
+- $$\( A = 3.1 \times 10^{-6} \)$$: Empirical constant for cubic systems in the Slack model
+
+This formulation accounts for:
+
+- **Atomic packing density** via the normalized atomic volume term  
+- **Anisotropy** through the lattice constant ratio  
+- **Reference scaling** based on Cu's FCC structure
+
+The estimated value is printed during runtime as: This dynamic estimation enables the model to adapt to various crystal structures while maintaining physical consistency. For other crystal types, reference values such as $$\( A = 1.5 \times 10^{-6} \)$$ (hcp) or $$\( A = 2.43 \times 10^{-6} \)$$ (diamond) may be used if specified.
+
+---
