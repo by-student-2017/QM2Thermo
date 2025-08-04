@@ -688,6 +688,12 @@ Where:
 
 If the coordination number `CN` is less than or equal to 0.0, it is automatically set to 12.0 to avoid division by zero or undefined behavior. This ensures that the correction term remains physically meaningful and numerically stable.
 
+### Physical Meaning of Each Term
+
+- **Atomic volume normalization**: Adjusts for packing density differences relative to FCC Cu  
+- **Anisotropy correction**: Accounts for deviations from cubic symmetry  
+- **Coordination number correction**: Reflects the influence of bonding environment on thermal transport, based on second moment approximation
+
 ### Runtime Output
 
 When this automatic estimation is triggered, the following message is printed:  
