@@ -1,6 +1,6 @@
 # LBT-TETRA (QM2Thermo)
 ## QM2Thermo: Post-processing Thermoelectric Parameters from Quantum Mechanical calculations Output
-- Currently, only WIEN2k + "(option) EPW (from QE or Abinit, wannier90, etc) output" is supported, but in the future we plan to make it compatible with various first-principles band calculations. We also plan to support GPUs with OpenACC in the future.
+- Currently, only WIEN2k + "(option) EPW (from QE, Abinit, or wannier90, etc) output" is supported, but in the future we plan to make it compatible with various first-principles band calculations. We also plan to support GPUs with OpenACC in the future.
 - Functions other than chemical potential and Seebeck coefficient, such as carrier concentration Nc, were created for future expansion and should be used only as a reference.
 - Various function expansions will be fully implemented after new project applications are approved.
 - H. Sato et al., J. Phase Equilib. Diffus. 45, 397-415 (2024).: [https://doi.org/10.1007/s11669-024-01086-y](https://doi.org/10.1007/s11669-024-01086-y)
@@ -166,7 +166,7 @@ If a calculation result file already exists, the corresponding calculation will 
 
 ---
 
-## Treatment of phonon thermal conductivity in Seebeck_analysis.f90
+## Treatment of lattice thermal conductivity ($$ k_ph $$) in Seebeck_analysis.f90
 - If the bulk modulus and density in parameter.txt are > 0, the sound speed is calculated, and the thermal conductivity is calculated using the formula in "Empirical estimation of thermal conductivity [11]".
 - phononDOS.dat calculates the constant volume specific heat Cv_DOS and Debye temperature Theta_D. If the bulk modulus or density in parameter.txt are <= 0, it calculates the average sound speed from Cv_DOS and the thermal conductivity.
 - The temperature dependence of the thermal conductivity is calculated using the Cezairliyan's treatment of "Thermal Conductivity of Elements [13]", where the code assumes that Tm = Debye temperature and km is the thermal conductivity at the Debye temperature.
