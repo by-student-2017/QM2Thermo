@@ -274,12 +274,14 @@ MODULE seebeck_data
   REAL(KIND=8) :: C_phel                          ! Phonon-Electron scattering coefficient (works: a2Fdos = F): (Ref. 2.31e10) [s^-1*eV^-2]
   REAL(KIND=8) :: B_pdef                          ! Point defect scattering coefficient: (Ref. 5.33e15) [s^-1*eV^-4]
   REAL(KIND=8) :: Bulk_modulus                    ! Bulk_modulus [GPa] (1 [eV/A^3] = 160.2 [GPa]), B = K
-  REAL(KIND=8) :: Shear_modulus                   ! Shear_modulus [GPa] = Bulk_modulus / (2*(1+Poisson_ratio)), G
+  REAL(KIND=8) :: Shear_modulus                   ! Shear_modulus [GPa] = 3*Bulk_modulus*(1-2*Poisson_ratio) / (2*(1+Poisson_ratio)), G
   REAL(KIND=8) :: Young_modulus                   ! Young_modulus [GPa] = 9*B*G/(3*B+G), E
   REAL(KIND=8) :: Poisson_ratio                   ! Poisson_ratio = (3*B-2*G)/(2*(3*B+G))
+  REAL(KIND=8) :: Poisson_ratio_read_value        ! Poisson_ratio_read_value <= 0.0 -> .TRUE. (use vs)
   REAL(KIND=8) :: density                         ! read [g/cm^3] unit -> density * 1000 [kg/m^3]
   REAL(KIND=8) :: vl                              ! sound velocity (longitudinal wave) [m/s] = ((Bulk_modulus*1.0D9+(4/3)*Shear Modulus*1.0D9)/(density*1000.0))**(0.5)   ! 1 [GPa] = 1.0e9 [kg/(m*s^2)
-  REAL(KIND=8) :: vt                              ! sound velocity (transverse wave) [m/s] = (Bulk_modulus*1.0D9/(density*1000.0))**(0.5) (vt = vs in this code) (vs = 0.87*vl)   ! 1 [GPa] = 1.0e9 [kg/(m*s^2)
+  REAL(KIND=8) :: vt                              ! sound velocity (transverse wave) [m/s] = (Bulk_modulus*1.0D9/(density*1000.0))**(0.5)                                 ! 1 [GPa] = 1.0e9 [kg/(m*s^2)
+  REAL(KIND=8) :: vs                              ! Shear wave velocity
   REAL(KIND=8) :: va                              ! The average sound wave velocity (the Harmonic Mean of velocities in this code.)
   REAL(KIND=8) :: Mavg                            ! The mean atomic mass, density * 1.0D6 [g/m] * (volume/N_atom) [A^3/N] * 1.0D30/6.022D23
   REAL(KIND=8) :: MPF_phonon                      ! mean free path of phonon, l = (vl + 2*vt)/3 * tau0_phonon [s]
@@ -291,8 +293,9 @@ MODULE seebeck_data
   REAL(KIND=8) :: kappa_phonon_min_Cahill         !
   REAL(KIND=8) :: kappa_phonon_min_Slack          !
   REAL(KIND=8) :: kappa_phonon_min_Slack_xK       !
-  REAL(KIND=8) :: km                              !
+  REAL(KIND=8) :: km                              ! Cezairliyan
   REAL(KIND=8) :: kappa_phonon                    ! kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
+  REAL(KIND=8) :: kappa_scale_factor              ! Scale factor to forcibly approach the experiment
   !-----------------------------------------------
   REAL(KIND=8) :: Nd                              ! Doping concentration in cm^-3: n-type 1.0e14 - 1.0e18 [cm^-3]
   REAL(KIND=8) :: Nd_hole                         ! hole
@@ -1542,13 +1545,14 @@ PROGRAM seebeck_analysis
   READ(90, '(25X, E12.6)') C_phel                 ! Phonon-Electron scattering coefficient. (works: a2Fdos = F): (Ref. 2.31e10)
   READ(90, '(25X, E12.6)') B_pdef                 ! Point defect scattering coefficient. (Ref. 5.33e15)
   READ(90, '(25X, E12.6)') Bulk_modulus           ! Bulk_modulus [GPa] (1 [eV/A^3] = 160.2 [GPa]), B = K
-  READ(90, '(25X, E12.6)') Shear_modulus          ! Shear_modulus [GPa] = Bulk_modulus / (2*(1+Poisson_ratio)), G
+  READ(90, '(25X, E12.6)') Shear_modulus          ! Shear_modulus [GPa] = 3*Bulk_modulus*(1-2*Poisson_ratio) / (2*(1+Poisson_ratio)), G
   READ(90, '(25X, E12.6)') Young_modulus          ! Young_modulus [GPa] = 9*B*G/(3*B+G), E
   READ(90, '(25X, E12.6)') Poisson_ratio          ! Poisson_ratio = (3*B-2*G)/(2*(3*B+G))
   READ(90, '(25X, E12.6)') density                ! read [g/cm^3] unit -> density * 1000 [kg/m^3]
   READ(90, '(25X, E12.6)') tau0_phonon            ! For phonons, it is about 10-100 times stronger than for electrons. (If it is 0.0, tau_ph * 100)
   READ(90, '(25X, E12.6)') Gruneisen_parameter    ! If it is 0.0, calculate from Bulk modulus and Poisson's ratio (or Shear modulus).
   READ(90, '(25X, E12.6)') Apara                  ! 
+  READ(90, '(25X, E12.6)') kappa_scale_factor     ! kappa = kappa * kappa_scale_factor
   READ(90, *)
   READ(90, '(25X, E12.6)') Nd                     ! Read Doping concentration [cm^-3]
   READ(90, '(25X, E12.6)') m_eff                  ! Effective mass (relative to m_e)
@@ -1590,7 +1594,8 @@ PROGRAM seebeck_analysis
   WRITE(*,*) "Shear modulus, G   [GPa]:", Shear_modulus
   WRITE(*,*) "Young's modulus, E [GPa]:", Young_modulus
   WRITE(*,*) "Poisson's ratio         :", Poisson_ratio
-  IF (Poisson_ratio == 0.0) THEN
+  Poisson_ratio_read_value = Poisson_ratio
+  IF (Poisson_ratio <= 0.0) THEN
     Poisson_ratio = 0.30D0
     WRITE(*,*) "(Automatically setting) Poisson_ratio:", Poisson_ratio
   END IF
@@ -1603,6 +1608,7 @@ PROGRAM seebeck_analysis
   END IF
   WRITE(*,*) "Gruneisen parameter     :", Gruneisen_parameter
   WRITE(*,*) "Slack model parameter A :", Apara
+  WRITE(*,*) "kappa scale factor      :", kappa_scale_factor
   WRITE(*,*) "----- Carrier concentration (Nc) calclation: optional -----"
   WRITE(*,*) "Nd (Doping conc.)[cm^-3]:", Nd
   WRITE(*,*) "Electron Effective Mass :", m_eff
@@ -1696,14 +1702,21 @@ PROGRAM seebeck_analysis
   ! Calculates estimated values of various physical properties
   ! ------------------------------------------------------------------
   IF (Bulk_modulus > 0.0 .and. density > 0.0) THEN
-    Shear_modulus = Bulk_modulus / (2.0D0*(1+Poisson_ratio))
+    IF (Shear_modulus <= 0.0) THEN
+      Shear_modulus = 3.0D0*Bulk_modulus*(1.0D0 - 2.0*Poisson_ratio) / (2.0D0*(1.0D0 + Poisson_ratio))
+    END IF
     ! 1 [GPa] = 1.0e9 [kg/(m*s^2)], 1 [g/cm^3] = 1000 [kg/m^3], [GPa]*[kg/m^3] = 1.0e9 [(m/s)^2]
     vl = ((Bulk_modulus*1.0D9 + (4.0D0/3.0D0)*Shear_modulus*1.0D9) / (density*1.0D3))**(1.0D0/2.0D0)
     vt = (Shear_modulus*1.0D9 / (density*1.0D3))**(1.0D0/2.0D0)
     WRITE(*,*) "Shear modulus, G [GPa]", Shear_Modulus
     WRITE(*,*) "sound velocity (longitudinal wave) estimated from bulk and shear moduli, vl [m/s]:", vl
     WRITE(*,*) "sound velocity (transverse   wave) estimated from shear modulus        , vt [m/s]:", vt
-    WRITE(*,*) "vt is nearly equal ot vs = 0.87*vl [m/s]:", 0.87*vl
+    IF (Poisson_ratio_read_value <= 0.0) THEN
+      WRITE(*,*) "Use vs instead of vt. (i.e., vt = vs)"
+      vs = 0.87*vl
+      vt = vs
+      WRITE(*,*) "Shear wave velocity estimated from 0.87*vl. (i.e., vt = vs = 0.87*vl)  , vs [m/s]:", vs
+    END IF
     WRITE(*,*) "-------------------------------"
     
     MPF_phonon = (vl + 2.0D0*vt)/3.0D0 * tau0_phonon * 1.0D10
@@ -1720,10 +1733,14 @@ PROGRAM seebeck_analysis
     WRITE(*,*) " highly crystalline materials."
     WRITE(*,*)
     !
-    IF (Young_modulus == 0.0) THEN
-      Young_modulus = 9.0D0 * Bulk_modulus * Shear_modulus / (3.0*Bulk_modulus + Shear_modulus)
+    IF (Young_modulus <= 0.0) THEN
+      IF (Poisson_ratio_read_value <= 0.0) THEN
+        Young_modulus = 9.0D0 * Bulk_modulus * Shear_modulus / (3.0*Bulk_modulus + Shear_modulus)
+      ELSE
+        Young_modulus = 9.0D0 * Bulk_modulus * (1.0D0 - Poisson_ratio) / &
+          & ( (1.0D0 + Poisson_ratio) * (1.0D0 - 2*0D0*Poisson_ratio) )
+      END IF
       WRITE(*,*) "(Automatically setting) Young_modulus [GPa]:", Young_modulus
-      WRITE(*,*) "sound velocity estimated from Young's modulus [m/s]:", (Young_modulus*1.0D9/(density*1.0D3))**(1.0D0/2.0D0)
     END IF
     !
     ! 1 [GPa] = 1.0e9 [kg/(m*s^2)], 1 [g/cm^3] = 1000 [kg/m^3], [kg/(m*s^2)]/[kg/m^3] = [(m/s)^2]
@@ -1733,6 +1750,29 @@ PROGRAM seebeck_analysis
       & (Young_modulus*1.0D9/(density*1.0D3))**(1.0D0/2.0D0)
     WRITE(*,*) "Clarke model: kappa_phonon_min [W/m/K]:", kappa_phonon_min
     kappa_phonon_min_Clarke = kappa_phonon_min
+    IF (kappa_scale_factor > 0.0) THEN
+      WRITE(*,*) "Correction with scale factor", kappa_scale_factor
+      WRITE(*,*) "  kappa_phonon_min [W/m/K]:", kappa_phonon_min * kappa_scale_factor
+    END IF
+    
+    WRITE(*,*)
+    va = (Young_modulus*1.0D9/(density*1.0D3))**(1.0D0/2.0D0)
+    WRITE(*,*) "average sound velocity, va [m/s]:", va  ! The Harmonic Mean of velocities.
+    !
+    Theta_D_va = (2.0D0*PI*hbar/kb) * ( (3.0D0*N_atom) / (4.0D0*PI*(volume*1.0D-30)) )**(1.0D0/3.0D0) * va
+    WRITE(*, *) "Debye temperature, Theta_D_va [K]:", Theta_D_va
+    
+    !WRITE(*,*)
+    !WRITE(*,*) "---------- ----------"
+    !WRITE(*,*) "Ref.: Thermal Conductivity of the Elements: https://srd.nist.gov/jpcrdreprint/1.3253100.pdf"
+    !WRITE(*,*) "Cezairliyan: k/km= [(1/3)*(T/Tm)^2 + 2/(3*(T/Tm))]^-1"
+    !WRITE(*,*) "Let Tm = Debye temperature and the thermal conductivity at that time be km."
+    !km = kappa_phonon_min * kappa_scale_factor
+    !WRITE(*,*) "Clarke model, km:" , km, " at ", Theta_D_va, " [K]"
+    !TEM = 300.0
+    !WRITE(*,*) "Clarke model: kappa_phonon_min [W/m/K]:",&
+    !  & km * ( (1.0D0/3.0D0)*(TEM/Theta_D_va)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D_va)) )**(-1.0D0) ,&
+    !  & " at ", TEM, " [K]"
     
     WRITE(*,*)
     WRITE(*,*) "---------- ----------"
@@ -1747,6 +1787,29 @@ PROGRAM seebeck_analysis
       & (N_atom/(volume*1.0D-30))**(2.0D0/3.0D0) * (vl + 2.0D0*vt)
     WRITE(*,*) "Cahill-Pohl model: kappa_phonon_min [W/m/K]:", kappa_phonon_min
     kappa_phonon_min_Cahill = kappa_phonon_min
+    IF (kappa_scale_factor > 0.0) THEN
+      WRITE(*,*) "Correction with scale factor", kappa_scale_factor
+      WRITE(*,*) "  kappa_phonon_min [W/m/K]:", kappa_phonon_min * kappa_scale_factor
+    END IF
+    
+    WRITE(*,*)
+    va = ( (1.0D0/3.0D0) * (1.0D0/vl**3.0D0 + 2.0D0/vt**3.0D0) )**(-1.0D0/3.0D0)
+    WRITE(*,*) "average sound velocity, va [m/s]:", va  ! The Harmonic Mean of velocities.
+    !
+    Theta_D_va = (2.0D0*PI*hbar/kb) * ( (3.0D0*N_atom) / (4.0D0*PI*(volume*1.0D-30)) )**(1.0D0/3.0D0) * va
+    WRITE(*, *) "Debye temperature, Theta_D_va [K]:", Theta_D_va
+    
+    WRITE(*,*)
+    WRITE(*,*) "---------- ----------"
+    WRITE(*,*) "Ref.: Thermal Conductivity of the Elements: https://srd.nist.gov/jpcrdreprint/1.3253100.pdf"
+    WRITE(*,*) "Cezairliyan: k/km= [(1/3)*(T/Tm)^2 + 2/(3*(T/Tm))]^-1"
+    WRITE(*,*) "Let Tm = Debye temperature and the thermal conductivity at that time be km."
+    km = kappa_phonon_min * kappa_scale_factor
+    WRITE(*,*) "Cahill-Pohl model, km:" , km, " at ", Theta_D_va, " [K]"
+    TEM = 300.0
+    WRITE(*,*) "Cahill-Pohl model: kappa_phonon_min [W/m/K]:",&
+      & km * ( (1.0D0/3.0D0)*(TEM/Theta_D_va)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D_va)) )**(-1.0D0) ,&
+      & " at ", TEM, " [K]"
     
     WRITE(*,*)
     WRITE(*,*) "---------- ----------"
@@ -1784,17 +1847,22 @@ PROGRAM seebeck_analysis
     kappa_phonon_min_Slack = kappa_phonon_min
     kappa_phonon_min_Slack_xK = Apara * Mavg * Theta_D_va**3.0D0 * (volume/N_atom)**(1.0D0/3.0D0) / &
       & (Gruneisen_parameter**2.0D0 * (N_atom)**(2.0D0/3.0D0))
+    IF (kappa_scale_factor > 0.0) THEN
+      WRITE(*,*) "Correction with scale factor", kappa_scale_factor
+      WRITE(*,*) "  kappa_phonon_min [W/m/K]:", kappa_phonon_min * kappa_scale_factor, " at ", TEM, " [K]"
+      kappa_phonon_min_Slack_xK = kappa_phonon_min_Slack_xK * kappa_scale_factor
+    END IF
     
-    WRITE(*,*)
-    WRITE(*,*) "---------- ----------"
-    WRITE(*,*) "Ref.: Thermal Conductivity of the Elements: https://srd.nist.gov/jpcrdreprint/1.3253100.pdf"
-    WRITE(*,*) "Cezairliyan: k/km= [(1/3)*(T/Tm)^2 + 2/(3*(T/Tm))]^-1"
-    WRITE(*,*) "Let Tm = Debye temperature and the thermal conductivity at that time be km."
-    km = kappa_phonon_min_Slack_xK / Theta_D_va
-    WRITE(*,*) "Slack model, km:" , km, " at ", Theta_D_va, " [K]"
-    WRITE(*,*) "Slack model: kappa_phonon_min [W/m/K]:",&
-      & km * ( (1.0D0/3.0D0)*(TEM/Theta_D_va)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D_va)) )**(-1.0D0) ,&
-      & " at ", TEM, " [K]"
+    !WRITE(*,*)
+    !WRITE(*,*) "---------- ----------"
+    !WRITE(*,*) "Ref.: Thermal Conductivity of the Elements: https://srd.nist.gov/jpcrdreprint/1.3253100.pdf"
+    !WRITE(*,*) "Cezairliyan: k/km= [(1/3)*(T/Tm)^2 + 2/(3*(T/Tm))]^-1"
+    !WRITE(*,*) "Let Tm = Debye temperature and the thermal conductivity at that time be km."
+    !km = kappa_phonon_min_Slack_xK / Theta_D_va
+    !WRITE(*,*) "Slack model, km:" , km, " at ", Theta_D_va, " [K]"
+    !WRITE(*,*) "Slack model: kappa_phonon_min [W/m/K]:",&
+    !  & km * ( (1.0D0/3.0D0)*(TEM/Theta_D_va)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D_va)) )**(-1.0D0) ,&
+    !  & " at ", TEM, " [K]"
     
     WRITE(*,*)
     WRITE(*,*) "-------------------------------"
