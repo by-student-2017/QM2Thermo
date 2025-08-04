@@ -56,7 +56,7 @@ $$
 E = 2G(1 + \nu)
 $$
 
-Alternatively, you can express $$\( E \)$$ directly from $$\( B \)$$ and $$\( nu \)$$:
+Alternatively, you can express $$\( E \)$$ directly from $$\( B \)$$ and $$\( \nu \)$$:
 
 $$
 E = \frac{9B(1 - \nu)}{(1 + \nu)(1 - 2\nu)}
@@ -83,6 +83,7 @@ Poisson's ratio $$\( \nu \)$$ varies depending on the material type. It describe
 - Lower Poisson's ratios (e.g., < 0.2) are typical for brittle materials like ceramics.
 - Higher values (e.g., > 0.4) are found in soft, ductile materials such as rubber or certain polymers.
 - Accurate Poisson's ratio is essential for calculating shear modulus, Young's modulus, and sound velocities.
+
 
 
 
