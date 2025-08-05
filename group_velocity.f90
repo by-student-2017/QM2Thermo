@@ -80,6 +80,14 @@ MODULE constants
   INTEGER :: num_sym_ops
   CHARACTER(LEN=15) :: sym_group_name
   
+  INTEGER :: ALX, ALY, ALZ
+  INTEGER :: BLX, BLY, BLZ
+  INTEGER :: CLX, CLY, CLZ
+  
+  REAL(8) :: A11, A12, A13
+  REAL(8) :: A21, A22, A23
+  REAL(8) :: A31, A32, A33
+  
   !-------------------------
   ! Lattice and grid size
   !-------------------------
@@ -282,6 +290,13 @@ SUBROUTINE read_constants
   
   CHARACTER(LEN=100) :: line
   INTEGER :: iostat
+  
+  REAL(8) :: T(3,3), Tinv(3,3)
+  REAL(8) :: det
+  REAL(8) :: cos_alpha
+  REAL(8) :: cos_beta
+  REAL(8) :: cos_gamma
+  REAL(8) :: sin_gamma
 
   OPEN(UNIT=90, FILE='wien.dos1', STATUS='OLD', IOSTAT=iostat)
   READ(90, '(A)')
@@ -289,12 +304,26 @@ SUBROUTINE read_constants
   WRITE(6,'(A, f9.5)') "Fermi energy [Ry]: ", EF
   CLOSE(90)
 
-  OPEN(UNIT=91, FILE='wien.struct', STATUS='OLD', IOSTAT=iostat)
-  READ(94,*)
-  READ(94,'(30X, I3, 1X, A)') num_sym_ops, sym_group_name
+  OPEN(UNIT=91, FILE='wien.kgen', STATUS='OLD', IOSTAT=iostat)
+  READ(91, '(1X, I9)') IMAX
+  WRITE(6,'(A,I9)') "Maximum number of k-points:", IMAX
+  CLOSE(91)
+
+  OPEN(UNIT=92, FILE='wien.klist', STATUS='OLD', IOSTAT=iostat)
+  READ(92, '(85X, 3(1X,I2))') NPX, NPY, NPZ
+  WRITE(6,'(A,I2)') "k-mesh size X, NPX:", NPX
+  WRITE(6,'(A,I2)') "k-mesh size Y, NPY:", NPY
+  WRITE(6,'(A,I2)') "k-mesh size Z, NPZ:", NPZ
+  NPT = (NPX+1)*(NPY+1)*(NPZ+1)
+  WRITE(6,'(A,I9)') "Total number of k-points:", NPT
+  CLOSE(92)
+
+  OPEN(UNIT=93, FILE='wien.struct', STATUS='OLD', IOSTAT=iostat)
+  READ(93,*)
+  READ(93,'(30X, I3, 1X, A)') num_sym_ops, sym_group_name
   WRITE(*,*) "Space group: ", num_sym_ops, " , Symbol: ", sym_group_name
-  READ(91, '(A)')
-  READ(91, *) LAC, LBC, LCC, alpha_deg, beta_deg, gamma_deg
+  READ(93, '(A)')
+  READ(93, *) LAC, LBC, LCC, alpha_deg, beta_deg, gamma_deg
   AL = LAC * B2A   ! B2A = 0.52918
   BL = LBC * B2A   ! B2A = 0.52918
   CL = LCC * B2A   ! B2A = 0.52918
@@ -304,28 +333,183 @@ SUBROUTINE read_constants
   WRITE(6,'(A, f9.5)') "alpha [degree]: ", alpha_deg
   WRITE(6,'(A, f9.5)') "beta  [degree]: ", beta_deg
   WRITE(6,'(A, f9.5)') "gamma [degree]: ", gamma_deg
-  alpha_rad  = alpha_deg  * PI/180.0
-  beta_rad   = beta_deg   * PI/180.0
-  gamma_rad  = gamma_deg  * PI/180.0
-  volume = (AL*B2A) * (BL*B2A) * (CL*B2A) * SQRT(1.0 &
-       & - COS(alpha_rad)**2.0 - COS(beta_rad)**2.0 - COS(gamma_rad)**2.0 &
-       & + 2.0 * COS(alpha_rad) * COS(beta_rad) * COS(gamma_rad))
-  WRITE(6,'(A,I9)') "Volume [A^3]:", volume
-  CLOSE(91)
-
-  OPEN(UNIT=92, FILE='wien.kgen', STATUS='OLD', IOSTAT=iostat)
-  READ(92, '(1X, I9)') IMAX
-  WRITE(6,'(A,I9)') "Maximum number of k-points:", IMAX
-  CLOSE(92)
-
-  OPEN(UNIT=93, FILE='wien.klist', STATUS='OLD', IOSTAT=iostat)
-  READ(93, '(85X, 3(1X,I2))') NPX, NPY, NPZ
-  WRITE(6,'(A,I2)') "k-mesh size X, NPX:", NPX
-  WRITE(6,'(A,I2)') "k-mesh size Y, NPY:", NPY
-  WRITE(6,'(A,I2)') "k-mesh size Z, NPZ:", NPZ
-  NPT = (NPX+1)*(NPY+1)*(NPZ+1)
-  WRITE(6,'(A,I9)') "Total number of k-points:", NPT
   CLOSE(93)
+  
+  ! Convert angles to radians
+  !alpha_rad = alpha_deg * PI / 180.0D0
+  !beta_rad  = beta_deg  * PI / 180.0D0
+  !gamma_rad = gamma_deg * PI / 180.0D0
+  
+  ! Compute cosines and sines
+  !cos_alpha = COS(alpha_rad)
+  !cos_beta  = COS(beta_rad)
+  !cos_gamma = COS(gamma_rad)
+  !sin_gamma = SIN(gamma_rad)
+  
+  ! Construct lattice vectors in Cartesian coordinates
+  ! a1 = (AL, 0, 0)
+  ! a2 = (BL * cos(gamma), BL * sin(gamma), 0)
+  ! a3 = (CL * cos(beta),
+  !       CL * (cos(alpha) - cos(beta) * cos(gamma)) / sin(gamma),
+  !       CL * sqrt(1 - cos(alpha)^2 - cos(beta)^2 - cos(gamma)^2 + 2*cos(alpha)*cos(beta)*cos(gamma)) / sin(gamma))
+  
+  !T(1,1) = AL
+  !T(1,2) = 0.0D0
+  !T(1,3) = 0.0D0
+  
+  !T(2,1) = BL * cos_gamma
+  !T(2,2) = BL * sin_gamma
+  !T(2,3) = 0.0D0
+  
+  !T(3,1) = CL * cos_beta
+  !T(3,2) = CL * (cos_alpha - cos_beta * cos_gamma) / sin_gamma
+  !T(3,3) = CL * SQRT(1.0D0 - cos_alpha**2 - cos_beta**2 - cos_gamma**2 + &
+  !                   2.0D0 * cos_alpha * cos_beta * cos_gamma) / sin_gamma
+  
+  ! Compute inverse of T using Cramer's rule
+  !det = T(1,1)*(T(2,2)*T(3,3) - T(2,3)*T(3,2)) - &
+  !      T(1,2)*(T(2,1)*T(3,3) - T(2,3)*T(3,1)) + &
+  !      T(1,3)*(T(2,1)*T(3,2) - T(2,2)*T(3,1))
+  
+  !IF (ABS(det) < 1.0D-10) THEN
+  !  WRITE(*,*) "Error: Transformation matrix is singular."
+  !  STOP
+  !END IF
+  
+  !Tinv(1,1) =  (T(2,2)*T(3,3) - T(2,3)*T(3,2)) / det
+  !Tinv(1,2) = -(T(1,2)*T(3,3) - T(1,3)*T(3,2)) / det
+  !Tinv(1,3) =  (T(1,2)*T(2,3) - T(1,3)*T(2,2)) / det
+  
+  !Tinv(2,1) = -(T(2,1)*T(3,3) - T(2,3)*T(3,1)) / det
+  !Tinv(2,2) =  (T(1,1)*T(3,3) - T(1,3)*T(3,1)) / det
+  !Tinv(2,3) = -(T(1,1)*T(2,3) - T(1,3)*T(2,1)) / det
+  
+  !Tinv(3,1) =  (T(2,1)*T(3,2) - T(2,2)*T(3,1)) / det
+  !Tinv(3,2) = -(T(1,1)*T(3,2) - T(1,2)*T(3,1)) / det
+  !Tinv(3,3) =  (T(1,1)*T(2,2) - T(1,2)*T(2,1)) / det
+  
+  ! Assign to Aij
+  !A11 = Tinv(1,1); A12 = Tinv(1,2); A13 = Tinv(1,3)
+  !A21 = Tinv(2,1); A22 = Tinv(2,2); A23 = Tinv(2,3)
+  !A31 = Tinv(3,1); A32 = Tinv(3,2); A33 = Tinv(3,3)
+  
+  !WRITE(*,*) "Transformation matrix Aij:"
+  !WRITE(*,*) A11, A12, A13
+  !WRITE(*,*) A21, A22, A23
+  !WRITE(*,*) A31, A32, A33
+  
+  SELECT CASE (num_sym_ops)
+    ! Triclinic system: lowest symmetry
+    CASE (1, 2)
+        ! Triclinic (P1, P-1): identity transformation
+        ALX =  1; ALY =  0; ALZ =  0
+        BLX =  0; BLY =  1; BLZ =  0
+        CLX =  0; CLY =  0; CLZ =  1
+    
+    ! Monoclinic system: low symmetry
+    CASE (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+        ! Monoclinic: identity transformation
+        ALX =  1; ALY =  0; ALZ =  0
+        BLX =  0; BLY =  1; BLZ =  0
+        CLX =  0; CLY =  0; CLZ =  1
+    
+    ! Orthorhombic system
+    CASE (16, 22, 38, 69, 70, 71, 72)
+        ! Orthorhombic: identity or simple transformation
+        ALX =  1; ALY =  0; ALZ =  0
+        BLX =  0; BLY =  1; BLZ =  0
+        CLX =  0; CLY =  0; CLZ =  1
+    
+    ! Tetragonal system
+    CASE (89, 123, 124, 125, 127, 128, 129, 131, 133, 135)
+        ! Tetragonal: high symmetry -> integer lattice
+        ALX =  1; ALY =  0; ALZ =  0
+        BLX =  0; BLY =  1; BLZ =  0
+        CLX =  0; CLY =  0; CLZ =  1
+    
+    ! FCC (Face-Centered Cubic)
+    CASE (139, 216, 217, 225, 227, 228, 230)
+        ! FCC: high symmetry -> integer lattice
+        ALX = -1; ALY =  1; ALZ =  1
+        BLX =  1; BLY = -1; BLZ =  1
+        CLX =  1; CLY =  1; CLZ = -1
+    
+    ! BCC (Body-Centered Cubic)
+    CASE (199, 206, 220, 221, 223, 224, 229)
+        ! BCC: high symmetry -> integer lattice
+        ALX =  1; ALY =  1; ALZ =  0
+        BLX =  0; BLY =  1; BLZ =  1
+        CLX =  1; CLY =  0; CLZ =  1
+    
+    ! HCP (Hexagonal Close-Packed)
+    CASE (175, 176, 177, 178, 179, 180, 186, 187, 188, 189, 190, 191, 194)
+        ! HCP: hexagonal system -> integer lattice
+        ALX =  1; ALY = -1; ALZ =  0
+        BLX =  1; BLY =  1; BLZ =  0
+        CLX =  0; CLY =  0; CLZ =  1
+    
+    ! Rhombohedral (Trigonal)
+    CASE (146, 148, 155, 160, 166, 167)
+        ! Rhombohedral: transform to pseudo-hexagonal integer lattice
+        ALX =  1; ALY =  0; ALZ = -1
+        BLX = -1; BLY =  1; BLZ =  0
+        CLX =  0; CLY = -1; CLZ =  1
+    
+    ! Symmorphic space groups (identity transformation)
+    CASE (21, 23, 25, 35, 42, 44, 47, 51, 65, 67, 73, 74, 78, 80, 81, 82, &
+          86, 88, 92, 96, 98, 99, 106, 110, 114, 118, 120, 122, 130, 138, &
+          195, 196, 197, 200, 202, 204)
+        ! Symmorphic: identity transformation
+        ALX =  1; ALY =  0; ALZ =  0
+        BLX =  0; BLY =  1; BLZ =  0
+        CLX =  0; CLY =  0; CLZ =  1
+    
+    CASE DEFAULT
+        WRITE(*,*) "Warning: Unsupported space group. Using identity transformation."
+        ALX =  1; ALY =  0; ALZ =  0
+        BLX =  0; BLY =  1; BLZ =  0
+        CLX =  0; CLY =  0; CLZ =  1
+  END SELECT
+  
+  WRITE(*,*) ALX, ALY, ALZ
+  WRITE(*,*) BLX, BLY, BLZ
+  WRITE(*,*) CLX, CLY, CLZ
+  
+  ! Construct a transformation matrix T from integer lattice vectors
+  T(1,1) = ALX; T(1,2) = ALY; T(1,3) = ALZ
+  T(2,1) = BLX; T(2,2) = BLY; T(2,3) = BLZ
+  T(3,1) = CLX; T(3,2) = CLY; T(3,3) = CLZ
+  
+  ! Calculate the determinant
+  det = T(1,1)*(T(2,2)*T(3,3) - T(2,3)*T(3,2)) - &
+        T(1,2)*(T(2,1)*T(3,3) - T(2,3)*T(3,1)) + &
+        T(1,3)*(T(2,1)*T(3,2) - T(2,2)*T(3,1))
+  
+  IF (ABS(det) < 1.0D-10) THEN
+    WRITE(*,*) "Error: Transformation matrix is singular."
+    STOP
+  END IF
+  ! Calculates the inverse matrix Tinv using Cramer's formula
+  Tinv(1,1) =  (T(2,2)*T(3,3) - T(2,3)*T(3,2)) / det
+  Tinv(1,2) = -(T(1,2)*T(3,3) - T(1,3)*T(3,2)) / det
+  Tinv(1,3) =  (T(1,2)*T(2,3) - T(1,3)*T(2,2)) / det
+  
+  Tinv(2,1) = -(T(2,1)*T(3,3) - T(2,3)*T(3,1)) / det
+  Tinv(2,2) =  (T(1,1)*T(3,3) - T(1,3)*T(3,1)) / det
+  Tinv(2,3) = -(T(1,1)*T(2,3) - T(1,3)*T(2,1)) / det
+  
+  Tinv(3,1) =  (T(2,1)*T(3,2) - T(2,2)*T(3,1)) / det
+  Tinv(3,2) = -(T(1,1)*T(3,2) - T(1,2)*T(3,1)) / det
+  Tinv(3,3) =  (T(1,1)*T(2,2) - T(1,2)*T(2,1)) / det
+  ! Substitute into Aij (transformation matrix to Cartesian coordinate system)
+  A11 = Tinv(1,1); A12 = Tinv(1,2); A13 = Tinv(1,3)
+  A21 = Tinv(2,1); A22 = Tinv(2,2); A23 = Tinv(2,3)
+  A31 = Tinv(3,1); A32 = Tinv(3,2); A33 = Tinv(3,3)
+  
+  WRITE(*,*) "Transformation matrix Aij:"
+  WRITE(*,*) A11, A12, A13
+  WRITE(*,*) A21, A22, A23
+  WRITE(*,*) A31, A32, A33
 
 END SUBROUTINE
 
@@ -1383,137 +1567,55 @@ END SUBROUTINE VDATA
 !   - Uses IP and IM from index_data (stencil indices)
 !================================================================================
 SUBROUTINE GV(I, J, VX, VY, VZ)
-  USE constants  ! Physical and numerical constants: PI, EV, KB, CEM, AL, BL, CL, EF, NPX, NPY, NPZ, NPT, MML, IMAX, NEMAX, EPS
-  USE band_data  ! Band energies: AMA1(IMAX,MML), total bands MMIN
-  USE index_data ! k-point mapping and stencil indices: IC, N1-N7, IP, IM, IEX
+  USE constants   ! ALX〜CLZ, NPX, NPY, NPZ, CEM, AL, BL, CL, IMAX, MML
+  USE band_data   ! AMA1(IMAX,MML)
+  USE index_data  ! IP, IM
   IMPLICIT NONE
-  
-  ! Inputs
-  INTEGER :: I, J  ! I = k-point index, J = band index
-  
-  ! Coefficients for 15-point central difference
-  REAL(KIND=8) :: CK1, CK2, CK3, CK4, CK5, CK6, CK7, CK8, CK9
-  REAL(KIND=8) :: CK10, CK11, CK12, CK13, CK14, CK15
-  
-  ! Intermediate derivatives along x (AAA), y (AAB), z (AAC)
-  REAL(KIND=8) :: AAA, AAB, AAC
-  
-  ! Output velocities
+
+  INTEGER :: I, J
   REAL(KIND=8) :: VX, VY, VZ
-  
-  !--------------------------------------------
-  ! Define finite difference weights for 15-point stencil
-  ! These coefficients improve accuracy of numerical differentiation
-  !--------------------------------------------
-  CK1  =  1.875000      /  2.0
-  CK2  = -1.544118      /  4.0
-  CK3  =  1.115196      /  6.0
-  CK4  = -0.7043343     /  8.0
-  CK5  =  0.3873839     / 10.0
-  CK6  = -0.1844685     / 12.0
-  CK7  =  7.5464390E-02 / 14.0
-  CK8  = -2.6248485E-02 / 16.0
-  CK9  =  7.6558078E-03 / 18.0
-  CK10 = -1.8373939E-03 / 20.0
-  CK11 =  3.5334498E-04 / 22.0
-  CK12 = -5.2347405E-05 / 24.0
-  CK13 =  5.6086506E-06 / 26.0
-  CK14 = -3.8680349E-07 / 28.0
-  CK15 =  1.2893449E-08 / 30.0
-  
-  !--------------------------------------------
-  ! Compute derivative dE/dkx using symmetric 15-point difference
-  ! AAA stores gradient along x
-  !--------------------------------------------
-  AAA = (CK1*(AMA1(IP(1, 1,I),J)-AMA1(IM(1, 1,I),J))+ &
-      &  CK2*(AMA1(IP(1, 2,I),J)-AMA1(IM(1, 2,I),J))+ &
-      &  CK3*(AMA1(IP(1, 3,I),J)-AMA1(IM(1, 3,I),J))+ &
-      &  CK4*(AMA1(IP(1, 4,I),J)-AMA1(IM(1, 4,I),J))+ &
-      &  CK5*(AMA1(IP(1, 5,I),J)-AMA1(IM(1, 5,I),J))+ &
-      &  CK6*(AMA1(IP(1, 6,I),J)-AMA1(IM(1, 6,I),J))+ &
-      &  CK7*(AMA1(IP(1, 7,I),J)-AMA1(IM(1, 7,I),J))+ &
-      &  CK8*(AMA1(IP(1, 8,I),J)-AMA1(IM(1, 8,I),J))+ &
-      &  CK9*(AMA1(IP(1, 9,I),J)-AMA1(IM(1, 9,I),J))+ &
-      & CK10*(AMA1(IP(1,10,I),J)-AMA1(IM(1,10,I),J))+ &
-      & CK11*(AMA1(IP(1,11,I),J)-AMA1(IM(1,11,I),J))+ &
-      & CK12*(AMA1(IP(1,12,I),J)-AMA1(IM(1,12,I),J))+ &
-      & CK13*(AMA1(IP(1,13,I),J)-AMA1(IM(1,13,I),J))+ &
-      & CK14*(AMA1(IP(1,14,I),J)-AMA1(IM(1,14,I),J))+ &
-      & CK15*(AMA1(IP(1,15,I),J)-AMA1(IM(1,15,I),J))  &
-      & )*(AL*1.0*NPX)*CEM
-  
-  !--------------------------------------------
-  ! Compute derivative dE/dky -> AAB (y-direction)
-  !--------------------------------------------
-  AAB = (CK1*(AMA1(IP(2, 1,I),J)-AMA1(IM(2, 1,I),J))+ &
-      &  CK2*(AMA1(IP(2, 2,I),J)-AMA1(IM(2, 2,I),J))+ &
-      &  CK3*(AMA1(IP(2, 3,I),J)-AMA1(IM(2, 3,I),J))+ &
-      &  CK4*(AMA1(IP(2, 4,I),J)-AMA1(IM(2, 4,I),J))+ &
-      &  CK5*(AMA1(IP(2, 5,I),J)-AMA1(IM(2, 5,I),J))+ &
-      &  CK6*(AMA1(IP(2, 6,I),J)-AMA1(IM(2, 6,I),J))+ &
-      &  CK7*(AMA1(IP(2, 7,I),J)-AMA1(IM(2, 7,I),J))+ &
-      &  CK8*(AMA1(IP(2, 8,I),J)-AMA1(IM(2, 8,I),J))+ &
-      &  CK9*(AMA1(IP(2, 9,I),J)-AMA1(IM(2, 9,I),J))+ &
-      & CK10*(AMA1(IP(2,10,I),J)-AMA1(IM(2,10,I),J))+ &
-      & CK11*(AMA1(IP(2,11,I),J)-AMA1(IM(2,11,I),J))+ &
-      & CK12*(AMA1(IP(2,12,I),J)-AMA1(IM(2,12,I),J))+ &
-      & CK13*(AMA1(IP(2,13,I),J)-AMA1(IM(2,13,I),J))+ &
-      & CK14*(AMA1(IP(2,14,I),J)-AMA1(IM(2,14,I),J))+ &
-      & CK15*(AMA1(IP(2,15,I),J)-AMA1(IM(2,15,I),J))  &
-      & )*(BL*1.0*NPY)*CEM
-  
-  !--------------------------------------------
-  ! Compute derivative dE/dkz -> AAC (z-direction)
-  !--------------------------------------------
-  AAC = (CK1*(AMA1(IP(3, 1,I),J)-AMA1(IM(3, 1,I),J))+ &
-      &  CK2*(AMA1(IP(3, 2,I),J)-AMA1(IM(3, 2,I),J))+ &
-      &  CK3*(AMA1(IP(3, 3,I),J)-AMA1(IM(3, 3,I),J))+ &
-      &  CK4*(AMA1(IP(3, 4,I),J)-AMA1(IM(3, 4,I),J))+ &
-      &  CK5*(AMA1(IP(3, 5,I),J)-AMA1(IM(3, 5,I),J))+ &
-      &  CK6*(AMA1(IP(3, 6,I),J)-AMA1(IM(3, 6,I),J))+ &
-      &  CK7*(AMA1(IP(3, 7,I),J)-AMA1(IM(3, 7,I),J))+ &
-      &  CK8*(AMA1(IP(3, 8,I),J)-AMA1(IM(3, 8,I),J))+ &
-      &  CK9*(AMA1(IP(3, 9,I),J)-AMA1(IM(3, 9,I),J))+ &
-      & CK10*(AMA1(IP(3,10,I),J)-AMA1(IM(3,10,I),J))+ &
-      & CK11*(AMA1(IP(3,11,I),J)-AMA1(IM(3,11,I),J))+ &
-      & CK12*(AMA1(IP(3,12,I),J)-AMA1(IM(3,12,I),J))+ &
-      & CK13*(AMA1(IP(3,13,I),J)-AMA1(IM(3,13,I),J))+ &
-      
-      & CK14*(AMA1(IP(3,14,I),J)-AMA1(IM(3,14,I),J))+ &
-      & CK15*(AMA1(IP(3,15,I),J)-AMA1(IM(3,15,I),J))  &
-      & )*(CL*1.0*NPZ)*CEM
-  
-  !--------------------------------------------
-  ! Combine directional derivatives to get velocity vector
-  ! VX, VY, VZ: group velocity components at point I, band J
-  ! Averaging helps reduce noise and improve symmetry
-  !--------------------------------------------
-  SELECT CASE (sym_group_name(1:1))
-    CASE ('F')
-      ! FCC
-      VX = (0.0 + AAB + AAC) / 2.0
-      VY = (AAA + 0.0 + AAC) / 2.0
-      VZ = (AAA + AAB + 0.0) / 2.0
-    CASE ('I')
-      ! BCC
-      VX = (-AAA + AAB + AAC) / 2.0
-      VY = ( AAA - AAB + AAC) / 2.0
-      VZ = ( AAA + AAB - AAC) / 2.0
-    CASE ('P')
-      ! SC
-      VX = AAA
-      VY = AAB
-      VZ = AAC
-    CASE ('H')
-      ! HCP
-      VX = AAA * 2.0*SQRT(3.0)
-      VY = AAB * 2.0*SQRT(3.0)
-      VZ = AAC
-    CASE DEFAULT
-      ! Error handling for unsupported space groups
-      WRITE(*,*) "Error: Crystal structures not yet implemented: ..."
-      STOP
-  END SELECT
-  
+  REAL(KIND=8) :: AAA, AAB, AAC
+  REAL(KIND=8) :: CK(15)
+  INTEGER :: N
+
+  ! Coefficients for 15-point central difference
+  CK(1)  =  1.875000      /  2.0
+  CK(2)  = -1.544118      /  4.0
+  CK(3)  =  1.115196      /  6.0
+  CK(4)  = -0.7043343     /  8.0
+  CK(5)  =  0.3873839     / 10.0
+  CK(6)  = -0.1844685     / 12.0
+  CK(7)  =  7.5464390E-02 / 14.0
+  CK(8)  = -2.6248485E-02 / 16.0
+  CK(9)  =  7.6558078E-03 / 18.0
+  CK(10) = -1.8373939E-03 / 20.0
+  CK(11) =  3.5334498E-04 / 22.0
+  CK(12) = -5.2347405E-05 / 24.0
+  CK(13) =  5.6086506E-06 / 26.0
+  CK(14) = -3.8680349E-07 / 28.0
+  CK(15) =  1.2893449E-08 / 30.0
+
+  ! Derivatives along x, y, z directions
+  AAA = 0.0D0
+  AAB = 0.0D0
+  AAC = 0.0D0
+
+  ! Calculation of central difference method using coefficient CK for correction
+  DO N = 1, 15
+    AAA = AAA + CK(N) * (AMA1(IP(1,N,I),J) - AMA1(IM(1,N,I),J))
+    AAB = AAB + CK(N) * (AMA1(IP(2,N,I),J) - AMA1(IM(2,N,I),J))
+    AAC = AAC + CK(N) * (AMA1(IP(3,N,I),J) - AMA1(IM(3,N,I),J))
+  END DO
+
+  ! Apply scaling based on grid resolution and lattice constants
+  AAA = AAA * (AL * NPX) * CEM
+  AAB = AAB * (BL * NPY) * CEM
+  AAC = AAC * (CL * NPZ) * CEM
+
+  ! Transform velocity vector using lattice transformation matrix
+  VX = A11 * AAA + A12 * AAB + A13 * AAC
+  VY = A21 * AAA + A22 * AAB + A23 * AAC
+  VZ = A31 * AAA + A32 * AAB + A33 * AAC
+
   RETURN
 END SUBROUTINE GV

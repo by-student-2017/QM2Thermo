@@ -291,9 +291,10 @@ SUBROUTINE read_constants()
         CLX =  0; CLY =  0; CLZ =  1
     
     CASE DEFAULT
-        ! Error handling for unsupported space groups
-        WRITE(*,*) "Error: Unsupported space group. Supported groups include SC, FCC, BCC, HCP, R, Tetragonal, Orthorhombic, Monoclinic, Triclinic."
-        STOP
+        WRITE(*,*) "Warning: Unsupported space group. Using identity transformation."
+        ALX =  1; ALY =  0; ALZ =  0
+        BLX =  0; BLY =  1; BLZ =  0
+        CLX =  0; CLY =  0; CLZ =  1
   END SELECT
   
   WRITE(*,*) ALX, ALY, ALZ
@@ -389,8 +390,8 @@ SUBROUTINE ApplySymmetry(III, I1, J1, K1, I4, J4, K4)
 
   ! Apply rotation and translation
   DO i = 1, 3
-    !v_out(i) = DOT_PRODUCT(sym(III)%R(i,:), v_in) + sym(III)%T(i)
-    v_out(i) = DOT_PRODUCT(sym(III)%R(i,:), v_in)
+    !v_out(i) = DOT_PRODUCT(sym(III)%R(i,:), v_in) + sym(III)%T(i) ! Includes translation operations
+    v_out(i) = DOT_PRODUCT(sym(III)%R(i,:), v_in)  ! use IG1, IG2, and IG3 DO loop (no translational operation)
   END DO
 
   ! Round transformed coordinates back to integer lattice
@@ -478,6 +479,7 @@ END SUBROUTINE ReadKList
 !      SC(  1): LX = L2X, LY = L2Y, LZ = L2Z
 !     FCC(227): LX = -L2X + L2Y + L2Z, LY =  L2X - L2Y + L2Z, LZ =  L2X + L2Y - L2Z
 !     BCC(229): LX = L2X + L2Y, LY = L2Y + L2Z, LZ = L2Z + L2X
+!     HCP(194): LX = L2X - L2Y, LY = L2X + L2Y, LZ = L2Z
 !---------------------------------------------------------------------
 SUBROUTINE BuildIC()
   USE constants   ! IMAX, NPX, NPY, NPZ, NPT, Nsym, sym, sym_ops, ALX-CLZ, IXX, IYY, IZZ, WTT, IC, LEX, Wrap function
@@ -598,6 +600,7 @@ SUBROUTINE BuildIC()
                   I3 = I4 - (ALX*IG1 + ALY*IG2 + ALZ*IG3) * NPX
                   J3 = J4 - (BLX*IG1 + BLY*IG2 + BLZ*IG3) * NPY
                   K3 = K4 - (CLX*IG1 + CLY*IG2 + CLZ*IG3) * NPZ
+                  
                   
                   IF (LX == I3 .AND. LY == J3 .AND. LZ == K3) THEN
                     ! Optional debug: WRITE(6,'(12I6)') NP, L2X, L2Y, L2Z, LX, LY, LZ, I1, J1, K1, L1, III
@@ -777,6 +780,3 @@ PROGRAM GenerateStencil
   DEALLOCATE(LEX)
   
 END PROGRAM GenerateStencil
-
-
-
