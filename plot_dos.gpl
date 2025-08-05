@@ -1,14 +1,22 @@
 #!/usr/bin/gnuplot
 
-# === Display on screen ===
-set terminal win font "Arial,12"
+EF = 0.34363
+
+# === Save as PNG for publication ===
+set terminal pngcairo size 800,600 font "Times New Roman,12"
+set output "Density_of_States.png"
+
 set xlabel "Energy, E / eV"
 set ylabel "Density of States, DOS / states eV^{-1} unitcell^{-1}"
-set grid
+
 set xrange [-12:10]
 set yrange [0:*]
+
 set format y "%.2f"
+
 set xzeroaxis
+
+set grid
 
 # Add minor ticks
 set xtics 2
@@ -17,15 +25,12 @@ set ytics 0.2
 set mxtics 5
 set mytics 5
 
-set title "Si DOS (58 x 58 x 58 mesh, noshift), TB-mBJ, WIEN2k"
-
-EF = 0.34363
+set title "Density of States"
 
 # --- Display preview on screen ---
-plot "wien.dos1" using (($1-EF)*13.605):($2/13.605) with lines linestyle 1 lc "black" title ""
+plot "wien.dos1" using (($1-EF)*13.605):($2/13.605) with lines linestyle 1 lc "black" title "Total DOS"
 
-# === Save as PNG for publication ===
-set terminal pngcairo size 800,600 font "Times New Roman,12"
-set output "Density_of_States.png"
+# === Display on screen ===
+set terminal win font "Arial,12"
 replot
 unset output
