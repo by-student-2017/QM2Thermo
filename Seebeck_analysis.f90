@@ -827,7 +827,7 @@ CONTAINS
   !-----------------------------------------------------------------------
   ! Function : get_tau
   ! Purpose  : Compute energy- and temperature-dependent relaxation time tau(E,T)
-  !          : based on Matthiessenﾂ’s rule combining multiple scattering mechanisms:
+  !          : based on Matthiessen’s rule combining multiple scattering mechanisms:
   !            - Phonon scattering      :  tau is proportional to  1 / (|E - mu| * T)
   !            - Impurity scattering    :  tau is proportional to  |E - mu|^n   (user-defined exponent)
   !            - Electronic DOS-based   :  tau is proportional to  1 / [DOS(E) * T]
