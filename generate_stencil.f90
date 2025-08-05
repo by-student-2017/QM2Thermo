@@ -229,32 +229,38 @@ SUBROUTINE read_constants()
           42, 44, 47, 51, 65, 67, 69, 70, 73, 74, 78, 80, 81, 82, 86, 88, &
           92, 96, 98, 99, 106, 110, 114, 118, 120, 122, 123, 130, 138, &
           195, 196, 197, 200, 202, 204, 221)
-        ! Symmorphic Space Groups
-        ALX = 1; ALY = 0; ALZ = 0
-        BLX = 0; BLY = 1; BLZ = 0
-        CLX = 0; CLY = 0; CLZ = 1
+        ! Symmorphic space groups: use identity transformation
+        ALX =  1; ALY =  0; ALZ =  0
+        BLX =  0; BLY =  1; BLZ =  0
+        CLX =  0; CLY =  0; CLZ =  1
     
-    CASE (139, 227, 230)
-        ! FCC (high symmetry)
+    CASE (139, 216, 217, 225, 227, 228, 230)
+        ! FCC (Face-Centered Cubic): Highly symmetric lattice -> integer lattice
         ALX = -1; ALY =  1; ALZ =  1
         BLX =  1; BLY = -1; BLZ =  1
         CLX =  1; CLY =  1; CLZ = -1
     
-    CASE (225, 229)
-        ! BCC (high symmetry)
-        ALX = 1; ALY = 1; ALZ = 0
-        BLX = 0; BLY = 1; BLZ = 1
-        CLX = 1; CLY = 0; CLZ = 1
+    CASE (199, 206, 220, 221, 223, 224, 229)
+        ! BCC (Body-Centered Cubic): Highly symmetric lattice -> integer lattice
+        ALX =  1; ALY =  1; ALZ =  0
+        BLX =  0; BLY =  1; BLZ =  1
+        CLX =  1; CLY =  0; CLZ =  1
     
-    CASE (194)
-        ! HCP (high symmetry)
-        ALX = 1; ALY = 0; ALZ = 0
-        BLX = 0; BLY = 1; BLZ = 0
-        CLX = 0; CLY = 0; CLZ = 1
+    CASE (175, 176, 177, 178, 179, 180, 186, 187, 188, 189, 190, 191, 194)
+        ! HCP (Hexagonal Close-Packed): Hexagonal crystal system -> integer lattice
+        ALX =  1; ALY = -1; ALZ =  0
+        BLX =  1; BLY =  1; BLZ =  0
+        CLX =  0; CLY =  0; CLZ =  1
+        
+    CASE (146, 148, 155, 160, 166, 167)
+        ! Rhombohedral (R) system: transform to pseudo-hexagonal integer lattice
+        ALX =  1; ALY =  0; ALZ = -1
+        BLX = -1; BLY =  1; BLZ =  0
+        CLX =  0; CLY = -1; CLZ =  1
     
     CASE DEFAULT
         ! Error handling for unsupported space groups
-        WRITE(*,*) "Error: Unsupported space group. Supported groups: ..."
+        WRITE(*,*) "Error: Unsupported space group. Supported groups include SC, FCC, BCC, HCP."
         STOP
   END SELECT
   
@@ -739,3 +745,4 @@ PROGRAM GenerateStencil
   DEALLOCATE(LEX)
   
 END PROGRAM GenerateStencil
+
