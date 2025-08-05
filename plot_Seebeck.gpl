@@ -22,8 +22,7 @@ set mytics 5
 set style line 1 lt 1 lw 2 lc rgb "#0072BD" pt 7 ps 1.2
 
 # Plot to screen
-#plot "Seebeck_analysis.dat" using 1:4 with linespoints linestyle 1 title "S(T)"
-plot "Seebeck_analysis.dat" using 1:4 with linespoints linestyle 1 title "S(T) inukai", "Seebeck_analysis_sato.dat" using 1:4 with linespoints linestyle 1 lc "red" title "S(T) sato"
+plot "Seebeck_analysis.dat" using 1:4 with linespoints linestyle 1 title "S(T)"
 
 # === Display on screen ===
 set terminal win font "Arial,12"
