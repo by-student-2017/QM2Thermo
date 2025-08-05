@@ -28,7 +28,7 @@ Simply using "make" is fine, but if you are concerned, please use "make clean", 
 ## Advanced Compilation
 There are compile options in the Makefile. If you want to customize it, remove the # from "FLAGS" or "DEBUG" or add the necessary options. An example of the optimization option is:
 ```
-FLAGS = -O2 -ftree-vectorize -ffp-contract=fast -fno-math-errno -march=native
+FLAGS = -O2 -march=native -ftree-vectorize -ffp-contract=fast -fno-math-errno
 ```
 The "-O3" option is not used here because it is an optimization that, in principle, has side effects. Therefore, "-O3" is not usually recommended, but it may be used in cases where the code is coded with side effects in mind, such as OpenMX (Professor Ozaki, the developer of OpenMX, is a genius, so he can do it. I, who am not very knowledgeable, could not do it). This code (LBT-TETRA) prioritizes readability as much as possible to make it easier for others to improve.  
 
