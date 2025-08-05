@@ -202,7 +202,7 @@ If a calculation result file already exists, the corresponding calculation will 
 - [15] eXtremes of heat conduction: https://users.mrl.illinois.edu/cahill/mrs_sympx_f11.pdf
 - [16] PINK: Physical-Informed Machine Learning for Thermal Conductivity: https://doi.org/10.48550/arXiv.2503.17060
 - [17] G. Qin et al., Mater. Adv., 2022,3, 6826-6830: https://doi.org/10.1039/D2MA00694D
-- [18] P. B. Allen, Phys. Rev. B 88 (2013) 144302.: https://doi.org/10.1103/PhysRevB.88.144302 (In heat conduction, we have shown that the phonon N process does not contribute to the relaxation of heat flow, and by treating only the U process as an effective scattering mechanism, we have improved the Callaway model to make it physically applicable. )
+- [18] P. B. Allen, Phys. Rev. B 88 (2013) 144302.: https://doi.org/10.1103/PhysRevB.88.144302 (In heat conduction, it has been shown that the phonon N-process (which is wavenumber-conserving scattering and may change the direction of phonon momentum but does not have the effect of damping the overall heat flow) does not contribute to the relaxation of the heat flow. By treating only the U-process as an effective scattering mechanism, the Callaway model is physically improved and becomes applicable.)
 
 
 ## Citation
