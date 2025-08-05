@@ -9,33 +9,47 @@ cp ./$filename/*.struct  wien.struct
 
 if [ ! -s "cfA1.dat" ]; then
     echo "cfA1.dat is not exists. Running asupersi.exe."
+    echo -e "\n ----- generate_stencil.exe ----- \n"
     ./generate_stencil.exe
+    echo -e "\n ----- group_velocity.exe ------- \n"
     ./group_velocity.exe
+    echo -e "\n ----- chemical_potential.exe --- \n"
     ./chemical_potential.exe
     gnuplot plot_cp.gpl
+    echo "\n ----- Seebeck_analysis.exe ----- \n"
     ./seebeck_analysis.exe
+    echo -e "\n ----- gnuplot------------------- \n"
     gnuplot plot_Seebeck.gpl
     gnuplot plot_ABGV2D.gpl
 elif [ ! -s "AKK.DATA" ]; then
-    echo "AKK.DATA is not exists. Running asupersi.exe."
+    echo "AKK.DATA is not exists. skip generate_stencil.exe"
+    echo -e "\n ----- group_velocity.exe ------- \n"
     ./group_velocity.exe
+    echo -e "\n ----- chemical_potential.exe --- \n"
     ./chemical_potential.exe
     gnuplot plot_cp.gpl
+    echo -e "\n ----- Seebeck_analysis.exe ----- \n"
     ./seebeck_analysis.exe
+    echo -e "\n ----- gnuplot------------------- \n"
     gnuplot plot_Seebeck.gpl
     gnuplot plot_ABGV2D.gpl
 elif [ ! -s "apot.data" ]; then
-    echo "AKK.DATA exists. Running asupersi.exe."
-    echo "apot.data not found. Running aaacp.exe instead."
+    echo "AKK.DATA exists. skip generate_stencil.exe"
+    echo "apot.data not found. skip chemical_potential.exe"
+    echo -e "\n ----- chemical_potential.exe --- \n"
     ./chemical_potential.exe
     gnuplot plot_cp.gpl
+    echo -e "\n ----- Seebeck_analysis.exe ----- \n"
     ./seebeck_analysis.exe
+    echo -e "\n ----- gnuplot------------------- \n"
     gnuplot plot_Seebeck.gpl
     gnuplot plot_ABGV2D.gpl
 else
-    echo "AKK.DATA exists. Running asupersi.exe."
-    echo "apot.data exists. Running aaass1.exe instead."
+    echo "AKK.DATA exists. skip generate_stencil.exe"
+    echo "apot.data exists. skip chemical_potential.exe"
+    echo -e "\n ----- seebeck_analysis.exe ----- \n"
     ./seebeck_analysis.exe
+    echo -e "\n ----- gnuplot------------------- \n"
     gnuplot plot_Seebeck.gpl
     gnuplot plot_ABGV2D.gpl
 fi
