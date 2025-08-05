@@ -2378,7 +2378,7 @@ PROGRAM seebeck_analysis
      ! For higher precision requirements, consider using REAL(16) or
      ! arbitrary precision libraries (e.g., MPFR).
      !=======================================================================
-     IF (ABS(T) > 2.220D-16) THEN
+     IF (ABS(T) > 2.220D-16*10.0) THEN
         ! Calculate and output average energy offset <E - mu> and Seebeck coefficient
         ! T1/T is the averaged energy deviation <E - mu>
         ! -T1/T/TEM * CO gives Seebeck coefficient in muV/K
