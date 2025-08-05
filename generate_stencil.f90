@@ -224,28 +224,40 @@ SUBROUTINE read_constants()
   WRITE(6,'(A,I3)') "   Number of symmetries:", Nsym
   CLOSE(94)
   
-  IF (num_sym_ops == 1 .or. num_sym_ops == 2 .or. &
-      num_sym_ops == 47 .or. num_sym_ops == 123 .or. &
-      num_sym_ops == 221) THEN
-    ! Space group: P (1), P-1 (2), Pmmm (47), P4/mmm (123), SC (221)
-    ALX =  1; ALY =  0; ALZ =  0
-    BLX =  0; BLY =  1; BLZ =  0
-    CLX =  0; CLY =  0; CLZ =  1
-  ELSE IF (num_sym_ops == 227 .or. num_sym_ops == 139) THEN
-    ! Space group: FCC (high symmetry)
-    ALX = -1; ALY =  1; ALZ =  1
-    BLX =  1; BLY = -1; BLZ =  1
-    CLX =  1; CLY =  1; CLZ = -1
-  ELSE IF (num_sym_ops == 229 .or. num_sym_ops == 225) THEN
-    ! Space group: BCC (high symmetry)
-    ALX =  1; ALY =  1; ALZ =  0
-    BLX =  0; BLY =  1; BLZ =  1
-    CLX =  1; CLY =  0; CLZ =  1
-  ELSE
-    WRITE(*,*) "Error: Unsupported space group. Supported groups: 1 (P), 2 (P-1), 47 (Pmmm), &"
-    WRITE(*,*) "       123 (P4/mmm), 221 (SC), 227 (FCC), 139 (FCC), 229 (BCC), and 225 (BCC)."
-    STOP
-  END IF
+  SELECT CASE (num_sym_ops)
+    CASE (1, 2, 3, 5, 6, 8, 10, 12, 16, 21, 22, 23, 25, 35, 38, &
+          42, 44, 47, 51, 65, 67, 69, 70, 73, 74, 78, 80, 81, 82, 86, 88, &
+          92, 96, 98, 99, 106, 110, 114, 118, 120, 122, 123, 130, 138, &
+          195, 196, 197, 200, 202, 204, 221)
+        ! Symmorphic Space Groups
+        ALX = 1; ALY = 0; ALZ = 0
+        BLX = 0; BLY = 1; BLZ = 0
+        CLX = 0; CLY = 0; CLZ = 1
+    
+    CASE (139, 227, 230)
+        ! FCC (high symmetry)
+        ALX = -1; ALY =  1; ALZ =  1
+        BLX =  1; BLY = -1; BLZ =  1
+        CLX =  1; CLY =  1; CLZ = -1
+    
+    CASE (225, 229)
+        ! BCC (high symmetry)
+        ALX = 1; ALY = 1; ALZ = 0
+        BLX = 0; BLY = 1; BLZ = 1
+        CLX = 1; CLY = 0; CLZ = 1
+    
+    CASE (194)
+        ! HCP (high symmetry)
+        ALX = 1; ALY = 0; ALZ = 0
+        BLX = 0; BLY = 1; BLZ = 0
+        CLX = 0; CLY = 0; CLZ = 1
+    
+    CASE DEFAULT
+        ! Error handling for unsupported space groups
+        WRITE(*,*) "Error: Unsupported space group. Supported groups: ..."
+        STOP
+  END SELECT
+  
   WRITE(*,*) ALX, ALY, ALZ
   WRITE(*,*) BLX, BLY, BLZ
   WRITE(*,*) CLX, CLY, CLZ

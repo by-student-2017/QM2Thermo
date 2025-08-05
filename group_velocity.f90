@@ -4,7 +4,7 @@
 ! Contact  : [uichiro25@gmail.com] (U. Mizutani: https://doi.org/10.1007/s11669-024-01103-0)
 ! GitHub   : https://github.com/by-student-2017/LBT-TETRA (optional)
 !-----------------------------------------------------------------------
-! Program : group_velocity_fcc.f90
+! Program : group_velocity.f90
 ! Purpose : 
 !   - To compute group velocity components (VX, VY, VZ) for FCC structures.
 !   - To use the band structure data and tetrahedron method for DOS (Density of States) analysis.
@@ -21,12 +21,12 @@
 !   CEM = 2.41798935D4 [cm/s per Hatree/Angstrom]
 !
 ! Compilation:
-!   gfortran -O2 group_velocity_fcc.f90 -o group_velocity_fcc.exe
-!   ifort    -O2 group_velocity_fcc.f90 -o group_velocity_fcc.exe
+!   gfortran -O2 group_velocity.f90 -o group_velocity.exe
+!   ifort    -O2 group_velocity.f90 -o group_velocity.exe
 !
 ! Required input files:
 !   - wien.energy     : WIEN2k output data
-!   - cf58*.dat       : differential points data
+!   - cf*.dat       : differential points data
 !
 ! Output:
 !   - AKK.DATA        : Band-resolved energy, DOS, velocity^2
@@ -75,10 +75,22 @@ MODULE constants
   REAL(KIND=8), PARAMETER :: B2A  = 0.52918               ! convert Bohr to Angstrom unit
   
   !-------------------------
+  ! Symmetry (space group)
+  !-------------------------
+  INTEGER :: num_sym_ops
+  CHARACTER(LEN=15) :: sym_group_name
+  
+  !-------------------------
   ! Lattice and grid size
   !-------------------------
   REAL(KIND=8) :: AL, BL, CL
   !REAL(KIND=8), PARAMETER :: AL   = 5.431                 ! Lattice constant [Angstrom] (example: Si)
+  
+  !-------------------------
+  ! Load Lattice parameters
+  !-------------------------
+  REAL(KIND=8) :: LAC, LBC, LCC, alpha_deg, beta_deg, gamma_deg, volume
+  REAL(8) :: alpha_rad, beta_rad, gamma_rad
   
   !-------------------------
   ! Shift reference in Rydberg (e.g., Fermi level)
@@ -269,7 +281,6 @@ SUBROUTINE read_constants
   IMPLICIT NONE
   
   CHARACTER(LEN=100) :: line
-  REAL(KIND=8) :: LA, LB, LC, alpha, beta, gamma
   INTEGER :: iostat
 
   OPEN(UNIT=90, FILE='wien.dos1', STATUS='OLD', IOSTAT=iostat)
@@ -279,16 +290,27 @@ SUBROUTINE read_constants
   CLOSE(90)
 
   OPEN(UNIT=91, FILE='wien.struct', STATUS='OLD', IOSTAT=iostat)
+  READ(94,*)
+  READ(94,'(30X, I3, 1X, A)') num_sym_ops, sym_group_name
+  WRITE(*,*) "Space group: ", num_sym_ops, " , Symbol: ", sym_group_name
   READ(91, '(A)')
-  READ(91, '(A)')
-  READ(91, '(A)')
-  READ(91, *) LA, LB, LC, alpha, beta, gamma
-  AL = LA * B2A   ! B2A = 0.52918
-  BL = LB * B2A   ! B2A = 0.52918
-  CL = LC * B2A   ! B2A = 0.52918
+  READ(91, *) LAC, LBC, LCC, alpha_deg, beta_deg, gamma_deg
+  AL = LAC * B2A   ! B2A = 0.52918
+  BL = LBC * B2A   ! B2A = 0.52918
+  CL = LCC * B2A   ! B2A = 0.52918
   WRITE(6,'(A, f9.5)') "Lattice constant, a [A]: ", AL
   WRITE(6,'(A, f9.5)') "Lattice constant, b [A]: ", BL
   WRITE(6,'(A, f9.5)') "Lattice constant, c [A]: ", CL
+  WRITE(6,'(A, f9.5)') "alpha [degree]: ", alpha_deg
+  WRITE(6,'(A, f9.5)') "beta  [degree]: ", beta_deg
+  WRITE(6,'(A, f9.5)') "gamma [degree]: ", gamma_deg
+  alpha_rad  = alpha_deg  * PI/180.0
+  beta_rad   = beta_deg   * PI/180.0
+  gamma_rad  = gamma_deg  * PI/180.0
+  volume = (AL*B2A) * (BL*B2A) * (CL*B2A) * SQRT(1.0 &
+       & - COS(alpha_rad)**2.0 - COS(beta_rad)**2.0 - COS(gamma_rad)**2.0 &
+       & + 2.0 * COS(alpha_rad) * COS(beta_rad) * COS(gamma_rad))
+  WRITE(6,'(A,I9)') "Volume [A^3]:", volume
   CLOSE(91)
 
   OPEN(UNIT=92, FILE='wien.kgen', STATUS='OLD', IOSTAT=iostat)
@@ -1456,6 +1478,7 @@ SUBROUTINE GV(I, J, VX, VY, VZ)
       & CK11*(AMA1(IP(3,11,I),J)-AMA1(IM(3,11,I),J))+ &
       & CK12*(AMA1(IP(3,12,I),J)-AMA1(IM(3,12,I),J))+ &
       & CK13*(AMA1(IP(3,13,I),J)-AMA1(IM(3,13,I),J))+ &
+      
       & CK14*(AMA1(IP(3,14,I),J)-AMA1(IM(3,14,I),J))+ &
       & CK15*(AMA1(IP(3,15,I),J)-AMA1(IM(3,15,I),J))  &
       & )*(CL*1.0*NPZ)*CEM
@@ -1465,9 +1488,32 @@ SUBROUTINE GV(I, J, VX, VY, VZ)
   ! VX, VY, VZ: group velocity components at point I, band J
   ! Averaging helps reduce noise and improve symmetry
   !--------------------------------------------
-  VX = (AAB + AAC) / 2.0
-  VY = (AAC + AAA) / 2.0
-  VZ = (AAA + AAB) / 2.0
+  SELECT CASE (sym_group_name(1:1))
+    CASE ('F')
+      ! FCC
+      VX = (0.0 + AAB + AAC) / 2.0
+      VY = (AAA + 0.0 + AAC) / 2.0
+      VZ = (AAA + AAB + 0.0) / 2.0
+    CASE ('I')
+      ! BCC
+      VX = (-AAA + AAB + AAC) / 2.0
+      VY = ( AAA - AAB + AAC) / 2.0
+      VZ = ( AAA + AAB - AAC) / 2.0
+    CASE ('P')
+      ! SC
+      VX = AAA
+      VY = AAB
+      VZ = AAC
+    CASE ('H')
+      ! HCP
+      VX = AAA * 2.0*SQRT(3.0)
+      VY = AAB * 2.0*SQRT(3.0)
+      VZ = AAC
+    CASE DEFAULT
+      ! Error handling for unsupported space groups
+      WRITE(*,*) "Error: Crystal structures not yet implemented: ..."
+      STOP
+  END SELECT
   
   RETURN
 END SUBROUTINE GV
