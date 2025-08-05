@@ -505,6 +505,7 @@ SUBROUTINE read_constants
   A11 = Tinv(1,1); A12 = Tinv(1,2); A13 = Tinv(1,3)
   A21 = Tinv(2,1); A22 = Tinv(2,2); A23 = Tinv(2,3)
   A31 = Tinv(3,1); A32 = Tinv(3,2); A33 = Tinv(3,3)
+
   
   WRITE(*,*) "Transformation matrix Aij:"
   WRITE(*,*) A11, A12, A13
@@ -1601,10 +1602,11 @@ SUBROUTINE GV(I, J, VX, VY, VZ)
   AAC = 0.0D0
 
   ! Calculation of central difference method using coefficient CK for correction
+  ! Compute derivative dE/dkx using symmetric 15-point difference
   DO N = 1, 15
-    AAA = AAA + CK(N) * (AMA1(IP(1,N,I),J) - AMA1(IM(1,N,I),J))
-    AAB = AAB + CK(N) * (AMA1(IP(2,N,I),J) - AMA1(IM(2,N,I),J))
-    AAC = AAC + CK(N) * (AMA1(IP(3,N,I),J) - AMA1(IM(3,N,I),J))
+    AAA = AAA + CK(N) * (AMA1(IP(1,N,I),J) - AMA1(IM(1,N,I),J)) ! dE/dk_A
+    AAB = AAB + CK(N) * (AMA1(IP(2,N,I),J) - AMA1(IM(2,N,I),J)) ! dE/dk_B
+    AAC = AAC + CK(N) * (AMA1(IP(3,N,I),J) - AMA1(IM(3,N,I),J)) ! dE/dk_C
   END DO
 
   ! Apply scaling based on grid resolution and lattice constants
