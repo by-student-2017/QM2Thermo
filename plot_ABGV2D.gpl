@@ -1,7 +1,9 @@
 #!/usr/bin/gnuplot
 
-# === Display on screen ===
-set terminal win font "Arial,12"
+# === Save as PNG (publication ready) ===
+set terminal pngcairo size 800,600 font "Times New Roman,12"
+set output "ABGV2D.png"
+
 #set xlabel "Energy, {/Italic E} - {/Symbol m} / eV"
 set xlabel "Energy, {/Italic E} / eV"
 set ylabel "Spectrum, A(E,T) / m^2 s^{-1} states unitcell^{-1} \nSpectrum, B(E,T) / m^2 s^{-1} states eV^{-1} unitcell^{-1}"
@@ -37,8 +39,7 @@ plot "ABGV2D.dat" using ($1==TEMP?$2:1/0):($1==TEMP?$4:1/0) axis x1y1 with lines
      "ABGV2D.dat" using ($1==TEMP?$2:1/0):($1==TEMP?$6:1/0) axis x1y2 with lines linestyle 1 lc "black" title sprintf("Electronic structure parameter, <|v|^2 x DOS> at T = %dK", TEMP)
 #splot 'ABGV2D.dat' using 1:2:3 with lines
 
-# === Save as PNG (publication ready) ===
-set terminal pngcairo size 800,600 font "Times New Roman,12"
-set output "ABGV2D.png"
+# === Display on screen ===
+set terminal win font "Arial,12"
 replot
 unset output
