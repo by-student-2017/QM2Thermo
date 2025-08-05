@@ -1,7 +1,9 @@
 #!/usr/bin/gnuplot
 
-# === Display on screen ===
-set terminal win font "Arial,12"
+# === Save as PNG (publication ready) ===
+set terminal pngcairo size 800,600 font "Times New Roman,12"
+set output "ZT_and_kappa.png"
+
 set xlabel "Temperature, {/Italic T} / K"
 set ylabel "Dimensionless Figure of Merit, {/Italic ZT} / dimensionless"
 set y2label "Thermal conductivity, {/Symbol k} / W m^{-1} K^{-1}"
@@ -32,8 +34,7 @@ plot "Seebeck_analysis.dat" using 1:23 axis x1y1  with linespoints linestyle 1 l
      "Seebeck_analysis.dat" using 1:10 axis x1y2  with linespoints linestyle 1 lc "red"   title "electron", \
      "Seebeck_analysis.dat" using 1:22 axis x1y2  with linespoints linestyle 1 lc "blue"  title "phonon"
 
-# === Save as PNG (publication ready) ===
-set terminal pngcairo size 800,600 font "Times New Roman,12"
-set output "ZT_and_kappa.png"
+# === Display on screen ===
+set terminal win font "Arial,12"
 replot
 unset output
