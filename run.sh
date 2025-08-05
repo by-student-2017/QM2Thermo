@@ -22,7 +22,8 @@ if [ ! -s "cfA1.dat" ]; then
     gnuplot plot_Seebeck.gpl
     gnuplot plot_ABGV2D.gpl
 elif [ ! -s "AKK.DATA" ]; then
-    echo "AKK.DATA is not exists. skip generate_stencil.exe"
+    echo "cfA1.dat exists. skip generate_stencil.exe"
+    echo "AKK.DATA is not exists. skip group_velocity.exe"
     echo -e "\n ----- run group_velocity.exe ------- \n"
     ./group_velocity.exe
     echo -e "\n\n ----- run chemical_potential.exe --- \n"
@@ -34,7 +35,8 @@ elif [ ! -s "AKK.DATA" ]; then
     gnuplot plot_Seebeck.gpl
     gnuplot plot_ABGV2D.gpl
 elif [ ! -s "apot.data" ]; then
-    echo "AKK.DATA exists. skip generate_stencil.exe"
+    echo "cfA1.dat exists. skip generate_stencil.exe"
+    echo "AKK.DATA is not exists. skip group_velocity.exe"
     echo "apot.data not found. skip chemical_potential.exe"
     echo -e "\n ----- run chemical_potential.exe --- \n"
     ./chemical_potential.exe
@@ -45,7 +47,8 @@ elif [ ! -s "apot.data" ]; then
     gnuplot plot_Seebeck.gpl
     gnuplot plot_ABGV2D.gpl
 else
-    echo "AKK.DATA exists. skip generate_stencil.exe"
+    echo "cfA1.dat exists. skip generate_stencil.exe"
+    echo "AKK.DATA is not exists. skip group_velocity.exe"
     echo "apot.data exists. skip chemical_potential.exe"
     echo -e "\n ----- run Seebeck_analysis.exe ----- "
     ./seebeck_analysis.exe
