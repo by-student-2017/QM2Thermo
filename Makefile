@@ -1,7 +1,7 @@
 # Fortran compiler settings
 FC = gfortran
-NCPUs = 4
-FLAGS = -O2 -march=native -fopenmp -ftree-parallelize-loops=$(NCPUs) # -ftree-vectorize -ffp-contract=fast -fno-math-errno
+NCPUs := $(shell expr $(shell nproc) / 2)
+FLAGS = -O2 -march=native -fopenmp -ftree-parallelize-loops=$(NCPUs) # -ftree-vectorize -ffp-contract=fast -fno-math-errno -floop-parallelize-all
 DEBUG = 
 #DEBUG = -g -Wall -fcheck=all -fcheck=bounds -fcheck=pointer -fbacktrace
 ##GPU: FC = nvfortran, FLAGS = -acc -ta=multicore -Minfo=acc
