@@ -225,42 +225,74 @@ SUBROUTINE read_constants()
   CLOSE(94)
   
   SELECT CASE (num_sym_ops)
-    CASE (1, 2, 3, 5, 6, 8, 10, 12, 16, 21, 22, 23, 25, 35, 38, &
-          42, 44, 47, 51, 65, 67, 69, 70, 73, 74, 78, 80, 81, 82, 86, 88, &
-          92, 96, 98, 99, 106, 110, 114, 118, 120, 122, 123, 130, 138, &
-          195, 196, 197, 200, 202, 204, 221)
-        ! Symmorphic space groups: use identity transformation
+    ! Triclinic system: lowest symmetry
+    CASE (1, 2)
+        ! Triclinic (P1, P-1): identity transformation
         ALX =  1; ALY =  0; ALZ =  0
         BLX =  0; BLY =  1; BLZ =  0
         CLX =  0; CLY =  0; CLZ =  1
     
+    ! Monoclinic system: low symmetry
+    CASE (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+        ! Monoclinic: identity transformation
+        ALX =  1; ALY =  0; ALZ =  0
+        BLX =  0; BLY =  1; BLZ =  0
+        CLX =  0; CLY =  0; CLZ =  1
+    
+    ! Orthorhombic system
+    CASE (16, 22, 38, 69, 70, 71, 72)
+        ! Orthorhombic: identity or simple transformation
+        ALX =  1; ALY =  0; ALZ =  0
+        BLX =  0; BLY =  1; BLZ =  0
+        CLX =  0; CLY =  0; CLZ =  1
+    
+    ! Tetragonal system
+    CASE (89, 123, 124, 125, 127, 128, 129, 131, 133, 135)
+        ! Tetragonal: high symmetry -> integer lattice
+        ALX =  1; ALY =  0; ALZ =  0
+        BLX =  0; BLY =  1; BLZ =  0
+        CLX =  0; CLY =  0; CLZ =  1
+    
+    ! FCC (Face-Centered Cubic)
     CASE (139, 216, 217, 225, 227, 228, 230)
-        ! FCC (Face-Centered Cubic): Highly symmetric lattice -> integer lattice
+        ! FCC: high symmetry -> integer lattice
         ALX = -1; ALY =  1; ALZ =  1
         BLX =  1; BLY = -1; BLZ =  1
         CLX =  1; CLY =  1; CLZ = -1
     
+    ! BCC (Body-Centered Cubic)
     CASE (199, 206, 220, 221, 223, 224, 229)
-        ! BCC (Body-Centered Cubic): Highly symmetric lattice -> integer lattice
+        ! BCC: high symmetry -> integer lattice
         ALX =  1; ALY =  1; ALZ =  0
         BLX =  0; BLY =  1; BLZ =  1
         CLX =  1; CLY =  0; CLZ =  1
     
+    ! HCP (Hexagonal Close-Packed)
     CASE (175, 176, 177, 178, 179, 180, 186, 187, 188, 189, 190, 191, 194)
-        ! HCP (Hexagonal Close-Packed): Hexagonal crystal system -> integer lattice
+        ! HCP: hexagonal system -> integer lattice
         ALX =  1; ALY = -1; ALZ =  0
         BLX =  1; BLY =  1; BLZ =  0
         CLX =  0; CLY =  0; CLZ =  1
-        
+    
+    ! Rhombohedral (Trigonal)
     CASE (146, 148, 155, 160, 166, 167)
-        ! Rhombohedral (R) system: transform to pseudo-hexagonal integer lattice
+        ! Rhombohedral: transform to pseudo-hexagonal integer lattice
         ALX =  1; ALY =  0; ALZ = -1
         BLX = -1; BLY =  1; BLZ =  0
         CLX =  0; CLY = -1; CLZ =  1
     
+    ! Symmorphic space groups (identity transformation)
+    CASE (21, 23, 25, 35, 42, 44, 47, 51, 65, 67, 73, 74, 78, 80, 81, 82, &
+          86, 88, 92, 96, 98, 99, 106, 110, 114, 118, 120, 122, 130, 138, &
+          195, 196, 197, 200, 202, 204, 221)
+        ! Symmorphic: identity transformation
+        ALX =  1; ALY =  0; ALZ =  0
+        BLX =  0; BLY =  1; BLZ =  0
+        CLX =  0; CLY =  0; CLZ =  1
+    
     CASE DEFAULT
         ! Error handling for unsupported space groups
-        WRITE(*,*) "Error: Unsupported space group. Supported groups include SC, FCC, BCC, HCP."
+        WRITE(*,*) "Error: Unsupported space group. Supported groups include SC, FCC, BCC, HCP, R, Tetragonal, Orthorhombic, Monoclinic, Triclinic."
         STOP
   END SELECT
   
@@ -745,4 +777,5 @@ PROGRAM GenerateStencil
   DEALLOCATE(LEX)
   
 END PROGRAM GenerateStencil
+
 
