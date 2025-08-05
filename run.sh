@@ -53,3 +53,10 @@ else
     gnuplot plot_Seebeck.gpl
     gnuplot plot_ABGV2D.gpl
 fi
+
+echo "----------------------------------------------------------------------------"
+echo "The above 'warning' is for convenience on Windows, so don't worry about it."
+echo ""
+echo 'set terminal win font "Arial,12"'
+echo "warning: unknown or ambiguous terminal type; type 'set terminal' for a list."
+echo "----------------------------------------------------------------------------"
