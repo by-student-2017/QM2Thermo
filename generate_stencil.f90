@@ -284,7 +284,7 @@ SUBROUTINE read_constants()
     ! Symmorphic space groups (identity transformation)
     CASE (21, 23, 25, 35, 42, 44, 47, 51, 65, 67, 73, 74, 78, 80, 81, 82, &
           86, 88, 92, 96, 98, 99, 106, 110, 114, 118, 120, 122, 130, 138, &
-          195, 196, 197, 200, 202, 204, 221)
+          195, 196, 197, 200, 202, 204)
         ! Symmorphic: identity transformation
         ALX =  1; ALY =  0; ALZ =  0
         BLX =  0; BLY =  1; BLZ =  0
@@ -777,5 +777,6 @@ PROGRAM GenerateStencil
   DEALLOCATE(LEX)
   
 END PROGRAM GenerateStencil
+
 
 
