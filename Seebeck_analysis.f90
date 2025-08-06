@@ -1390,7 +1390,7 @@ CONTAINS
     real(8) :: step_size, closest_diff
 
     Theta_D_low = wmax/kb*0.25D0
-    Theta_D_high = wmax/kb*1.0D0
+    Theta_D_high = wmax/kb*1.00D0
     Cv_DOS = compute_Cv_DOS(T)
   
     n_divisions = 2500
