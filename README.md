@@ -879,6 +879,8 @@ This document summarizes commonly used relaxation time approximations for electr
 
 > **Note on Normal (N) Processes**  
 > While Normal phonon-phonon scattering processes conserve crystal momentum and can change phonon directions, they do not directly contribute to thermal resistance unless Umklapp processes are also present. This is discussed in detail by Allen (PRB 2013) and Maznev & Wright (Am. J. Phys. 2014).
+> $$\( A_U \): Typical coefficient values are 10^-19 to 10^-21 [s/K]. Highly material dependent.
+> $$\( A_U \): 
 
 #### Notes
 
