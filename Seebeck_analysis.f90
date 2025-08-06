@@ -1348,7 +1348,7 @@ CONTAINS
        Cv = Cv + integrand * d_omega
     end do
 
-    ! 1 [eV/K] = 1.60218e-19 * 6.02214e23 = 9.6485e4 [J/(mol K)]
+    ! 1 [eV/K] * 1.60218e-19 [C] * 6.02214e23 [1/mol] = 9.6485e4 [J/(mol K)]
     Cv = Cv * kb * 9.6485e4
   end function compute_Cv_DOS
 
@@ -1372,7 +1372,7 @@ CONTAINS
        Cv = Cv + integrand * dx
     end do
     
-    ! 1 [eV/K] = 1.60218e-19 * 6.02214e23 = 9.6485e4 [J/(mol K)]
+    ! 1 [eV/K] * 1.60218e-19 [C] * 6.02214e23 [1/mol] = 9.6485e4 [J/(mol K)]
     Cv = 9.0D0 * kb * (T / Theta_D)**3.0D0 * Cv * 9.6485e4
   end function compute_Cv_Debye
 
