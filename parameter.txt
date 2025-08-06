@@ -6,7 +6,7 @@ impurity        (F or T):  F         ! Impurity scattering. Typically used in he
 n_impurity              :  3.000     ! 1: Mild energy-dependence, 3.0: high energy, 4.0: more. (works: impurity = T)
 dos (electron)  (F or T):  F         ! Accounts for scattering probability increasing with available final states
 a2Fdos  (files & lambda):  F         ! a2F.dos takes precedence over phononDOS in calculating relaxation times.
-phononDOS       (F or T):  F         ! Lines 1 and 2 are comment lines. Frequency [eV] vs. Total DOS (phonon) data.
+phononDOS       (F or T):  T         ! Lines 1 and 2 are comment lines. Frequency [eV] vs. Total DOS (phonon) data.
 N_atom         (integer):  2         ! Normalize phdos with 3N. (If phononDOS.dat is normalized to 3N = 3, N_atom = 1.)
 filter          (F or T):  F         ! Weight: w(acoustic)=1, w(0.01-0.03 eV)=0.5, w(optical)=0. (works: phononDOS = T)
 L_bound       [Angstrom]:  0.0       ! Boundary scattering. (works: phononDOS = T and N_atom)
@@ -14,7 +14,7 @@ b_para                  :  0.0       ! Umklapp (Klemens-Callaway type model) sca
 C_phel      [s^-1*eV^-2]:  0.0       ! Phonon-Electron scattering coefficient. (Ref. 2.31e10) (works: a2Fdos = F)
 B_pdef      [s^-1*eV^-4]:  0.0       ! Point defect scattering coefficient. (Ref. 5.33e15)
 !---EOS data to kappa---:------------!--optional-----------------------------------------------------------------------
-Bulk modulus, B    [GPa]: 100.0      ! For example, use Bulk_modulus_from_EOS and get Bulk modulus.
+Bulk modulus, B    [GPa]:   0.0      ! For example, use Bulk_modulus_from_EOS and get Bulk modulus.
 B' (=dB/dP)             :  0.0       ! Derivative of bulk modulus with respect to pressure. You can get it from EOS.
 V0                 [A^3]:  0.0       ! Gets it from EOS. If V0 <= 0.0, uses the volume derived from wien.struct data.
 Shear modulus, G   [GPa]:  0.0       ! If G <= 0.0, calculate from Bulk modulus and Poisson's ratio.
@@ -26,11 +26,11 @@ Gruneisen parameter     :  0.0       ! If it is 0.0, calculate from vt and vl (B
 Slack model parameter A :  0.0       ! If it is 0.0, calculate from Gruneisen parameter (B and Poisson's ratio or G.)
 Apara_flag (Ref. [15])  :  T         ! T: use Ref:[17] or F: original (Lattice-parameter-Based Estimation).
 !---tau_ph(+scattering)-:------------!--optional-----------------------------------------------------------------------
-relaxation time (ph) [s]:  1.00e-12  ! About 10 - 100 times stronger than electrons. (If it is <= 0.0, tau0(el) * 100)
-A_U (Umklapp process)   :  1.00e-20  ! Umklapp (U) scattering. General Range: 1.0e-19 - 1.0e-21. (works: phononDOS = T)
+relaxation time (ph) [s]:  1.00e-10  ! About 1000 - 10000 times stronger than electrons. (If <= 0.0, tau0(el) * 10000)
+A_U (Umklapp process)   :  1.00e-21  ! Umklapp (U) scattering. General Range: 1.0e-19 - 1.0e-22. (works: phononDOS = T)
 Ub  (Umklapp process)   :  2.5       ! Umklapp (U) scattering. (Ref. 2 - 3).                     (works: phononDOS = T)
-A_D (Point defect)      :  1.00e-46  ! Point defect scattering. General Range: 1.0e-45 - 1.0e-47.(works: phononDOS = T)
-A_N (Normal process)    :  0.0       ! Not use. Normal (U) scattering. General Range: 1.0e-23 - 1.0e-25 [s/K^3]
+A_D (Point defect)      :  1.00e-47  ! Point defect scattering. General Range: 1.0e-45 - 1.0e-48.(works: phononDOS = T)
+A_N (Normal process)    :  1.00e-24  ! Not use. Normal (U) scattering. General Range: 1.0e-23 - 1.0e-25 [s/K^3]
 !---optional (Nc) ------:------------!--optional-----------------------------------------------------------------------
 Doping concent.  [cm^-3]:  0.0       ! General Range: 1.0e14 - 1.0e20 [cm^-3] (If it is 0.0, calculate from VEC/volume)
 Electron Effective Mass :  0.26e0    ! Effective mass (relative to m_e)
@@ -59,3 +59,7 @@ Pinning Shift       [eV]:  0.05e0    ! General Range: 0.01 - 0.1 [eV]
 
 # Note 4: The optional carrier concentration Nc is just prepared for future developments.
 #  The calculation of Nc has not been fully developed, so please feel free to improve it if you are interested.
+
+
+# Note 5: The relaxation time of phonons is said to be 10 to 100 times longer than that of electrons.
+#  To take into account various types of scattering, the basic relaxation time ("relaxation time (ph) [s]") needs to be set to approximately 10e-10 [s].

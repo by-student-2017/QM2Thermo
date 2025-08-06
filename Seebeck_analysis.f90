@@ -1023,12 +1023,12 @@ CONTAINS
     
     ! Phonon DOS-based Relaxation Time
     IF (use_phononDOS) THEN
-      tau_phdos_phonon = tau0_phonon / ((1.0D0 + n_B) / (omega + 1.0D-15) + 1.0D-15)
+      tau_phdos_phonon = tau0_phonon / ( (1.0D0 + n_B) / MAX(omega, 1.0D-15) )
     END IF
     
     ! Umklapp scattering (T >> R.T.)
     IF (A_U > 0.0D0 .and. Ub > 0.0D0) THEN
-      tau_Umk_phonon = 1.0D0 / (A_U * omega**2.0D0 * T * exp(-Theta_D/(Ub*T)))
+      tau_Umk_phonon = 1.0D0 / (A_U * omega**2.0D0 * T * exp(-Theta_D/(Ub*T)) + 1.0D-15)
     END IF
     
     ! Point defect (Mass-difference) scattering (T <= R.T.)
@@ -1118,7 +1118,7 @@ CONTAINS
         END IF
         
         ! Compute Bose-Einstein distribution for the phonon mode
-        n_B = 1.0D0 / (DEXP(omega / (kb*Theta_D)) - 1.0D0)  ! Bose-Einstein distribution
+        n_B = 1.0D0 / (DEXP(omega / (kb*T)) - 1.0D0)  ! Bose-Einstein distribution
         
         tau_phonon = tau_phonon + get_tau_phonon_oT(omega,T) * DOSPH(i) * n_B * d_omega
         total_dos_phonon = total_dos_phonon + DOSPH(i) * n_B * d_omega
@@ -1721,12 +1721,13 @@ PROGRAM seebeck_analysis
   REAL(8) :: ZT                      ! ZT
   REAL(8) :: A_T                     ! The numerator A(T) in Fig. 12
   REAL(8) :: B_T                     ! The denominator B(T)
+  REAL(8) :: tau_phonon              ! Base relaxation time (phonon) [s]
   
-  CHARACTER(LEN=318), PARAMETER :: hdr = "#  T [K]   mu [eV]    <E-mu> [eV] &
+  CHARACTER(LEN=335), PARAMETER :: hdr = "#  T [K]   mu [eV]    <E-mu> [eV] &
     & S [muV/K]    s_all [S/m]  s_hole [S/m] s_elec [S/m] R [Ohm m]    PF [W/m/K^2] ke [W/m/K]  &
     & MFP_hole [A] MFP_elec [A] Nc [cm^-3]   Nc_h [cm^-3] Nc_e [cm^-3] RH [m^3/C]  &
     & Mh[cm^2/V/s] Me[cm^2/V/s] Meffh[kg/kg] Meffe[kg/kg] Cv[J/(molK)]&
-    & kp [W/m/K]   ZT           A(T)         B(T)"
+    & kp [W/m/K]   ZT           A(T)         B(T)         tau_ph [s]"
   
   ! ------------------------------------------------------------------
   ! Step 0: Load "DEF(Energy shift offset)" data from 'parameter.txt'
@@ -1824,7 +1825,7 @@ PROGRAM seebeck_analysis
   WRITE(*,*) "relaxation time (ph) [s]:", tau0_phonon
   use_tau0_phonon_flag = .TRUE.
   IF (tau0_phonon <= 0.0) THEN
-    tau0_phonon = tau0 * 100.0D0
+    tau0_phonon = tau0 * 100.0D0 * 100.0D0
     WRITE(*,*) "(Automatically setting) Base relaxation time (phonon) [s]:"
     WRITE(*,*) "  Base relaxation time (electron) [s] * 100:", tau0_phonon
     use_tau0_phonon_flag = .FALSE.
@@ -2148,7 +2149,7 @@ PROGRAM seebeck_analysis
       kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * va**2.0D0 * tau0_phonon
       WRITE(*, *) "Calculation results of phonon thermal conductivity using Cv_DOS calculated from data in phononDOS.dat and"
       WRITE(*, *) " va calculated from Cv_DOS."
-      WRITE(*, *) "kappa_phonon(Cv_DOS) [W/m/K]: ", kappa_phonon
+      WRITE(*, *) "kappa_phonon(Cv_DOS) [W/m/K]: ", kappa_phonon, " at tau_ph =", tau0_phonon
       
       WRITE(*,*)
       WRITE(*,*) "---------- ----------"
@@ -2198,13 +2199,16 @@ PROGRAM seebeck_analysis
   WRITE(20, *) "! tau mode: dos(electron)", use_dos, ", a2Fdos", use_a2Fdos
   WRITE(20, *) "! tau mode: phnonDOS", use_phononDOS, ", N_atom", N_atom
   WRITE(20, *) "! tau mode: filter", use_selection_filter
-  IF (use_phononDOS) WRITE(20, *) "! Matched Debye Temperature (Theta_D) [K]:", Theta_D
+  !IF (use_phononDOS) WRITE(20, *) "! Matched Debye Temperature (Theta_D) [K]:", Theta_D
+  IF (use_phononDOS) WRITE(20, *) "! Debye Temperature (Theta_D) [K] (second moment method):", Theta_D
   IF (use_phononDOS .eqv. .FALSE.) THEN
     WRITE(20, *) "! Specific heat at constant volume is not calculated. Cv = 0.0000E+00 [J/(mol K)]"
     WRITE(20, *) "! Since phononDOS.dat is not used, the Slack model + Cezairliyan is used for the phonon thermal conductivity."
+    WRITE(20, *) "! The relaxation time of phonon is not calculated. tau(phonon) = 0.0000E+00 [s]"
     ! -----
     WRITE(*, *) "Specific heat at constant volume is not calculated. Cv = 0.0000E+00 [J/(mol K)]"
     WRITE(*, *) "Since phononDOS.dat is not used, the Slack model + Cezairliyan is used for the phonon thermal conductivity."
+    WRITE(*, *) "The relaxation time of phonon is not calculated. tau(phonon) = 0.0000E+00 [s]"
   END IF
   WRITE(20,'(A)') hdr
   !
@@ -2544,25 +2548,30 @@ PROGRAM seebeck_analysis
        Cv_DOS = compute_Cv_DOS(TEM)
        specific_heat = Cv_DOS         ! Specific heat at constant volume
        IF (use_tau0_phonon_flag) THEN
-         IF (vl >= 0.0 .and. vt >= 0.0) THEN
+         tau_phonon = get_tau_phonon_T(TEM)
+         IF (vl > 0.0 .and. vt > 0.0) THEN
            ! [J/(mol*K)] * [mol/m^3] * ([m/s])^2 * [s] = [(J*s)/(m*K)] = [W/(m*K)]
            kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * &
-             & ((N_atom/volume)*(1.0e30/6.022e23)) * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * get_tau_phonon_T(TEM)
+             & ((N_atom/volume)*(1.0e30/6.022e23)) * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau_phonon
          ELSE
-           sound_velocity = Theta_D / (6 * PI**2 * N_atom / volume)**(1.0D0/3.0D0)
+           va = Theta_D / ( (2.0D0*PI*hbar/kb) * ( (3.0D0*N_atom) / (4.0D0*PI*(volume*1.0D-30)) )**(1.0D0/3.0D0) )
+           ! [J/(mol*K)] * [mol/m^3] * ([m/s])^2 * [s] = [(J*s)/(m*K)] = [W/(m*K)]
            kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * &
-             & ((N_atom/volume)*(1.0e30/6.022e23)) * sound_velocity**2.0D0 * get_tau_phonon_T(TEM)
+             & ((N_atom/volume)*(1.0e30/6.022e23)) * va**2.0D0 * tau_phonon
          END IF
        ELSE
          ! Cezairliyan
-         sound_velocity = Theta_D / (6 * PI**2 * N_atom / volume)**(1.0D0/3.0D0)
-         km = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * sound_velocity**2.0D0 * get_tau_phonon_T(Theta_D)
+         tau_phonon = get_tau_phonon_T(Theta_D)
+         va = Theta_D / ( (2.0D0*PI*hbar/kb) * ( (3.0D0*N_atom) / (4.0D0*PI*(volume*1.0D-30)) )**(1.0D0/3.0D0) )
+         kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * &
+           & ((N_atom/volume)*(1.0e30/6.022e23)) * va**2.0D0 * tau_phonon
          kappa_phonon = km * ( (1.0D0/3.0D0)*(TEM/Theta_D)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D)) )**(-1.0D0)
        END IF
        ZT = power_factor * temperature / (kappa_electron + kappa_phonon)
      ELSE
        Cv_DOS = 0.0
        specific_heat = Cv_DOS         ! Specific heat at constant volume
+       tau_phonon = 0.0
        IF (Bulk_modulus > 0.0 .and. density > 0.0) THEN
          ! Cezairliyan
          kappa_phonon = km * ( (1.0D0/3.0D0)*(TEM/Theta_D_Cezairliyan_equ)**2.0D0 + &
@@ -2604,7 +2613,7 @@ PROGRAM seebeck_analysis
         ! Calculate and output average energy offset <E - mu> and Seebeck coefficient
         ! T1/T is the averaged energy deviation <E - mu>
         ! -T1/T/TEM * CO gives Seebeck coefficient in muV/K
-        WRITE(6,'(F8.1,1X,F10.6, 23(1X,E12.4))') &
+        WRITE(6,'(F8.1,1X,F10.6, 24(1X,E12.4))') &
           &   temperature &
           & , chemical_potential &
           & , mean_energy &
@@ -2629,8 +2638,9 @@ PROGRAM seebeck_analysis
           & , kappa_phonon &
           & , ZT &
           & , A_T &
-          & , B_T
-        WRITE(20,'(F8.1,1X,F10.6, 23(1X,E12.4))') &
+          & , B_T &
+          &, tau_phonon
+        WRITE(20,'(F8.1,1X,F10.6, 24(1X,E12.4))') &
           &   temperature &
           & , chemical_potential &
           & , mean_energy &
@@ -2655,7 +2665,8 @@ PROGRAM seebeck_analysis
           & , kappa_phonon &
           & , ZT &
           & , A_T &
-          & , B_T
+          & , B_T &
+          &, tau_phonon
      ELSE
         ! If denominator T is too small (numerical instability), output placeholders
         WRITE(6,'(F8.1,1X,F10.6,1X,A)') TEM, CP, "-- -- -- -- -- -- -- -- -- -- -- --"
