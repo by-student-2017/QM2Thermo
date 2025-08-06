@@ -826,5 +826,6 @@ Steps:
 
 - This method provides a way to **map complex phonon DOS to an effective Debye temperature**, useful for simplified modeling.
 - The accuracy depends on the quality of the phonon DOS and the resolution of the search grid.
+- Initially, we tried a binary search method, but it didn't work because the Cv at phonon DOS and the Cv at Debye temperature didn't match in all regions. Therefore, we simply changed the Debye temperature little by little and selected the Debye temperature with the best Cv match. The current method is simple and robust, but there is room for improvement.
 
 ---
