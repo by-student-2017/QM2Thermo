@@ -488,7 +488,7 @@ $$
 The relaxation time $$\( \tau(\varepsilon) \)$$ can be calculated from the Eliashberg spectral function $$\( \alpha^2F(\omega) \)$$ using:
 
 $$
-\frac{1}{\tau(\varepsilon)} \propto 2\pi \int_0^{\infty} \alpha^2F(\omega) \left[
+\frac{1}{\tau(\varepsilon)} = \frac{1}{\tau_0} \cdot 2\pi \int_0^{\infty} \alpha^2F(\omega) \left[
 1 + 2n(\omega) + f(\varepsilon - \omega) - f(\varepsilon + \omega)
 \right] d\omega
 $$
