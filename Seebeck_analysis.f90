@@ -1724,6 +1724,10 @@ PROGRAM seebeck_analysis
   REAL(8) :: B_T                     ! The denominator B(T)
   REAL(8) :: tau_phonon              ! Base relaxation time (phonon) [s]
   
+  REAL(8) :: kappa_Cezairliyan, kappa_Slack ! thermal conductivity [W/(m*K)]
+  REAL(8) :: f_transition            ! Smooth connection between Cezairliyan and Slack
+  REAL(8), PARAMETER:: delta_T = 50.0D0  ! Smoothness of the transition (in K)
+  
   CHARACTER(LEN=335), PARAMETER :: hdr = "#  T [K]   mu [eV]    <E-mu> [eV] &
     & S [muV/K]    s_all [S/m]  s_hole [S/m] s_elec [S/m] R [Ohm m]    PF [W/m/K^2] ke [W/m/K]  &
     & MFP_hole [A] MFP_elec [A] Nc [cm^-3]   Nc_h [cm^-3] Nc_e [cm^-3] RH [m^3/C]  &
@@ -2210,9 +2214,13 @@ PROGRAM seebeck_analysis
     IF (use_Cezairliyan_all_range) THEN
       WRITE(20, *) "! Cezairliyan_all_range = T: Cezairliyan model used over the entire temperature range."
     ELSE
-      WRITE(20, *) "! Cezairliyan_all_range = F: The Slack model is used in Temp. > Debye Temp. "
-      WRITE(20, *) "!   (i.e., Temp. > ", Theta_D_Cezairliyan_equ, "[K])"
-      WRITE(20, *) "!   and supplemented by Cezairliyan scheme in Temp. <= Debye Temp."
+      WRITE(20, *) "! Cezairliyan_all_range = F: Slack model is smoothly connected above (Debye Temp. - 2*delta_T) [K]."
+      WRITE(20, *) "!   Specifically, the transition starts at Temp. > ", Theta_D_Cezairliyan_equ - 2*delta_T, " [K]"
+      WRITE(20, *) "!   and gradually shifts from Cezairliyan to Slack model as Temp increases."
+      WRITE(20, *) "!   Theta_D:", Theta_D_Cezairliyan_equ, "[K], delta_T:", delta_T, "[K]"
+      WRITE(20, *) "! In this code: (Using the Fermi-Dirac function)"
+      WRITE(20, *) "!   f_transition = 1.0D0 / (1.0D0 + EXP(-(TEM - Theta_D_Cezairliyan_equ) / delta_T))"
+      WRITE(20, *) "!   kappa_phonon = (1.0D0 - f_transition) * kappa_Cezairliyan + f_transition * kappa_Slack"
     END IF
     WRITE(20, *) "! The relaxation time of phonon is not calculated. tau(phonon) = 0.0000E+00 [s]"
     ! -----
@@ -2221,9 +2229,13 @@ PROGRAM seebeck_analysis
     IF (use_Cezairliyan_all_range) THEN
       WRITE(*, *) "! Cezairliyan_all_range = T: Cezairliyan model used over the entire temperature range."
     ELSE
-      WRITE(*, *) "! Cezairliyan_all_range = F: The Slack model is used in Temp. > Debye Temp. "
-      WRITE(*, *) "!   (i.e., Temp. > ", Theta_D_Cezairliyan_equ, "[K])"
-      WRITE(*, *) "!   and supplemented by Cezairliyan scheme in Temp. <= Debye Temp."
+      WRITE(*, *) "! Cezairliyan_all_range = F: Slack model is smoothly connected above (Debye Temp. - 2*delta_T) [K]."
+      WRITE(*, *) "!   Specifically, the transition starts at Temp. > ", Theta_D_Cezairliyan_equ - 2*delta_T, " [K]"
+      WRITE(*, *) "!   and gradually shifts from Cezairliyan to Slack model as Temp increases."
+      WRITE(*, *) "!   Theta_D:", Theta_D_Cezairliyan_equ, "[K], delta_T:", delta_T, "[K]"
+      WRITE(*, *) "! In this code: (Using the Fermi-Dirac function)"
+      WRITE(*, *) "!   f_transition = 1.0D0 / (1.0D0 + EXP(-(TEM - Theta_D_Cezairliyan_equ) / delta_T))"
+      WRITE(*, *) "!   kappa_phonon = (1.0D0 - f_transition) * kappa_Cezairliyan + f_transition * kappa_Slack"
     END IF
     WRITE(*, *) "The relaxation time of phonon is not calculated. tau(phonon) = 0.0000E+00 [s]"
   END IF
@@ -2591,11 +2603,16 @@ PROGRAM seebeck_analysis
        tau_phonon = 0.0
        IF (Bulk_modulus > 0.0 .and. density > 0.0) THEN
          ! Cezairliyan
-         kappa_phonon = km * ( (1.0D0/3.0D0)*(TEM/Theta_D_Cezairliyan_equ)**2.0D0 + &
+         kappa_Cezairliyan = km * ( (1.0D0/3.0D0)*(TEM/Theta_D_Cezairliyan_equ)**2.0D0 + &
            & 2.0D0/(3.0D0*(TEM/Theta_D_Cezairliyan_equ)) )**(-1.0D0)
          !
-         IF ( (use_Cezairliyan_all_range .neqv. .TRUE.)  .and. (TEM > Theta_D_Cezairliyan_equ) ) THEN
-           kappa_phonon = kappa_phonon_min_Slack_xK / TEM
+         IF ( (use_Cezairliyan_all_range .neqv. .TRUE.)  .and. (TEM > (Theta_D_Cezairliyan_equ - 2.0D0*delta_T)) ) THEN
+           f_transition = 1.0D0 / (1.0D0 + EXP(-(TEM - Theta_D_Cezairliyan_equ) / delta_T))
+           
+           kappa_Slack = kappa_phonon_min_Slack_xK / TEM
+           
+           ! Smooth transition between Cezairliyan and Slack
+           kappa_phonon = (1.0D0 - f_transition) * kappa_Cezairliyan + f_transition * kappa_Slack
          END IF
          !
          ZT = power_factor * temperature / (kappa_electron + kappa_phonon)
