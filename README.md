@@ -776,7 +776,7 @@ The integral is evaluated numerically using discretized data from `phononDOS.dat
 - The final result is converted to **J/(mol·K)** using:
 
 $$
-1 [\text{eV/K}] \times 1.60218e-19 [C] \times 6.02214e23 [\text{1/mol}] = 9.6485 \times 10^4 \ [\text{J/(mol·K)}]
+1 [\text{eV/K}] \times 1.60218\times10^{-19} [C] \times 6.02214\times10^{23} [\text{1/mol}] = 9.6485 \times 10^4 \ [\text{J/(mol·K)}]
 $$
 
 - The computed heat capacity $$\( C_v(T) \)$$, in units of **J/(mol·K)**, returned via the subroutine's output variable.
@@ -803,7 +803,7 @@ Where:
 The integral is evaluated numerically using 2500 subdivisions. The final result is converted to **J/(mol·K)** using:
 
 $$
-1 [\text{eV/K}] \times 1.60218e-19 [C] \times 6.02214e23 [\text{1/mol}] = 9.6485 \times 10^4 \ [\text{J/(mol·K)}]
+1 [\text{eV/K}] \times 1.60218\times10^{-19} [C] \times 6.02214\times10^{23} [\text{1/mol}] = 9.6485 \times 10^4 \ [\text{J/(mol·K)}]
 $$
 
 ### Debye Temperature Matching: `find_matching_Theta_D`
@@ -826,6 +826,6 @@ Steps:
 
 - This method provides a way to **map complex phonon DOS to an effective Debye temperature**, useful for simplified modeling.
 - The accuracy depends on the quality of the phonon DOS and the resolution of the search grid.
-- Initially, we tried a binary search method, but it didn't work because the Cv at phonon DOS and the Cv at Debye temperature didn't match in all regions. Therefore, we simply changed the Debye temperature little by little and selected the Debye temperature with the best Cv match. The current method is simple and robust, but there is room for improvement.
+- The Debye temperature is simply changed little by little and the Debye temperature with the best matching Cv is selected. This method is simple and robust, but it still does not work well because the Cv at phonon DOS and the Cv at the Debye temperature do not match in all regions.
 
 ---
