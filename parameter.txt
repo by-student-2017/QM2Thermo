@@ -1,6 +1,6 @@
-!-----------------------:------------!--Memo---------------------------------------------------------------------------
+!---Main----------------:------------!--Memo---------------------------------------------------------------------------
 DEF (Energy shift)  [eV]:  0.000000  ! -0.002700 or 1.173000, etc. Also compare it with the output VEC.
-Base relaxation time [s]:  1.00e-14  ! 1.00000e-14 is often used. tau0 = 1/(1/tau_ph-ph(Alamode) + 1/tau_ph-el(EPW))
+Base relaxation time [s]:  1.00e-14  ! tau0=1.00000e-14 is often used. tau0=1/(1/tau_ph-ph(Alamode) + 1/tau_ph-el(EPW))
 phonon (lambda) (F or T):  F         ! The lambda file output by EPW (QE or Abinit) is read and processed.
 impurity        (F or T):  F         ! Impurity scattering. Typically used in heavily doped semiconductors
 n_impurity              :  3.000     ! 1: Mild energy-dependence, 3.0: high energy, 4.0: more. (works: impurity = T)
@@ -16,17 +16,22 @@ B_pdef      [s^-1*eV^-4]:  0.0       ! Point defect scattering coefficient. (Ref
 !---EOS data to kappa---:------------!--optional-----------------------------------------------------------------------
 Bulk modulus, B    [GPa]: 100.0      ! For example, use Bulk_modulus_from_EOS and get Bulk modulus.
 B' (=dB/dP)             :  0.0       ! Derivative of bulk modulus with respect to pressure. You can get it from EOS.
-V0                 [A^3]:  0.0       ! Get from EOS. If V0 <= 0.0, use wien.struct data
+V0                 [A^3]:  0.0       ! Gets it from EOS. If V0 <= 0.0, uses the volume derived from wien.struct data.
 Shear modulus, G   [GPa]:  0.0       ! If G <= 0.0, calculate from Bulk modulus and Poisson's ratio.
-G' (=dG/dV)             :  0.0       ! If it is 0.0, calculate from B, B' and Poisson's ratio.
+G' (=dG/dV)             :  0.0       ! If it is <= 0.0, calculate from B, B' and Poisson's ratio.
 Young's modulus, E [GPa]:  0.0       ! If E <= 0.0, calculate from Bulk modulus and Shear modulus or Poisson's ratio.
 Poisson's ratio         :  0.3       ! General Range: 0.25 - 0.35 (If it is <= 0.0, set 0.3 and vs = 0.87*vl.)
 density         [g/cm^3]:  2.33      ! Please try your best to calculate it from a cif file or something.
-relaxation time (ph) [s]:  1.00e-12  ! About 10-100 times stronger than electrons. (If it is < 0.0, tau_ph * 100 [s])
-Gruneisen parameter     :  0.0       ! If it is 0.0, calculate from vt and vl (Bulk modulus and Poisson's ratio).
-Slack model parameter A :  0.0       ! If it is 0.0, calculate from Gruneisen parameter (B and Poisson's ratio.)
-Apara_flag (Ref. [15])  :  T         ! T: use Ref:[17] or F: original
-!-------optional--------:------------!--optional-----------------------------------------------------------------------
+Gruneisen parameter     :  0.0       ! If it is 0.0, calculate from vt and vl (Bulk modulus and Poisson's ratio or G).
+Slack model parameter A :  0.0       ! If it is 0.0, calculate from Gruneisen parameter (B and Poisson's ratio or G.)
+Apara_flag (Ref. [15])  :  T         ! T: use Ref:[17] or F: original (Lattice-parameter-Based Estimation).
+!---tau_ph(+scattering)-:------------!--optional-----------------------------------------------------------------------
+relaxation time (ph) [s]:  1.00e-12  ! About 10 - 100 times stronger than electrons. (If it is <= 0.0, tau0(el) * 100)
+A_U (Umklapp process)   :  1.00e-20  ! Umklapp (U) scattering. General Range: 1.0e-19 - 1.0e-21. (works: phononDOS = T)
+Ub  (Umklapp process)   :  2.5       ! Umklapp (U) scattering. (Ref. 2 - 3).                     (works: phononDOS = T)
+A_D (Point defect)      :  1.00e-46  ! Point defect scattering. General Range: 1.0e-45 - 1.0e-47.(works: phononDOS = T)
+A_N (Normal process)    :  0.0       ! Not use. Normal (U) scattering. General Range: 1.0e-23 - 1.0e-25 [s/K^3]
+!---optional (Nc) ------:------------!--optional-----------------------------------------------------------------------
 Doping concent.  [cm^-3]:  0.0       ! General Range: 1.0e14 - 1.0e20 [cm^-3] (If it is 0.0, calculate from VEC/volume)
 Electron Effective Mass :  0.26e0    ! Effective mass (relative to m_e)
 alpha (Scattering coef.):  1.0e-20   ! General Range: 1.0e-22 - 1.0e-18
@@ -41,3 +46,16 @@ N_sat (Satu.)    [cm^-3]:  1.0e19    ! General Range: 1.0e18 - 1.0e20(insulater)
 Delta E gap       [eV/K]:  2.5e-4    ! General Range: 2.0e-4 - 4.0e-4 [eV/K]
 Pinning Shift       [eV]:  0.05e0    ! General Range: 0.01 - 0.1 [eV]
 !-------optional--------:------------!--optional-----------------------------------------------------------------------
+# Developer comments
+
+# Note 1: DEF is required information in main.
+#  Base relaxation time [s] is a non-negative value. For research purposes, 1.0e-14 or 1.0 is used.
+
+# Note 2: In EOS data to kappa, the bulk modulus is required to calculate the thermal conductivity.
+#  If you don't care about thermal conductivity, just set it to a non-negative value (e.g., 100.0).
+
+# Note 3: Basically, if you set the value to 0, it will be estimated from other data. 
+#   If you want to improve the calculation accuracy, please enter the data.
+
+# Note 4: The optional carrier concentration Nc is just prepared for future developments.
+#  The calculation of Nc has not been fully developed, so please feel free to improve it if you are interested.

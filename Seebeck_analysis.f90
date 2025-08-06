@@ -290,6 +290,11 @@ MODULE seebeck_data
   REAL(KIND=8) :: Mavg                            ! The mean atomic mass, density * 1.0D6 [g/m] * (volume/N_atom) [A^3/N] * 1.0D30/6.022D23
   REAL(KIND=8) :: MPF_phonon                      ! mean free path of phonon, l = (vl + 2*vt)/3 * tau0_phonon [s]
   REAL(KIND=8) :: tau0_phonon                     ! For phonons, it is about 10-100 times stronger than for electrons. (If it is 0.0, tau_ph * 100)
+  LOGICAL :: use_tau0_phonon_flag                 ! tau0_phonon > 0.0 case -> .TRUE.
+  REAL(KIND=8) :: A_U                             ! Coefficient AU of Umklapp (U) scattering
+  REAL(KIND=8) :: Ub                              ! Coefficient b  of Umklapp (U) scattering
+  REAL(KIND=8) :: A_D                             ! Coefficient AD of Point defect scattering
+  REAL(KIND=8) :: A_N                             ! Coefficient AN of Normal (N) process
   REAL(KIND=8) :: Gruneisen_parameter             ! It corresponds to the ratio of the second-order elastic constant C to the third-order elastic constant D.
   REAL(KIND=8) :: Gruneisen_parameter_L           ! 
   REAL(KIND=8) :: Gruneisen_parameter_S           ! 
@@ -923,8 +928,6 @@ CONTAINS
     
     ! Umklapp (Klemens-Callaway type model) scattering (T >> R.T.)
     IF ((b_para > 0.0D0) .and. use_phononDOS) THEN
-       ! Debay temperature is approximate (hbar*wmax/kb) for nomarilzed phonon dos with 3N.
-       !tau_Umk = tau0 / (E1**2.0D0 * T * exp(-(hbar*wmax/kb)/(b_para*T)) + 1.0D-12)
        tau_Umk = tau0 / (E1**2.0D0 * T * exp(-Theta_D/(b_para*T)) + 1.0D-12)
     ELSE
        tau_Umk = 0.0D0
@@ -932,7 +935,6 @@ CONTAINS
     
     ! Boundary scattering
     IF ((L_bound > 0.0D0) .and. use_phononDOS) THEN
-       !sound_velocity = wmax / (6 * PI**2 * N_atom / volume)**(1.0D0/3.0D0)
        sound_velocity = Theta_D / (6 * PI**2 * N_atom / volume)**(1.0D0/3.0D0)
        tau_bound = L_bound / sound_velocity
     ELSE
@@ -970,6 +972,152 @@ CONTAINS
        get_tau = tau0
     END IF
   END FUNCTION get_tau
+  
+  
+  !-----------------------------------------------------------------------
+  ! Function: get_tau_phonon_oT
+  !
+  ! Purpose:
+  !   Calculates the phonon relaxation time tau(omega, T) at a given frequency omega [eV]
+  !   and temperature T [K], considering multiple scattering mechanisms.
+  !   The total relaxation time is computed using Matthiessen's rule:
+  !     1/tau_total = 1/tau_phDOS + 1/tau_Umk + 1/tau_pdef + 1/tau_bound
+  !
+  ! Inputs:
+  !   omega - Phonon frequency in electron volts [eV]
+  !   T     - Temperature in Kelvin [K]
+  !
+  ! Outputs:
+  !   get_tau_phonon_oT - Total phonon relaxation time [s]
+  !
+  ! Notes:
+  !   - Phonon DOS-based scattering is included if use_phononDOS is true.
+  !   - Umklapp scattering is active for high temperatures.
+  !   - Point defect scattering is dominant at low temperatures.
+  !   - Boundary scattering depends on film thickness and atomic density.
+  !   - Momentum-conserving scattering is currently not used.
+  !   - Numerical stability is ensured by small epsilon terms.
+  !-----------------------------------------------------------------------
+  REAL(KIND=8) FUNCTION get_tau_phonon_oT(omega, T)
+    REAL(KIND=8), INTENT(IN) :: omega ! Phonon frequencey [eV]
+    REAL(KIND=8), INTENT(IN) :: T     ! Temperature [K]
+    !------------------------------
+    REAL(KIND=8) :: tau_phdos_phonon      ! Relaxation time based on phonon density of states
+    REAL(KIND=8) :: tau_Umk_phonon        ! Umklapp (U) scattering. (works: phononDOS = T)
+    REAL(KIND=8) :: tau_bound_phonon      ! Boundary scattering. (works: phononDOS = T and N_atom) (L_bound corresponds to the film thickness and grain size.)
+    REAL(KIND=8) :: tau_pdef_phonon       ! Point defect scattering coefficient.
+    REAL(KIND=8) :: tau_Normal_phonon     ! Momentum-conserving phonon scattering.
+    !------------------------------
+    REAL(KIND=8) :: inv_sum    ! 
+    REAL(KIND=8) :: n_B        ! Bose-Einstein distribution
+    INTEGER :: i
+    
+    tau_phdos_phonon  = 0.0D0  ! Phonon DOS-based relaxation time
+    tau_Umk_phonon    = 0.0D0  ! Umklapp scattering (T >> R.T.)
+    tau_pdef_phonon   = 0.0D0  ! Point defect (Mass-difference) scattering (T <= R.T.)
+    tau_bound_phonon  = 0.0D0  ! Boundary scattering
+    tau_Normal_phonon = 0.0D0  ! Momentum-conserving phonon scattering (not use)
+    
+    ! Compute Bose-Einstein distribution for the phonon mode
+    n_B = 1.0D0 / (DEXP(omega / (kb*T)) - 1.0D0)  ! Bose-Einstein distribution
+    
+    ! Phonon DOS-based Relaxation Time
+    IF (use_phononDOS) THEN
+      tau_phdos_phonon = tau0_phonon / ((1.0D0 + n_B) / (omega + 1.0D-12) + 1.0D-12)
+    END IF
+    
+    ! Umklapp scattering (T >> R.T.)
+    IF (A_U > 0.0D0 .and. Ub > 0.0D0) THEN
+      tau_Umk_phonon = 1.0D0 / (A_U * omega**2.0D0 * T * exp(-Theta_D/(Ub*T)))
+    END IF
+    
+    ! Point defect (Mass-difference) scattering (T <= R.T.)
+    IF (A_D > 0.0D0) THEN
+      tau_pdef_phonon = 1.0D0 / (A_D * omega**4.0D0)
+    END IF
+    
+    ! Boundary scattering
+    IF ((L_bound > 0.0D0) .and. use_phononDOS) THEN
+       sound_velocity = Theta_D / (6.0D0 * PI**2.0D0 * N_atom / volume)**(1.0D0/3.0D0)
+       tau_bound_phonon = L_bound / sound_velocity
+    ELSE
+       tau_bound_phonon = 0.0D0
+    END IF
+    
+    ! --- Matthiessen rule: combine non-zero components
+    inv_sum = 0.0D0
+    IF (tau_phdos_phonon  > 0.0D0) inv_sum = inv_sum + 1.0D0 / tau_phdos_phonon
+    IF (tau_Umk_phonon    > 0.0D0) inv_sum = inv_sum + 1.0D0 / tau_Umk_phonon
+    IF (tau_pdef_phonon   > 0.0D0) inv_sum = inv_sum + 1.0D0 / tau_pdef_phonon
+    IF (tau_bound_phonon  > 0.0D0) inv_sum = inv_sum + 1.0D0 / tau_bound_phonon
+    
+    IF (inv_sum > 0.0D0) THEN
+       get_tau_phonon_oT = 1.0D0 / inv_sum
+    ELSE
+       get_tau_phonon_oT = tau0_phonon
+    END IF
+    
+  END FUNCTION get_tau_phonon_oT
+  
+  
+  !---------------------------------------------------------------
+  ! Function: get_tau_phonon_T
+  !
+  ! Purpose:
+  !   Computes the average phonon relaxation time (tau(T)) at a given temperature T [K],
+  !   by integrating over all phonon modes using the phonon density of states (DOSPH)
+  !   and the Bose-Einstein distribution.
+  !
+  ! Inputs:
+  !   T - Temperature in Kelvin [K]
+  !
+  ! Outputs:
+  !   get_tau_phonon_T - Average phonon relaxation time [s]
+  !
+  ! Method:
+  !   - Loops over all phonon frequencies ω from WPH(i)
+  !   - For each omega, computes the Bose-Einstein occupation number n_B
+  !   - Evaluates tau(omega, T) using get_tau_phonon_oT (which applies Matthiessen's rule)
+  !   - Accumulates tau(omega, T) * DOSPH(i) * n_B * d(omea)
+  !   - Normalizes by total weighted DOS to obtain the average tau(T)
+  !
+  ! Notes:
+  !   - Frequencies below 1e-4 eV are ignored for numerical stability
+  !   - Frequency step dω is computed adaptively to avoid division by zero
+  !---------------------------------------------------------------
+  REAL(KIND=8) FUNCTION get_tau_phonon_T(T)
+    REAL(KIND=8), INTENT(IN) :: T     ! Temperature [K]
+    !------------------------------
+    REAL(8) :: omega
+    REAL(8) :: d_omega
+    REAL(8) :: n_B
+    REAL(8) :: tau_phonon
+    REAL(8) :: total_dos_phonon
+    INTEGER :: i
+    
+    tau_phonon = 0.0D0
+    total_dos_phonon = 0.0D0
+    
+    DO i = 1, NPH
+      omega = WPH(i)  ! [eV]
+      IF (omega > 1.0D-4) THEN  ! Ignore very small frequencies for numerical stability
+        IF (i > 1) THEN
+          d_omega = MAX(WPH(i) - WPH(i-1), 1.0D-12)  ! Avoid division by zero
+        ELSE
+          d_omega = WPH(i) ! Initial frequency step
+        END IF
+        
+        ! Compute Bose-Einstein distribution for the phonon mode
+        n_B = 1.0D0 / (DEXP(omega / (kb*Theta_D)) - 1.0D0)  ! Bose-Einstein distribution
+        
+        tau_phonon = tau_phonon + get_tau_phonon_oT(omega,T) * DOSPH(i) * n_B * d_omega
+        total_dos_phonon = total_dos_phonon + DOSPH(i) * n_B * d_omega
+      END IF
+    END DO
+    
+    get_tau_phonon_T = tau_phonon / total_dos_phonon
+    
+  END FUNCTION get_tau_phonon_T
   
   
   !---------------------------------------------------------------
@@ -1341,9 +1489,9 @@ CONTAINS
        ! Immediately after reading with read_phonon_dos(), the sum of DOSPH(i) is 3N = 3*N_atom [dimensionless].
        integrand = x**2 * exp(x) / ((exp(x) - 1.0d0)**2  + 1.0e-12) * DOSPH(i)
        IF (i > 1) THEN
-         d_omega = MAX(WPH(i) - WPH(i-1), 1.0D-12)
+         d_omega = MAX(WPH(i) - WPH(i-1), 1.0D-12)  ! Avoid division by zero
        ELSE
-         d_omega = WPH(1)
+         d_omega = WPH(1)  ! Initial frequency step
        END IF
        Cv = Cv + integrand * d_omega
     end do
@@ -1598,10 +1746,15 @@ PROGRAM seebeck_analysis
   READ(90, '(25X, E12.6)') Young_modulus          ! Young_modulus [GPa] = 9*B*G/(3*B+G), E
   READ(90, '(25X, E12.6)') Poisson_ratio          ! Poisson_ratio = (3*B-2*G)/(2*(3*B+G))
   READ(90, '(25X, E12.6)') density                ! read [g/cm^3] unit -> density * 1000 [kg/m^3]
-  READ(90, '(25X, E12.6)') tau0_phonon            ! For phonons, it is about 10-100 times stronger than for electrons. (If it is 0.0, tau_ph * 100)
   READ(90, '(25X, E12.6)') Gruneisen_parameter    ! If it is 0.0, calculate from Bulk modulus and Poisson's ratio (or Shear modulus).
   READ(90, '(25X, E12.6)') Apara                  ! A parameter of Slack model
   READ(90, '(25X, L10)')   use_Apara_gamma        ! T: use Ref:[17] or F: original
+  READ(90, *)
+  READ(90, '(25X, E12.6)') tau0_phonon            ! For phonons, it is about 10-100 times stronger than for electrons. (If it is 0.0, tau_ph * 100)
+  READ(90, '(25X, E12.6)') A_U                    ! Umklapp (U) scattering. General Range: 1.0e-19 - 1.0e-21.
+  READ(90, '(25X, E12.6)') Ub                     ! Umklapp (U) scattering. (Ref. 2 - 3) if <= 0.0, use 2.5.
+  READ(90, '(25X, E12.6)') A_D                    ! Point defect scattering. General Range: 1.0e-45 - 1.0e-47.
+  READ(90, '(25X, E12.6)') A_N                    ! Not use. Normal (U) scattering. General Range: 1.0e-23 - 1.0e-25 [s/K^3]
   READ(90, *)
   READ(90, '(25X, E12.6)') Nd                     ! Read Doping concentration [cm^-3]
   READ(90, '(25X, E12.6)') m_eff                  ! Effective mass (relative to m_e)
@@ -1653,15 +1806,24 @@ PROGRAM seebeck_analysis
     WRITE(*,*) "(Automatically setting) Poisson_ratio:", Poisson_ratio
   END IF
   WRITE(*,*) "density         [g/cm^3]:", density
-  WRITE(*,*) "relaxation time (ph) [s]:", tau0_phonon
-  IF (tau0_phonon < 0.0) THEN
-    tau0_phonon = tau0 * 100.0D0
-    WRITE(*,*) "(Automatically setting) Base relaxation time (phonon) [s]:"
-    WRITE(*,*) "  Base relaxation time (electron) [s] * 100:", tau0_phonon
-  END IF
   WRITE(*,*) "Gruneisen parameter     :", Gruneisen_parameter
   WRITE(*,*) "Slack model parameter A :", Apara
   WRITE(*,*) "Apara_flag (Ref. [15])  :", use_Apara_gamma
+  
+  WRITE(*,*) "----- Phonon relaxation time for phonon scattering: optional -----"
+  WRITE(*,*) "relaxation time (ph) [s]:", tau0_phonon
+  use_tau0_phonon_flag = .TRUE.
+  IF (tau0_phonon <= 0.0) THEN
+    tau0_phonon = tau0 * 100.0D0
+    WRITE(*,*) "(Automatically setting) Base relaxation time (phonon) [s]:"
+    WRITE(*,*) "  Base relaxation time (electron) [s] * 100:", tau0_phonon
+    use_tau0_phonon_flag = .FALSE.
+  END IF
+  WRITE(*,*) "A_U (Umklapp process)   :", A_U
+  WRITE(*,*) "Ub  (Umklapp process)   :", Ub
+  WRITE(*,*) "A_D (Point defect)      :", A_D
+  WRITE(*,*) "A_N (Normal process)    :", A_N
+  
   WRITE(*,*) "----- Carrier concentration (Nc) calclation: optional -----"
   WRITE(*,*) "Nd (Doping conc.)[cm^-3]:", Nd
   WRITE(*,*) "Electron Effective Mass :", m_eff
@@ -2371,14 +2533,23 @@ PROGRAM seebeck_analysis
      IF (use_phononDOS) THEN
        Cv_DOS = compute_Cv_DOS(TEM)
        specific_heat = Cv_DOS         ! Specific heat at constant volume
-       IF (vl >= 0.0 .and. vt >= 0.0 .and. tau0_phonon > 0.0) THEN
-         ! [J/(mol*K)] * [mol/m^3] * ([m/s])^2 * [s] = [(J*s)/(m*K)] = [W/(m*K)]
-         kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
-         !
-         ! phononDOS.dat + Cezairliyan
-         !kappa_phonon = km * ( (1.0D0/3.0D0)*(TEM/Theta_D)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D)) )**(-1.0D0)
-         ZT = power_factor * temperature / (kappa_electron + kappa_phonon)
+       IF (use_tau0_phonon_flag) THEN
+         IF (vl >= 0.0 .and. vt >= 0.0) THEN
+           ! [J/(mol*K)] * [mol/m^3] * ([m/s])^2 * [s] = [(J*s)/(m*K)] = [W/(m*K)]
+           kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * &
+             & ((N_atom/volume)*(1.0e30/6.022e23)) * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * get_tau_phonon_T(TEM)
+         ELSE
+           sound_velocity = Theta_D / (6 * PI**2 * N_atom / volume)**(1.0D0/3.0D0)
+           kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * &
+             & ((N_atom/volume)*(1.0e30/6.022e23)) * sound_velocity**2.0D0 * get_tau_phonon_T(TEM)
+         END IF
+       ELSE
+         ! Cezairliyan
+         sound_velocity = Theta_D / (6 * PI**2 * N_atom / volume)**(1.0D0/3.0D0)
+         km = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * sound_velocity**2.0D0 * get_tau_phonon_T(Theta_D)
+         kappa_phonon = km * ( (1.0D0/3.0D0)*(TEM/Theta_D)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D)) )**(-1.0D0)
        END IF
+       ZT = power_factor * temperature / (kappa_electron + kappa_phonon)
      ELSE
        Cv_DOS = 0.0
        specific_heat = Cv_DOS         ! Specific heat at constant volume
