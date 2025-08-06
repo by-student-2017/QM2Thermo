@@ -773,11 +773,10 @@ The integral is evaluated numerically using discretized data from `phononDOS.dat
 ## Implementation Notes
 
 - `phononDOS.dat`: Contains phonon frequencies and corresponding DOS values. The DOS is normalized to 3N, where N is the number of atoms in the unit cell.
-- A small regularization term $$\( 1.0 \times 10^{-12} \)$$ is added to the denominator to avoid division by zero.
 - The final result is converted to **J/(mol·K)** using:
 
 $$
-1 [\text{eV/K}] = 9.6485 \times 10^4 \ [\text{J/(mol·K)}]
+1 [\text{eV/K}] \times 1.60218e-19 [C] \times 6.02214e23 [1/mol] = 9.6485 \times 10^4 \ [\text{J/(mol·K)}]
 $$
 
 - The computed heat capacity $$\( C_v(T) \)$$, in units of **J/(mol·K)**, returned via the subroutine's output variable.
