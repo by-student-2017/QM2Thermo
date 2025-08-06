@@ -299,6 +299,7 @@ MODULE seebeck_data
   REAL(KIND=8) :: Gruneisen_parameter_L           ! 
   REAL(KIND=8) :: Gruneisen_parameter_S           ! 
   REAL(KIND=8) :: Apara                           ! parameter A of Slack model.
+  LOGICAL :: use_Cezairliyan_all_range            ! ! F: The Slack model is used in "T > Theta_D" and supplemented by Cezairliyan in "T <= Theta_D".
   REAL(KIND=8) :: kappa_phonon_min                ! Cahill molde: (1/2)*(PI/6)**(1/3)*kb*(volume/N_atom)**(2/3)*(vl + 2*vt)
   REAL(KIND=8) :: kappa_phonon_min_Clarke         !
   REAL(KIND=8) :: kappa_phonon_min_Cahill         !
@@ -1760,6 +1761,7 @@ PROGRAM seebeck_analysis
   READ(90, '(25X, E12.6)') Gruneisen_parameter    ! If it is 0.0, calculate from Bulk modulus and Poisson's ratio (or Shear modulus).
   READ(90, '(25X, E12.6)') Apara                  ! A parameter of Slack model
   READ(90, '(25X, L10)')   use_Apara_gamma        ! T: use Ref:[17] or F: original
+  READ(90, '(25X, L10)')   use_Cezairliyan_all_range ! F: The Slack model is used in "T > Theta_D" and supplemented by Cezairliyan in "T <= Theta_D".
   READ(90, *)
   READ(90, '(25X, E12.6)') tau0_phonon            ! For phonons, it is about 10-100 times stronger than for electrons. (If it is 0.0, tau_ph * 100)
   READ(90, '(25X, E12.6)') A_U                    ! Umklapp (U) scattering. General Range: 1.0e-19 - 1.0e-21.
@@ -1820,6 +1822,7 @@ PROGRAM seebeck_analysis
   WRITE(*,*) "Gruneisen parameter     :", Gruneisen_parameter
   WRITE(*,*) "Slack model parameter A :", Apara
   WRITE(*,*) "Apara_flag (Ref. [15])  :", use_Apara_gamma
+  WRITE(*,*) "Cezairliyan (all range) :", use_Cezairliyan_all_range
   
   WRITE(*,*) "----- Phonon relaxation time for phonon scattering: optional -----"
   WRITE(*,*) "relaxation time (ph) [s]:", tau0_phonon
@@ -2204,10 +2207,24 @@ PROGRAM seebeck_analysis
   IF (use_phononDOS .eqv. .FALSE.) THEN
     WRITE(20, *) "! Specific heat at constant volume is not calculated. Cv = 0.0000E+00 [J/(mol K)]"
     WRITE(20, *) "! Since phononDOS.dat is not used, the Slack model + Cezairliyan is used for the phonon thermal conductivity."
+    IF (use_Cezairliyan_all_range) THEN
+      WRITE(20, *) "! Cezairliyan_all_range = T: Cezairliyan model used over the entire temperature range."
+    ELSE
+      WRITE(20, *) "! Cezairliyan_all_range = F: The Slack model is used in Temp. > Debye Temp. "
+      WRITE(20, *) "!   (i.e., Temp. > ", Theta_D_Cezairliyan_equ, "[K])"
+      WRITE(20, *) "!   and supplemented by Cezairliyan scheme in Temp. <= Debye Temp."
+    END IF
     WRITE(20, *) "! The relaxation time of phonon is not calculated. tau(phonon) = 0.0000E+00 [s]"
     ! -----
     WRITE(*, *) "Specific heat at constant volume is not calculated. Cv = 0.0000E+00 [J/(mol K)]"
     WRITE(*, *) "Since phononDOS.dat is not used, the Slack model + Cezairliyan is used for the phonon thermal conductivity."
+    IF (use_Cezairliyan_all_range) THEN
+      WRITE(*, *) "! Cezairliyan_all_range = T: Cezairliyan model used over the entire temperature range."
+    ELSE
+      WRITE(*, *) "! Cezairliyan_all_range = F: The Slack model is used in Temp. > Debye Temp. "
+      WRITE(*, *) "!   (i.e., Temp. > ", Theta_D_Cezairliyan_equ, "[K])"
+      WRITE(*, *) "!   and supplemented by Cezairliyan scheme in Temp. <= Debye Temp."
+    END IF
     WRITE(*, *) "The relaxation time of phonon is not calculated. tau(phonon) = 0.0000E+00 [s]"
   END IF
   WRITE(20,'(A)') hdr
@@ -2576,6 +2593,10 @@ PROGRAM seebeck_analysis
          ! Cezairliyan
          kappa_phonon = km * ( (1.0D0/3.0D0)*(TEM/Theta_D_Cezairliyan_equ)**2.0D0 + &
            & 2.0D0/(3.0D0*(TEM/Theta_D_Cezairliyan_equ)) )**(-1.0D0)
+         !
+         IF ( (use_Cezairliyan_all_range .neqv. .TRUE.)  .and. (TEM > Theta_D_Cezairliyan_equ) ) THEN
+           kappa_phonon = kappa_phonon_min_Slack_xK / TEM
+         END IF
          !
          ZT = power_factor * temperature / (kappa_electron + kappa_phonon)
        ELSE

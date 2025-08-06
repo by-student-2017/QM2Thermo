@@ -25,6 +25,7 @@ density         [g/cm^3]:  2.33      ! Please try your best to calculate it from
 Gruneisen parameter     :  0.0       ! If it is 0.0, calculate from vt and vl (Bulk modulus and Poisson's ratio or G).
 Slack model parameter A :  0.0       ! If it is 0.0, calculate from Gruneisen parameter (B and Poisson's ratio or G.)
 Apara_flag (Ref. [15])  :  T         ! T: use Ref:[17] or F: original (Lattice-parameter-Based Estimation).
+Cezairliyan (all range) :  F         ! T: All range or F: Slack model (T > Debye Temp.) + Cezairliyan (T <= Debye Temp)
 !--tau_ph(+scattering)--:------------!--optional (tau_ph works: phononDOS = T)-----------------------------------------
 relaxation time (ph) [s]:  1.00e-10  ! About 1000 - 10000 times stronger than electrons. (If <= 0.0, tau0(el) * 10000)
 A_U (Umklapp process)   :  1.00e-21  ! Umklapp (U) scattering.  General Range: 1.0e-19 - 1.0e-22 [s^-1*K^-1*eV^-2].
