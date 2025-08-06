@@ -1411,6 +1411,43 @@ CONTAINS
     Cv_Debye_out = compute_Cv_Debye(T, Theta_D_match)
   end subroutine find_matching_Theta_D
 
+  !---------------------------------------------------------------
+  ! Subroutine: compute_second_moment_Theta_D
+  ! Purpose: Find Debye temperature using second moment
+  !---------------------------------------------------------------
+  subroutine compute_second_moment_Theta_D(T, Theta_D_second_moment, Cv_DOS_out, Cv_Debye_out)
+    implicit none
+    real(8), intent(in) :: T
+    real(8), intent(out) :: Theta_D_second_moment, Cv_DOS_out, Cv_Debye_out
+    real(8) :: w2_avg, w2_denominator, w2_numerator, d_omega
+    integer :: i
+    
+    w2_avg = 0.0d0
+    w2_denominator = 0.0d0
+    w2_numerator = 0.0d0
+    
+    ! Loop over phonon frequencies
+    do i = 1, NPH
+      if (i > 1) then
+        d_omega = MAX(WPH(i) - WPH(i - 1), 1.0d-12)  ! Avoid division by zero
+      else
+        d_omega = WPH(1)  ! Initial frequency step
+      end if
+      w2_numerator = w2_numerator + WPH(i)**2.0d0 * DOSPH(i) * d_omega
+      w2_denominator = w2_denominator + DOSPH(i) * d_omega
+    end do
+    
+    ! Calculate the average squared frequency
+    w2_avg = w2_numerator / w2_denominator
+    
+    ! Calculate Debye temperature using second moment
+    Theta_D_second_moment = ((5.0d0 / 3.0d0) * w2_avg)**0.5d0 / kb
+    
+    ! Compute specific heats for output
+    Cv_DOS_out = compute_Cv_DOS(T)
+    Cv_Debye_out = compute_Cv_Debye(T, Theta_D_second_moment)
+  end subroutine compute_second_moment_Theta_D
+
 END MODULE seebeck_data
 
 
@@ -1907,22 +1944,26 @@ PROGRAM seebeck_analysis
     CALL read_phonon_dos()
     WRITE(*,*) "------------------------------------------------------"
     TEM = 300.0
-    I = 1
-    DO WHILE( ABS(TEM - Theta_D) > 1.0D-2 .and. I <= 100)
-      call find_matching_Theta_D(TEM, Theta_D, Cv_DOS, Cv_Debye)  ! Subroutines defined at the end of MODULE seebeck_data
-      TEM = TEM * 0.7 + Theta_D * 0.3
-      !WRITE(*,*) I, TEM, Theta_D
-      I = I +1
-    END DO
-    IF (Theta_D > wmax/kb) THEN
-      TEM = 300.0
-      call find_matching_Theta_D(TEM, Theta_D, Cv_DOS, Cv_Debye)  ! Subroutines defined at the end of MODULE seebeck_data
-    END IF
-    WRITE(*, *) "Temperature, T [K]", TEM
-    WRITE(*, *) "Matched Debye Temperature (Theta_D) [K]:", Theta_D
+    !I = 1
+    !DO WHILE( ABS(TEM - Theta_D) > 1.0D-2 .and. I <= 100)
+    !  call find_matching_Theta_D(TEM, Theta_D, Cv_DOS, Cv_Debye)  ! Subroutines defined at the end of MODULE seebeck_data
+    !  TEM = TEM * 0.7 + Theta_D * 0.3
+    !  !WRITE(*,*) I, TEM, Theta_D
+    !  I = I +1
+    !END DO
+    !IF (Theta_D > wmax/kb) THEN
+    !  TEM = 300.0
+    !  call find_matching_Theta_D(TEM, Theta_D, Cv_DOS, Cv_Debye)  ! Subroutines defined at the end of MODULE seebeck_data
+    !END IF
+    call compute_second_moment_Theta_D(TEM, Theta_D, Cv_DOS, Cv_Debye)
+    !WRITE(*, *) "Matched Debye Temperature (Theta_D) [K]:", Theta_D
+    WRITE(*, *) "Debye Temperature (Theta_D) [K] (second moment method):", Theta_D
     WRITE(*, *) "Frequency (Omega) Maximum (wmax)    [K]:", wmax/kb
+    WRITE(*, *)
+    WRITE(*, *) "Temperature, T [K]", TEM
     WRITE(*, *) "Cv_DOS(T) [J/(mol K)]:", Cv_DOS
     WRITE(*, *) "Cv_Debye(T, Theta_D) [J/(mol K)]:", Cv_Debye
+    WRITE(*, *) "Dulong-Petit approximatio (T >= Debye Temperature): Cv_DP = 3*R = 3*8.314 [J/(mol K)]:", 3*8.314
     WRITE(*, *) "Dulong-Petit approximation is assumed at Temperatre >= Debye Temperature", Theta_D, " or ",  wmax/kb
     !
     WRITE(*,*)
@@ -2332,10 +2373,10 @@ PROGRAM seebeck_analysis
        specific_heat = Cv_DOS         ! Specific heat at constant volume
        IF (vl >= 0.0 .and. vt >= 0.0 .and. tau0_phonon > 0.0) THEN
          ! [J/(mol*K)] * [mol/m^3] * ([m/s])^2 * [s] = [(J*s)/(m*K)] = [W/(m*K)]
-         !kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
+         kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
          !
          ! phononDOS.dat + Cezairliyan
-         kappa_phonon = km * ( (1.0D0/3.0D0)*(TEM/Theta_D)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D)) )**(-1.0D0)
+         !kappa_phonon = km * ( (1.0D0/3.0D0)*(TEM/Theta_D)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D)) )**(-1.0D0)
          ZT = power_factor * temperature / (kappa_electron + kappa_phonon)
        END IF
      ELSE
