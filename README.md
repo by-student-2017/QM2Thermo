@@ -863,10 +863,10 @@ The subroutine `find_matching_Theta_D(T, Theta_D_match, Cv_DOS_out, Cv_Debye_out
 | **Point defect scattering**| $$\tau^{-1}(\omega) = A_D \omega^4$$                                            | Very strong                 | Weak                        | Disordered systems        |
 | **Boundary scattering**    | $$\tau^{-1} = \frac{v}{L}$$                                                      | None                        | None                        | Nanostructures, low-T     |
 | **Normal (N) process**     | $$\tau_N^{-1}(\omega) = A_N \omega^2 T^3$$                                           | Quadratic                   | Cubic                       | Momentum-conserving phonon scattering |
-- $$\( A_U \)$$: Typical coefficient values are $$\ 10^{-19} \$$ to $$\ 10^{-21} \$$ [s/K]. Highly material dependent.
+- $$\( A_U \)$$: Typical coefficient values are $$\ 10^{-19} \$$ to $$\ 10^{-21} \$$. Highly material dependent.
 - b: Typical coefficient values are  2 to 3. Empirical value for adjusting the temperature range over which Umklapp scattering is effective.
-- $$\( A_D \)$$: Typical coefficient values are $$\ 10^{-45} \$$ to $$\ 10^{-47} \$$ [ $$\ s^{3} \$$ ]. Depends on defect concentration and mass difference.
-- $$\( A_N \)$$: Typical coefficient values are $$\ 10^{-23} \$$ to $$\ 10^{-25} \$$ [ $$\ s/K^{3} \$$ ]. It is often omitted in the temperature range where Umklapp scattering is dominant. In the high-temperature range or materials where the U process is suppressed, the influence of the N process must be considered.
+- $$\( A_D \)$$: Typical coefficient values are $$\ 10^{-45} \$$ to $$\ 10^{-47} \$$. Depends on defect concentration and mass difference.
+- $$\( A_N \)$$: Typical coefficient values are $$\ 10^{-23} \$$ to $$\ 10^{-25} \$$. It is often omitted in the temperature range where Umklapp scattering is dominant. In the high-temperature range or materials where the U process is suppressed, the influence of the N process must be considered.
 
 > **Note on Normal (N) Processes**  
 > While Normal phonon-phonon scattering processes conserve crystal momentum and can change phonon directions, they do not directly contribute to thermal resistance unless Umklapp processes are also present. This is discussed in detail by Allen (PRB 2013) and Maznev & Wright (Am. J. Phys. 2014).
