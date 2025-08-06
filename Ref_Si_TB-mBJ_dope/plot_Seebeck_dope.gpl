@@ -17,7 +17,6 @@ set yrange [-1000:1000]
 set format y "%.2f"
 
 set xzeroaxis
-
 set grid
 
 # Add minor ticks
