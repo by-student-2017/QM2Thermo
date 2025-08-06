@@ -2613,6 +2613,8 @@ PROGRAM seebeck_analysis
            
            ! Smooth transition between Cezairliyan and Slack
            kappa_phonon = (1.0D0 - f_transition) * kappa_Cezairliyan + f_transition * kappa_Slack
+         ELSE
+           kappa_phonon = kappa_Cezairliyan
          END IF
          !
          ZT = power_factor * temperature / (kappa_electron + kappa_phonon)
