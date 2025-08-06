@@ -1,6 +1,6 @@
-!---Main----------------:------------!--Memo---------------------------------------------------------------------------
+!-----Main (tau_el)-----:------------!--Memo---------------------------------------------------------------------------
 DEF (Energy shift)  [eV]:  0.000000  ! -0.002700 or 1.173000, etc. Also compare it with the output VEC.
-Base relaxation time [s]:  1.00e-14  ! tau0=1.00000e-14 is often used. tau0=1/(1/tau_ph-ph(Alamode) + 1/tau_ph-el(EPW))
+Base relaxation time [s]:  1.00e-14  ! tau0=1.00000e-14 is often used. (1.0 if you don't want to consider it)
 phonon (lambda) (F or T):  F         ! The lambda file output by EPW (QE or Abinit) is read and processed.
 impurity        (F or T):  F         ! Impurity scattering. Typically used in heavily doped semiconductors
 n_impurity              :  3.000     ! 1: Mild energy-dependence, 3.0: high energy, 4.0: more. (works: impurity = T)
@@ -10,7 +10,7 @@ phononDOS       (F or T):  F         ! Lines 1 and 2 are comment lines. Frequenc
 N_atom         (integer):  2         ! Normalize phdos with 3N. (If phononDOS.dat is normalized to 3N = 3, N_atom = 1.)
 filter          (F or T):  F         ! Weight: w(acoustic)=1, w(0.01-0.03 eV)=0.5, w(optical)=0. (works: phononDOS = T)
 L_bound       [Angstrom]:  0.0       ! Boundary scattering. (works: phononDOS = T and N_atom)
-b_para                  :  0.0       ! Umklapp (Klemens-Callaway type model) scat. (Ref. 1 - 2) (works: phononDOS = T)
+b_para   [dimensionless]:  0.0       ! Umklapp (Klemens-Callaway type model) scat. (Ref. 1 - 2) (works: phononDOS = T)
 C_phel      [s^-1*eV^-2]:  0.0       ! Phonon-Electron scattering coefficient. (Ref. 2.31e10) (works: a2Fdos = F)
 B_pdef      [s^-1*eV^-4]:  0.0       ! Point defect scattering coefficient. (Ref. 5.33e15)
 !---EOS data to kappa---:------------!--optional-----------------------------------------------------------------------
@@ -25,13 +25,13 @@ density         [g/cm^3]:  2.33      ! Please try your best to calculate it from
 Gruneisen parameter     :  0.0       ! If it is 0.0, calculate from vt and vl (Bulk modulus and Poisson's ratio or G).
 Slack model parameter A :  0.0       ! If it is 0.0, calculate from Gruneisen parameter (B and Poisson's ratio or G.)
 Apara_flag (Ref. [15])  :  T         ! T: use Ref:[17] or F: original (Lattice-parameter-Based Estimation).
-!---tau_ph(+scattering)-:------------!--optional (tau_ph works: phononDOS = T)-----------------------------------------
+!--tau_ph(+scattering)--:------------!--optional (tau_ph works: phononDOS = T)-----------------------------------------
 relaxation time (ph) [s]:  1.00e-10  ! About 1000 - 10000 times stronger than electrons. (If <= 0.0, tau0(el) * 10000)
 A_U (Umklapp process)   :  1.00e-21  ! Umklapp (U) scattering.  General Range: 1.0e-19 - 1.0e-22 [s^-1*K^-1*eV^-2].
 Ub  (Umklapp process)   :  2.5       ! Umklapp (U) scattering.  General Range:       2 - 3       [dimensionless].
 A_D (Point defect)      :  1.00e-47  ! Point defect scattering. General Range: 1.0e-45 - 1.0e-48 [eV^-4*s^-1].
 A_N (Normal process)    :  1.00e-24  ! Normal (U) scattering.   General Range: 1.0e-23 - 1.0e-25 [s^-1*K^-3*eV^-2].
-!---optional (Nc) ------:------------!--optional-----------------------------------------------------------------------
+!-----optional (Nc) ----:------------!--optional-----------------------------------------------------------------------
 Doping concent.  [cm^-3]:  0.0       ! General Range: 1.0e14 - 1.0e20 [cm^-3] (If it is 0.0, calculate from VEC/volume)
 Electron Effective Mass :  0.26e0    ! Effective mass (relative to m_e)
 alpha (Scattering coef.):  1.0e-20   ! General Range: 1.0e-22 - 1.0e-18
