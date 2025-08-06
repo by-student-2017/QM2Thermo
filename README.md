@@ -806,6 +806,8 @@ $$
 1 [\text{eV/K}] \times 1.60218\times10^{-19} [C] \times 6.02214\times10^{23} [\text{1/mol}] = 9.6485 \times 10^4 \ [\text{J/(mol·K)}]
 $$
 
+---
+
 ### Debye Temperature via Second Moment: `compute_second_moment_Theta_D`
 
 The subroutine `compute_second_moment_Theta_D(T, Theta_D_second_moment, Cv_DOS_out, Cv_Debye_out)` estimates the Debye temperature based on the **second moment** of the phonon density of states (DOS).
