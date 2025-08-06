@@ -1,6 +1,8 @@
 #!/usr/bin/gnuplot
 
+# === Input data and title ===
 EF = 0.34363
+set title "Density of States"
 
 # === Save as PNG for publication ===
 set terminal pngcairo size 800,600 font "Times New Roman,12"
@@ -11,11 +13,9 @@ set ylabel "Density of States, DOS / states eV^{-1} unitcell^{-1}"
 
 set xrange [-12:10]
 set yrange [0:*]
-
 set format y "%.2f"
 
 set xzeroaxis
-
 set grid
 
 # Add minor ticks
@@ -24,8 +24,6 @@ set ytics 0.2
 
 set mxtics 5
 set mytics 5
-
-set title "Density of States"
 
 # --- Display preview on screen ---
 plot "wien.dos1" using (($1-EF)*13.605):($2/13.605) with lines linestyle 1 lc "black" title "Total DOS"
