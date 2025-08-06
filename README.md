@@ -834,7 +834,7 @@ $$
   
 ---
 
-### Debye Temperature Matching (Legacy): `find_matching_Theta_D`
+### Debye Temperature Matching (Legacy and Not recommended): `find_matching_Theta_D`
 
 The subroutine `find_matching_Theta_D(T, Theta_D_match, Cv_DOS_out, Cv_Debye_out)` finds the Debye temperature \( \Theta_D \) that best reproduces the heat capacity computed from phonon DOS at temperature $$\( T \)$$.
 
