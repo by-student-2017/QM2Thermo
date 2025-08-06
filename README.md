@@ -520,7 +520,7 @@ This additive inverse relation allows individual mechanisms (phonon, impurity, g
 
 ---
 
-## Common Relaxation Time Approximations
+## Common Relaxation Time Approximations (electronic scattering mechanisms)
 
 | Scattering Type        | Approximation                          | Energy Dependence              |
 |------------------------|----------------------------------------|--------------------------------|
@@ -529,7 +529,7 @@ This additive inverse relation allows individual mechanisms (phonon, impurity, g
 | Optical phonon         | Step-like or constant above threshold  | Depends on phonon energy       |
 | Constant Approximation | $$\( \tau(\varepsilon) = \tau_0 \)$$       | Simplified CRTA (common fallback) |
 
-## Relaxation Time Approximations for Transport Calculations
+## Relaxation Time Approximations for Transport Calculations (electronic scattering mechanisms)
 
 | Scattering Type             | Approximate Expression                                                     | Energy Dependence           | Temperature Dependence     | Applicability             |
 |----------------------------|-----------------------------------------------------------------------------|-----------------------------|-----------------------------|---------------------------|
@@ -546,8 +546,6 @@ This additive inverse relation allows individual mechanisms (phonon, impurity, g
 > - $$\( g(\varepsilon) \)$$: electronic density of states  
 > - $$\( D_{\text{ph}}(\omega) \)$$: phonon density of states  
 > - $$\( n(\omega, T) \)$$: Bose-Einstein distribution
-
----
 
 ### Implementation Tips
 
@@ -849,5 +847,32 @@ The subroutine `find_matching_Theta_D(T, Theta_D_match, Cv_DOS_out, Cv_Debye_out
 **Remarks:**
 - This method is simple and robust but may not always yield a good match, especially when the phonon DOS deviates significantly from the Debye model.
 - The Debye temperature is adjusted incrementally, and the best match is selected based on heat capacity difference.
+
+---
+
+## Relaxation Time Approximations for Transport Calculations
+
+This document summarizes commonly used relaxation time approximations for electronic and phonon transport modeling. Relaxation time $$\( \tau \)$$ characterizes how long carriers or phonons persist before scattering, and its dependence on energy and temperature varies by mechanism.
+
+### Phonon Scattering Mechanisms
+
+| Scattering Type             | Approximate Expression                                                                 | Frequency Dependence        | Temperature Dependence     | Applicability             |
+|----------------------------|-----------------------------------------------------------------------------------------|-----------------------------|-----------------------------|---------------------------|
+| **Phonon DOS-based**       | $$\( \tau^{-1} \propto \int D_{\text{ph}}(\omega) \cdot \frac{1 + n(\omega,T)}{\omega} \, d\omega \)$$ | Indirect via phonons        | Strong via $$\( n(\omega) \)$$ | Full phonon spectrum      |
+| **Umklapp scattering**     | $$\( \tau^{-1}(\omega) = A_U \omega^2 T \exp\left(-\frac{\Theta_D}{bT}\right) \)$$ | Strong                      | Exponential suppression     | High-T lattice transport  |
+| **Point defect scattering**| $$\( \tau^{-1}(\omega) = A_D \omega^4 \)$$                                            | Very strong                 | Weak                        | Disordered systems        |
+| **Boundary scattering**    | $$\( \tau^{-1} = \frac{v}{L} \)$$                                                      | None                        | None                        | Nanostructures, low-T     |
+
+#### Notes
+
+- $$\( \varepsilon \)$$: Carrier energy  
+- $$\( \mu \)$$: Chemical potential  
+- $$\( \omega \)$$: Phonon frequency  
+- $$\( D_{\text{ph}}(\omega) \)$$: Phonon density of states  
+- $$\( n(\omega, T) \)$$: Bose-Einstein distribution  
+- $$\( A_U, A_D \)$$: Material-dependent scattering coefficients  
+- $$\( L \)$$: Characteristic length (e.g., grain size)  
+- $$\( k_B \)$$: Boltzmann constant  
+- $$\( \lambda \)$$: Electron-phonon coupling constant
 
 ---
