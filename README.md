@@ -857,11 +857,11 @@ The subroutine `find_matching_Theta_D(T, Theta_D_match, Cv_DOS_out, Cv_Debye_out
 
 | Scattering Type             | Approximate Expression                                                                 | Frequency Dependence        | Temperature Dependence     | Applicability             |
 |----------------------------|-----------------------------------------------------------------------------------------|-----------------------------|-----------------------------|---------------------------|
-| **Phonon DOS-based**       | $$\( \tau^{-1} \propto \int D_{\text{ph}}(\omega) \cdot \frac{1 + n(\omega,T)}{\omega} \, d\omega \)$$ | Indirect via phonons        | Strong via $$\( n(\omega) \)$$ | Full phonon spectrum      |
-| **Umklapp (U) scattering**     | $$\( \tau^{-1}(\omega) = A_U \omega^2 T \exp\left(-\frac{\Theta_D}{bT}\right) \)$$ | Strong                      | Exponential suppression     | High-T lattice transport  |
-| **Point defect scattering**| $$\( \tau^{-1}(\omega) = A_D \omega^4 \)$$                                            | Very strong                 | Weak                        | Disordered systems        |
-| **Boundary scattering**    | $$\( \tau^{-1} = \frac{v}{L} \)$$                                                      | None                        | None                        | Nanostructures, low-T     |
 | **Constant (CRTA)**        | $$\tau(\omega) = \tau_0$$                                                            | None                        | None                        | Simple models (use $$\( 1.0 \times 10^{-12} \)$$ s) |
+| **DOS-based (phonon)**       | $$\tau^{-1} \propto \int D_{\text{ph}}(\omega) \cdot \frac{1 + n(\omega,T)}{\omega} d\omega$$ | Indirect via phonons        | Strong via $$\( n(\omega) \)$$ | Full phonon spectrum      |
+| **Umklapp (U) scattering**     | $$\tau_U^{-1}(\omega) = A_U \omega^2 T \exp\left(-\frac{\Theta_D}{bT}\right)$$ | Strong                      | Exponential suppression     | High-T lattice transport  |
+| **Point defect scattering**| $$\tau^{-1}(\omega) = A_D \omega^4$$                                            | Very strong                 | Weak                        | Disordered systems        |
+| **Boundary scattering**    | $$\tau^{-1} = \frac{v}{L}$$                                                      | None                        | None                        | Nanostructures, low-T     |
 | **Normal (N) process**     | $$\tau_N^{-1}(\omega) = A_N \omega^2 T^3$$                                           | Quadratic                   | Cubic                       | Momentum-conserving phonon scattering |
 - $$\( A_U \)$$: Typical coefficient values are $$\ 10^{-19} \$$ to $$\ 10^{-21} \$$ [s/K]. Highly material dependent.
 - b: Typical coefficient values are  2 to 3. Empirical value for adjusting the temperature range over which Umklapp scattering is effective.
