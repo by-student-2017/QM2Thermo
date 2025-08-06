@@ -1023,7 +1023,7 @@ CONTAINS
     
     ! Phonon DOS-based Relaxation Time
     IF (use_phononDOS) THEN
-      tau_phdos_phonon = tau0_phonon / ((1.0D0 + n_B) / (omega + 1.0D-12) + 1.0D-12)
+      tau_phdos_phonon = tau0_phonon / ((1.0D0 + n_B) / (omega + 1.0D-15) + 1.0D-15)
     END IF
     
     ! Umklapp scattering (T >> R.T.)
@@ -1040,9 +1040,18 @@ CONTAINS
     IF ((L_bound > 0.0D0) .and. use_phononDOS) THEN
        sound_velocity = Theta_D / (6.0D0 * PI**2.0D0 * N_atom / volume)**(1.0D0/3.0D0)
        tau_bound_phonon = L_bound / sound_velocity
-    ELSE
-       tau_bound_phonon = 0.0D0
     END IF
+    
+    !-------------------------------------------------------------------------------------------------------------
+    ! Note on Normal (N) Processes:
+    ! While Normal phonon-phonon scattering processes conserve crystal momentum and can change phonon directions, 
+    ! they do not directly contribute to thermal resistance unless Umklapp processes are also present. 
+    ! This is discussed in detail by Allen (PRB 2013) and Maznev & Wright (Am. J. Phys. 2014).
+    !-------------------------------------------------------------------------------------------------------------
+    !IF (A_N > 0.0D0) THEN
+    !  tau_Normal_phonon = 1.0D0 / (A_N * omega**2.0D0 * T**3.0D0 + 1.0D-15)
+    !END IF
+    !-------------------------------------------------------------------------------------------------------------
     
     ! --- Matthiessen rule: combine non-zero components
     inv_sum = 0.0D0
@@ -1050,6 +1059,7 @@ CONTAINS
     IF (tau_Umk_phonon    > 0.0D0) inv_sum = inv_sum + 1.0D0 / tau_Umk_phonon
     IF (tau_pdef_phonon   > 0.0D0) inv_sum = inv_sum + 1.0D0 / tau_pdef_phonon
     IF (tau_bound_phonon  > 0.0D0) inv_sum = inv_sum + 1.0D0 / tau_bound_phonon
+    !IF (tau_Normal_phonon > 0.0D0) inv_sum = inv_sum + 1.0D0 / tau_Normal_phonon
     
     IF (inv_sum > 0.0D0) THEN
        get_tau_phonon_oT = 1.0D0 / inv_sum
