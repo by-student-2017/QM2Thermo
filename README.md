@@ -783,11 +783,11 @@ $$
 
 ---
 
-## Debye Heat Capacity
+## Constant-Volume Heat Capacity from Debye temperature
 
-This module includes routines to compute the **Debye heat capacity** and to estimate the **Debye temperature** that best matches the phonon DOS-based heat capacity.
+This module includes routines to compute the **heat capacity** and to estimate the **Debye temperature** that best matches the phonon DOS-based heat capacity ( in Legacy code).
 
-### Debye Heat Capacity: `compute_Cv_Debye`
+### Heat Capacity: `compute_Cv_Debye`
 
 The function `compute_Cv_Debye(T, Theta_D)` calculates the constant-volume heat capacity $$\( C_v(T) \)$$ using the Debye model:
 
