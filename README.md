@@ -782,3 +782,49 @@ $$
 - The computed heat capacity $$\( C_v(T) \)$$, in units of **J/(mol·K)**, returned via the subroutine's output variable.
 
 ---
+
+## Debye Heat Capacity and Debye Temperature Estimation
+
+This module includes routines to compute the **Debye heat capacity** and to estimate the **Debye temperature** that best matches the phonon DOS-based heat capacity.
+
+### Debye Heat Capacity: `compute_Cv_Debye`
+
+The function `compute_Cv_Debye(T, Theta_D)` calculates the constant-volume heat capacity $$\( C_v(T) \)$$ using the Debye model:
+
+$$
+C_v(T) = 9 k_B \left( \frac{T}{\Theta_D} \right)^3 \int_0^{\Theta_D/T} \frac{x^4 e^x}{(e^x - 1)^2} dx
+$$
+
+Where:
+- $$\( T \)$$: Temperature (K)
+- $$\( \Theta_D \)$$: Debye temperature (K)
+- $$\( k_B \)$$: Boltzmann constant (eV/K)
+
+The integral is evaluated numerically using 2500 subdivisions. The final result is converted to **J/(mol·K)** using:
+
+$$
+1 [\text{eV/K}] \times 1.60218e-19 [C] \times 6.02214e23 [1/mol] = 9.6485 \times 10^4 \ [\text{J/(mol·K)}]
+$$
+
+### Debye Temperature Matching: `find_matching_Theta_D`
+
+The subroutine `find_matching_Theta_D(T, Theta_D_match, Cv_DOS_out, Cv_Debye_out)` finds the Debye temperature $$\( \Theta_D \)$$ that best reproduces the heat capacity computed from phonon DOS at temperature $$\( T \)$$.
+
+Steps:
+1. Compute $$\( C_v^{\text{DOS}}(T) \)$$ using `compute_Cv_DOS`.
+2. Scan $$\( \Theta_D \)$$ in the range $$\( [0.25 \cdot \omega_{\text{max}}/k_B, 1.00 \cdot \omega_{\text{max}}/k_B] \)$$.
+3. For each candidate $$\( \Theta_D \)$$, compute $$\( C_v^{\text{Debye}}(T) \)$$.
+4. Select the $$\( \Theta_D \)$$ that minimizes $$\( |C_v^{\text{Debye}} - C_v^{\text{DOS}}| \)$$.
+
+### Output
+
+- `Theta_D_match`: Estimated Debye temperature (K)
+- `Cv_DOS_out`: Heat capacity from phonon DOS (J/(mol·K))
+- `Cv_Debye_out`: Best-fit Debye heat capacity (J/(mol·K))
+
+### Remarks
+
+- This method provides a way to **map complex phonon DOS to an effective Debye temperature**, useful for simplified modeling.
+- The accuracy depends on the quality of the phonon DOS and the resolution of the search grid.
+
+---
