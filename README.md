@@ -874,6 +874,8 @@ This document summarizes commonly used relaxation time approximations for electr
 | **Umklapp scattering**     | $$\( \tau^{-1}(\omega) = A_U \omega^2 T \exp\left(-\frac{\Theta_D}{bT}\right) \)$$ | Strong                      | Exponential suppression     | High-T lattice transport  |
 | **Point defect scattering**| $$\( \tau^{-1}(\omega) = A_D \omega^4 \)$$                                            | Very strong                 | Weak                        | Disordered systems        |
 | **Boundary scattering**    | $$\( \tau^{-1} = \frac{v}{L} \)$$                                                      | None                        | None                        | Nanostructures, low-T     |
+| **Constant (CRTA)**        | $$\tau(\omega) = \tau_0$$                                                            | None                        | None                        | Simple models (use $$\( 1.0 \times 10^{-12} \)$$ s) |
+| **Normal (N) process**     | $$\tau_N^{-1}(\omega) = A_N \omega^2 T^3$$                                           | Quadratic                   | Cubic                       | Momentum-conserving phonon scattering |
 
 #### Notes
 
