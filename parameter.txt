@@ -27,7 +27,7 @@ Slack model parameter A :  0.0       ! If it is 0.0, calculate from Gruneisen pa
 Apara_flag (Ref. [17])  :  T         ! T: use Ref:[17] or F: original (Lattice-parameter-Based Estimation).
 Cezairliyan (all range) :  F         ! T: All range or F: Slack model (T > Debye Temp.) + Cezairliyan (T <= Debye Temp)
 !--tau_ph(+scattering)--:------------!--optional (tau_ph works: phononDOS = T)-----------------------------------------
-relaxation time (ph) [s]:  1.80e-10  ! About 1000 - 10000 times stronger than electrons. (If <= 0.0, tau0(el) * 10000)
+relaxation time (ph) [s]:  1.00e-10  ! About 1000 - 10000 times stronger than electrons. (If <= 0.0, tau0(el) * 10000)
 A_U (Umklapp process)   :  1.00e-21  ! Umklapp (U) scattering.  General Range: 1.0e-19 - 1.0e-22 [s^-1*K^-1*eV^-2].
 Ub  (Umklapp process)   :  2.5       ! Umklapp (U) scattering.  General Range:       2 - 3       [dimensionless].
 A_D (Point defect)      :  1.00e-47  ! Point defect scattering. General Range: 1.0e-45 - 1.0e-48 [eV^-4*s^-1].
@@ -51,6 +51,7 @@ Pinning Shift       [eV]:  0.05e0    ! General Range: 0.01 - 0.1 [eV]
 
 # Note 1: DEF is required information in main.
 #  Base relaxation time [s] is a non-negative value. For research purposes, 1.0e-14 or 1.0 is used.
+#  To take into account various types of scattering (a2Fdos or dos), the "Base relaxation time [s]" needs to be set to approximately 10e-12 [s].
 
 # Note 2: In EOS data to kappa, the bulk modulus is required to calculate the thermal conductivity.
 #  If you don't care about thermal conductivity, just set it to a non-negative value (e.g., 100.0).
