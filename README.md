@@ -820,8 +820,10 @@ $$
 2. Estimate the Debye temperature using:
 
 $$
-\Theta_D = \sqrt{\frac{5}{3} \langle \omega^2 \rangle} / k_B
+\Theta_D = \left(\frac{\hbar}{k_B}\right) \sqrt{\frac{5}{3} \langle \omega^2 \rangle}
 $$
+
+- In the code, the units are such that $$\( k_B \)$$ is in [eV/K] and $$\( \omega \)$$ is in [eV], so $$\( \hbar = 1.0 \)$$ in these units.
 
 3. Use this $$\( \Theta_D \)$$ to compute the Debye heat capacity.
 
@@ -830,4 +832,20 @@ $$
 - More stable and efficient than grid search.
 - Better suited for complex or non-Debye-like phonon spectra.
   
+---
+
+### Debye Temperature Matching (Legacy): `find_matching_Theta_D`
+
+The subroutine `find_matching_Theta_D(T, Theta_D_match, Cv_DOS_out, Cv_Debye_out)` finds the Debye temperature \( \Theta_D \) that best reproduces the heat capacity computed from phonon DOS at temperature $$\( T \)$$.
+
+**Steps:**
+1. Compute $$\( C_v^{\text{DOS}}(T) \)$$ using `compute_Cv_DOS`.
+2. Scan $$\( \Theta_D \)$$ in the range $$\( [0.75 \cdot \omega_{\text{max}}/k_B, 1.00 \cdot \omega_{\text{max}}/k_B] \)$$.
+3. For each candidate $$\( \Theta_D \)$$, compute $$\( C_v^{\text{Debye}}(T) \)$$.
+4. Select the $$\( \Theta_D \)$$ that minimizes $$\( |C_v^{\text{Debye}} - C_v^{\text{DOS}}| \)$$.
+
+**Remarks:**
+- This method is simple and robust but may not always yield a good match, especially when the phonon DOS deviates significantly from the Debye model.
+- The Debye temperature is adjusted incrementally, and the best match is selected based on heat capacity difference.
+
 ---
