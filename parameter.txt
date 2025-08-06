@@ -6,7 +6,7 @@ impurity        (F or T):  F         ! Impurity scattering. Typically used in he
 n_impurity              :  3.000     ! 1: Mild energy-dependence, 3.0: high energy, 4.0: more. (works: impurity = T)
 dos (electron)  (F or T):  F         ! Accounts for scattering probability increasing with available final states
 a2Fdos  (files & lambda):  F         ! a2F.dos takes precedence over phononDOS in calculating relaxation times.
-phononDOS       (F or T):  T         ! Lines 1 and 2 are comment lines. Frequency [eV] vs. Total DOS (phonon) data.
+phononDOS       (F or T):  F         ! Lines 1 and 2 are comment lines. Frequency [eV] vs. Total DOS (phonon) data.
 N_atom         (integer):  2         ! Normalize phdos with 3N. (If phononDOS.dat is normalized to 3N = 3, N_atom = 1.)
 filter          (F or T):  F         ! Weight: w(acoustic)=1, w(0.01-0.03 eV)=0.5, w(optical)=0. (works: phononDOS = T)
 L_bound       [Angstrom]:  0.0       ! Boundary scattering. (works: phononDOS = T and N_atom)
@@ -14,13 +14,13 @@ b_para                  :  0.0       ! Umklapp (Klemens-Callaway type model) sca
 C_phel      [s^-1*eV^-2]:  0.0       ! Phonon-Electron scattering coefficient. (Ref. 2.31e10) (works: a2Fdos = F)
 B_pdef      [s^-1*eV^-4]:  0.0       ! Point defect scattering coefficient. (Ref. 5.33e15)
 !---EOS data to kappa---:------------!--optional-----------------------------------------------------------------------
-Bulk modulus, B    [GPa]:   0.0      ! For example, use Bulk_modulus_from_EOS and get Bulk modulus.
+Bulk modulus, B    [GPa]: 100.0      ! For example, use Bulk_modulus_from_EOS and get Bulk modulus.
 B' (=dB/dP)             :  0.0       ! Derivative of bulk modulus with respect to pressure. You can get it from EOS.
 V0                 [A^3]:  0.0       ! Gets it from EOS. If V0 <= 0.0, uses the volume derived from wien.struct data.
 Shear modulus, G   [GPa]:  0.0       ! If G <= 0.0, calculate from Bulk modulus and Poisson's ratio.
 G' (=dG/dV)             :  0.0       ! If it is <= 0.0, calculate from B, B' and Poisson's ratio.
 Young's modulus, E [GPa]:  0.0       ! If E <= 0.0, calculate from Bulk modulus and Shear modulus or Poisson's ratio.
-Poisson's ratio         :  0.3       ! General Range: 0.25 - 0.35 (If it is <= 0.0, set 0.3 and vs = 0.87*vl.)
+Poisson's ratio         :  0.236     ! General Range: 0.25 - 0.35 (If it is <= 0.0, set 0.3 and vs = 0.87*vl.) Si:0.236
 density         [g/cm^3]:  2.33      ! Please try your best to calculate it from a cif file or something.
 Gruneisen parameter     :  0.0       ! If it is 0.0, calculate from vt and vl (Bulk modulus and Poisson's ratio or G).
 Slack model parameter A :  0.0       ! If it is 0.0, calculate from Gruneisen parameter (B and Poisson's ratio or G.)
@@ -46,7 +46,7 @@ N_sat (Satu.)    [cm^-3]:  1.0e19    ! General Range: 1.0e18 - 1.0e20(insulater)
 Delta E gap       [eV/K]:  2.5e-4    ! General Range: 2.0e-4 - 4.0e-4 [eV/K]
 Pinning Shift       [eV]:  0.05e0    ! General Range: 0.01 - 0.1 [eV]
 !-------optional--------:------------!--optional-----------------------------------------------------------------------
-# Developer comments
+## Developer comments
 
 # Note 1: DEF is required information in main.
 #  Base relaxation time [s] is a non-negative value. For research purposes, 1.0e-14 or 1.0 is used.
@@ -55,11 +55,14 @@ Pinning Shift       [eV]:  0.05e0    ! General Range: 0.01 - 0.1 [eV]
 #  If you don't care about thermal conductivity, just set it to a non-negative value (e.g., 100.0).
 
 # Note 3: Basically, if you set the value to 0, it will be estimated from other data. 
-#   If you want to improve the calculation accuracy, please enter the data.
+#  If you want to improve prediction accuracy, you need to set the value. For example, kappa requires the correct values of G or Poisson's ratio, not just B.
 
 # Note 4: The optional carrier concentration Nc is just prepared for future developments.
 #  The calculation of Nc has not been fully developed, so please feel free to improve it if you are interested.
 
-
 # Note 5: The relaxation time of phonons is said to be 10 to 100 times longer than that of electrons.
 #  To take into account various types of scattering, the basic relaxation time ("relaxation time (ph) [s]") needs to be set to approximately 10e-10 [s].
+
+## Comments on improving the code
+# An important improvement would be to automatically obtain N_atom and density from the input file (such as *.struct) of 
+# the first-principles calculation, but I don't have time to develop this.
