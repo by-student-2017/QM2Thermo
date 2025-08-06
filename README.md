@@ -877,6 +877,9 @@ This document summarizes commonly used relaxation time approximations for electr
 | **Constant (CRTA)**        | $$\tau(\omega) = \tau_0$$                                                            | None                        | None                        | Simple models (use $$\( 1.0 \times 10^{-12} \)$$ s) |
 | **Normal (N) process**     | $$\tau_N^{-1}(\omega) = A_N \omega^2 T^3$$                                           | Quadratic                   | Cubic                       | Momentum-conserving phonon scattering |
 
+> **Note on Normal (N) Processes**  
+> While Normal phonon-phonon scattering processes conserve crystal momentum and can change phonon directions, they do not directly contribute to thermal resistance unless Umklapp processes are also present. This is discussed in detail by Allen (PRB 2013) and Maznev & Wright (Am. J. Phys. 2014).
+
 #### Notes
 
 - $$\( \varepsilon \)$$: Carrier energy  
