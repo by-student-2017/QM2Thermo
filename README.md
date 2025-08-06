@@ -877,7 +877,7 @@ This document summarizes commonly used relaxation time approximations for electr
 | **Constant (CRTA)**        | $$\tau(\omega) = \tau_0$$                                                            | None                        | None                        | Simple models (use $$\( 1.0 \times 10^{-12} \)$$ s) |
 | **Normal (N) process**     | $$\tau_N^{-1}(\omega) = A_N \omega^2 T^3$$                                           | Quadratic                   | Cubic                       | Momentum-conserving phonon scattering |
 - $$\( A_U \)$$: Typical coefficient values are $$\ 10^{-19} \$$ to $$\ 10^{-21} \$$ [s/K]. Highly material dependent.
-- b: Typical coefficient values are  2 to 3.
+- b: Typical coefficient values are  2 to 3. Empirical value for adjusting the temperature range over which Umklapp scattering is effective.
 - $$\( A_D \)$$: Typical coefficient values are $$\ 10^{-45} \$$ to $$\ 10^{-47} \$$ [ $$\ s^{3} \$$ ]. Depends on defect concentration and mass difference.
 - $$\( A_N \)$$: Typical coefficient values are $$\ 10^{-23} \$$ to $$\ 10^{-25} \$$ [ $$\ s/K^{3} \$$ ]. It is often omitted in the temperature range where Umklapp scattering is dominant. In the high-temperature range or materials where the U process is suppressed, the influence of the N process must be considered.
 
