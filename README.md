@@ -812,7 +812,7 @@ The subroutine `find_matching_Theta_D(T, Theta_D_match, Cv_DOS_out, Cv_Debye_out
 
 Steps:
 1. Compute $$\( C_v^{\text{DOS}}(T) \)$$ using `compute_Cv_DOS`.
-2. Scan $$\( \Theta_D \)$$ in the range $$\( [0.25 \cdot \omega_{\text{max}}/k_B, 1.00 \cdot \omega_{\text{max}}/k_B] \)$$.
+2. Scan $$\( \Theta_D \)$$ in the range $$\( [0.75 \cdot \omega_{\text{max}}/k_B, 1.00 \cdot \omega_{\text{max}}/k_B] \)$$.
 3. For each candidate $$\( \Theta_D \)$$, compute $$\( C_v^{\text{Debye}}(T) \)$$.
 4. Select the $$\( \Theta_D \)$$ that minimizes $$\( |C_v^{\text{Debye}} - C_v^{\text{DOS}}| \)$$.
 
