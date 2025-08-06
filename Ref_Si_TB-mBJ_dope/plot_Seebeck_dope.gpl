@@ -1,9 +1,15 @@
 #!/usr/bin/gnuplot
 
-# === Display on screen ===
-set terminal win font "Arial,12"
+minus = "DEF = -0.0027 [eV]"
+plus  = "DEF =  1.1730 [eV]"
+
+# === Save as PNG (publication ready) ===
+set terminal pngcairo size 800,600 font "Times New Roman,12"
+set output "seebeck_vs_temperature.png"
+
 set xlabel "Temperature, {/Italic T} / K"
 set ylabel "Seebeck coefficient, {/Italic S} / {/Symbol m}V K^{-1}"
+
 set grid
 set xrange [0:1000]
 set yrange [-1000:1000]
@@ -19,9 +25,6 @@ set mytics 5
 
 set title "Si DOS (58 x 58 x 58 mesh, noshift), TB-mBJ, WIEN2k"
 
-minus = "DEF = -0.0027 [eV]"
-plus  = "DEF =  1.1730 [eV]"
-
 # Add VEC annotations
 set label sprintf("VEC (%s (minus)): 3.9999997000000000", minus) at 300,  100 textcolor rgb "red"  font "Arial,12"
 set label sprintf("VEC (%s (plus)) : 4.0025006999848038", plus)  at 300, -100 textcolor rgb "blue" font "Arial,12"
@@ -32,8 +35,7 @@ set style line 1 lt 1 lw 2 lc rgb "#0072BD" pt 7 ps 1.2
 # Plot to screen
 plot "Seebeck_analysis_minus.dat" using 1:4 with linespoints linestyle 1 lc "red" title sprintf("{/Symbol m}(T) (%s)", minus), "Seebeck_analysis_plus.dat" using 1:4 with linespoints linestyle 1 title sprintf("{/Symbol m}(T) (%s)", plus)
 
-# === Save as PNG (publication ready) ===
-set terminal pngcairo size 800,600 font "Times New Roman,12"
-set output "seebeck_vs_temperature.png"
+# === Display on screen ===
+set terminal win font "Arial,12"
 replot
 unset output
