@@ -854,6 +854,18 @@ The subroutine `find_matching_Theta_D(T, Theta_D_match, Cv_DOS_out, Cv_Debye_out
 
 This document summarizes commonly used relaxation time approximations for electronic and phonon transport modeling. Relaxation time $$\( \tau \)$$ characterizes how long carriers or phonons persist before scattering, and its dependence on energy and temperature varies by mechanism.
 
+### Electronic Scattering Mechanisms
+
+| Scattering Type             | Approximate Expression                                                     | Energy Dependence           | Temperature Dependence     | Applicability             |
+|----------------------------|-----------------------------------------------------------------------------|-----------------------------|-----------------------------|---------------------------|
+| **Acoustic phonon**        | $$\( \tau(\varepsilon) \propto \varepsilon^{-1/2} \)$$                   | Weak                        | Mild                        | Metals, high-T            |
+| **Ionized impurity**       | $$\( \tau(\varepsilon) \propto \|\varepsilon - \mu\|^n \)$$              | Strong (user-defined $$\( n \))$$ | Weak or none               | Doped semiconductors      |
+| **Constant (CRTA)**        | $$\( \tau(\varepsilon) = \tau_0 \)$$                                      | None                        | None                        | Simple models (use $$\( 1.0 \times 10^{-14} \)$$ s) |
+| **Eliashberg-based**       | See: $$\( \alpha^2F(\omega) \)$$ integration                               | Fully resolved              | Fully resolved              | First-principles accurate |
+| **$$\( \lambda \)$$**-based Allen approx. | $$\( \tau(T) \approx \frac{1}{\pi \lambda k_B T} \)$$         | None (Fermi-level only)     | Linear in $$\( T \)$$         | Metals                    |
+| **DOS-based (electronic)** | $$\( \tau(\varepsilon) \propto \frac{1}{g(\varepsilon) T} \)$$          | Moderate                    | Linear in $$\( T \)$$         | Generic materials         |
+| **Phonon scattering**      | $$\( \tau(\varepsilon) \propto \frac{1}{\|\varepsilon - \mu\| \cdot T} \)$$ | Linear near band edges      | Linear                      | Semiconductors, general   |
+
 ### Phonon Scattering Mechanisms
 
 | Scattering Type             | Approximate Expression                                                                 | Frequency Dependence        | Temperature Dependence     | Applicability             |
