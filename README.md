@@ -770,7 +770,7 @@ Where:
 
 The integral is evaluated numerically using discretized data from `phononDOS.dat`.
 
-## Implementation Notes
+### Implementation Notes
 
 - `phononDOS.dat`: Contains phonon frequencies and corresponding DOS values. The DOS is normalized to 3N, where N is the number of atoms in the unit cell.
 - The final result is converted to **J/(mol·K)** using:
@@ -783,7 +783,7 @@ $$
 
 ---
 
-## Debye Heat Capacity and Debye Temperature Estimation
+## Debye Heat Capacity
 
 This module includes routines to compute the **Debye heat capacity** and to estimate the **Debye temperature** that best matches the phonon DOS-based heat capacity.
 
@@ -806,26 +806,28 @@ $$
 1 [\text{eV/K}] \times 1.60218\times10^{-19} [C] \times 6.02214\times10^{23} [\text{1/mol}] = 9.6485 \times 10^4 \ [\text{J/(mol·K)}]
 $$
 
-### Debye Temperature Matching: `find_matching_Theta_D`
+### Debye Temperature via Second Moment: `compute_second_moment_Theta_D`
 
-The subroutine `find_matching_Theta_D(T, Theta_D_match, Cv_DOS_out, Cv_Debye_out)` finds the Debye temperature $$\( \Theta_D \)$$ that best reproduces the heat capacity computed from phonon DOS at temperature $$\( T \)$$.
+The subroutine `compute_second_moment_Theta_D(T, Theta_D_second_moment, Cv_DOS_out, Cv_Debye_out)` estimates the Debye temperature based on the **second moment** of the phonon density of states (DOS).
 
-Steps:
-1. Compute $$\( C_v^{\text{DOS}}(T) \)$$ using `compute_Cv_DOS`.
-2. Scan $$\( \Theta_D \)$$ in the range $$\( [0.75 \cdot \omega_{\text{max}}/k_B, 1.00 \cdot \omega_{\text{max}}/k_B] \)$$.
-3. For each candidate $$\( \Theta_D \)$$, compute $$\( C_v^{\text{Debye}}(T) \)$$.
-4. Select the $$\( \Theta_D \)$$ that minimizes $$\( |C_v^{\text{Debye}} - C_v^{\text{DOS}}| \)$$.
+**Steps:**
+1. Compute the average squared phonon frequency:
 
-### Output
+$$
+\langle \omega^2 \rangle = \frac{\int \omega^2 g(\omega) d\omega}{\int g(\omega) d\omega}
+$$
 
-- `Theta_D_match`: Estimated Debye temperature (K)
-- `Cv_DOS_out`: Heat capacity from phonon DOS (J/(mol·K))
-- `Cv_Debye_out`: Best-fit Debye heat capacity (J/(mol·K))
+2. Estimate the Debye temperature using:
 
-### Remarks
+$$
+\Theta_D = \sqrt{\frac{5}{3} \langle \omega^2 \rangle} / k_B
+$$
 
-- This method provides a way to **map complex phonon DOS to an effective Debye temperature**, useful for simplified modeling.
-- The accuracy depends on the quality of the phonon DOS and the resolution of the search grid.
-- The Debye temperature is simply changed little by little and the Debye temperature with the best matching Cv is selected. This method is simple and robust, but it still does not work well because the Cv at phonon DOS and the Cv at the Debye temperature do not match in all regions.
+3. Use this $$\( \Theta_D \)$$ to compute the Debye heat capacity.
 
+**Advantages:**
+- Physically meaningful and statistically grounded.
+- More stable and efficient than grid search.
+- Better suited for complex or non-Debye-like phonon spectra.
+  
 ---
