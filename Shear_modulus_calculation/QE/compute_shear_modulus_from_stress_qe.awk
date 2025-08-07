@@ -28,14 +28,14 @@ END {
     # Central difference approximation: G = (sigma(+e) - sigma(-e)) / (2 * e)
     if ((strain[epsilon5] != "") && (strain[epsilon1] != "")) {
         G1 = -(strain[epsilon5] - strain[epsilon1]) / (2 * epsilon5)
-        printf("Shear modulus (G) from +/- %.3f strain: %.6f Ry/Bohr^3\n", epsilon4, G1)
-        printf("Shear modulus (G) from +/- %.3f strain: %.6f GPa\n", epsilon4, G1*conversion_factor)
+        printf("Shear modulus (G) from +/- %.3f strain: %.6f Ry/Bohr^3\n", epsilon5, G1)
+        printf("Shear modulus (G) from +/- %.3f strain: %.6f GPa\n", epsilon5, G1*conversion_factor)
     }
     if ((strain[epsilon4] != "") && (strain[epsilon2] != "")) {
         G2 = -(strain[epsilon4] - strain[epsilon2]) / (2 * epsilon4)
-        printf("Shear modulus (G) from +/- %.3f strain: %.6f Ry/Bohr^3\n", epsilon3, G2)
-        printf("Shear modulus (G) from +/- %.3f strain: %.6f GPa\n", epsilon3, G2*conversion_factor)
+        printf("Shear modulus (G) from +/- %.3f strain: %.6f Ry/Bohr^3\n", epsilon4, G2)
+        printf("Shear modulus (G) from +/- %.3f strain: %.6f GPa\n", epsilon4, G2*conversion_factor)
     }
-    printf("Average Shear modulus (G) from +/- %.3f strain: %.6f Ry/Bohr^3\n", epsilon3, (G1+G2)/2)
-    printf("Average Shear modulus (G) from +/- %.3f strain: %.6f GPa\n", epsilon3, (G1+G2)/2*conversion_factor)
+    printf("Average Shear modulus (G): %.6f Ry/Bohr^3\n", (G1+G2)/2)
+    printf("Average Shear modulus (G): %.6f GPa\n", (G1+G2)/2*conversion_factor)
 }
