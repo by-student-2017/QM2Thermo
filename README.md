@@ -884,3 +884,104 @@ The subroutine `find_matching_Theta_D(T, Theta_D_match, Cv_DOS_out, Cv_Debye_out
 - $$\( \lambda \)$$: Electron-phonon coupling constant
 
 ---
+
+## Cezairliyan Model for Elemental Thermal Conductivity
+
+Cezairliyan et al. proposed a semi-empirical expression for the lattice thermal conductivity of elemental solids, based on normalized temperature with respect to the Debye temperature.
+
+### Expression
+
+$$
+\kappa(T) = k_m \left[ \frac{1}{3} \left( \frac{T}{\Theta_D} \right)^2 + \frac{2}{3} \left( \frac{\Theta_D}{T} \right) \right]^{-1}
+$$
+
+Where:
+
+- **$$\( \kappa(T) \)$$**: Lattice thermal conductivity at temperature $$\( T \)$$
+- **$$\( k_m \)$$**: Material-specific scaling factor (W/m·K)
+- **$$\( \Theta_D \)$$**: Debye temperature (K)
+- **$$\( T \)$$**: Absolute temperature (K)
+
+### Features
+
+- Captures the **non-monotonic behavior** of thermal conductivity with temperature.
+- Valid across a **wide temperature range**, including intermediate regimes.
+- Derived from fitting experimental data for elemental solids.
+
+### Applicability
+
+- Suitable for **pure elements** with well-defined Debye temperatures.
+- Often used in combination with other models (e.g., Slack) for composite or complex materials.
+
+> **Reference**:  
+> Cezairliyan, A., et al. *Thermal Conductivity of the Elements: A Comprehensive Review*, JPCRD, [DOI: 10.1063/1.3253100](https://srd.nist.gov/jpcrdreprint/1.3253100.pdf)
+
+---
+
+## Phonon Thermal Conductivity Calculation
+
+This section describes the logic used to compute the phonon contribution to thermal conductivity (`kappa_phonon`) in the Fortran code. The calculation adapts based on whether the phonon density of states (DOS) is used and whether empirical models (Cezairliyan and Slack) are applied.
+
+### Case 1: Using Phonon DOS (`use_phononDOS = .TRUE.`)
+
+1. **Specific Heat Calculation**  
+   - `Cv_DOS = compute_Cv_DOS(TEM)`  
+   - Specific heat at constant volume is computed from the phonon DOS.
+
+2. **Relaxation Time (`tau_phonon`)**  
+   - If `use_tau0_phonon_flag = .TRUE.`, temperature-dependent relaxation time is used:  
+     `tau_phonon = get_tau_phonon_T(TEM)`
+
+3. **Group Velocity**  
+   - If longitudinal (`vl`) and transverse (`vt`) sound velocities are available:  
+     $$\ v_{	ext{avg}} = \frac{v_l + 2v_t}{3} \$$
+   - Otherwise, average velocity is estimated from Debye temperature:  
+     $$\ v_a = \frac{\Theta_D}{\left( \frac{2\pi \hbar}{k_B} \right) \left( \frac{3N}{4\pi V} \right)^{1/3}} \$$
+
+4. **Thermal Conductivity**  
+   - General expression:
+     $$\ \kappa_{\text{phonon}} = \frac{1}{3} C_v \cdot \rho \cdot v^2 \cdot \tau \$$
+   - Where:
+     - $$\( C_v \)$$: Specific heat [J/mol·K]
+     - $$\( \rho \)$$: Atomic density [mol/m³]
+     - $$\( v \)$$: Average phonon velocity [m/s]
+     - $$\( \tau \)$$: Relaxation time [s]
+
+5. **Fallback to Cezairliyan Model**  
+   - If `use_tau0_phonon_flag = .FALSE.`, relaxation time is fixed at Debye temperature and Cezairliyan model is used:
+     $$\ \kappa_{\text{phonon}} = k_m \left[ \frac{1}{3} \left( \frac{T}{\Theta_D} \right)^2 + \frac{2}{3} \left( \frac{\Theta_D}{T} \right) \right]^{-1} \$$
+
+### Case 2: Without Phonon DOS (`use_phononDOS = .FALSE.`)
+
+1. **Cezairliyan Model**  
+   - Used when bulk modulus and density are available:  
+     $$\ \kappa_{\text{Cezairliyan}} = k_m \left[ \frac{1}{3} \left( \frac{T}{\Theta_D^{\text{equ}}} \right)^2 + \frac{2}{3} \left( \frac{\Theta_D^{\text{equ}}}{T} \right) \right]^{-1} \$$
+
+2. **Slack Model (High Temperature)**  
+   - Applied when temperature exceeds transition threshold:  
+     $$\ \kappa_{\text{Slack}} = \frac{\kappa_{\text{Slack@xK}}}{T} \$$
+
+3. **Smooth Transition Function**  
+   - Sigmoid-like function for interpolation:
+     $$\ f_{\text{transition}} = \frac{1}{1 + \exp\left( -\frac{T - \Theta_D^{\text{equ}}}{\Delta T} \right)} \$$
+   - Final conductivity:
+     $$\ \kappa_{\text{phonon}} = (1 - f_{\text{transition}}) \cdot \kappa_{\text{Cezairliyan}} + f_{\text{transition}} \cdot \kappa_{\text{Slack}} \$$
+
+### Figure of Merit (ZT)
+
+The thermoelectric figure of merit is computed as:
+
+$$
+ZT = \frac{\text{power factor} \cdot T}{\kappa_{\text{electron}} + \kappa_{\text{phonon}}}
+$$
+
+### Notes
+
+- $$\( k_m \)$$: Empirical scaling factor
+- $$\( \Theta_D \)$$: Debye temperature
+- $$\( \Delta T \)$$: Transition width
+- $$\( N \)$$: Number of atoms
+- $$\( V \)$$: Volume in A^3
+- $$\( \hbar, k_B \)$$: Physical constants
+
+---
