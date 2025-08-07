@@ -10,11 +10,11 @@ BEGIN {
     conversion_factor = 14710.5  # Ry/Bohr^3 -> GPa
 
     epsilon0 =  ""
-    epsilon1 = -0.01
+    epsilon1 = -0.010
     epsilon2 = -0.005
     epsilon3 =  0.0
     epsilon4 =  0.005
-    epsilon5 =  0.01
+    epsilon5 =  0.010
 }
 {
     print "Read:", $1, $4, $7, $9
