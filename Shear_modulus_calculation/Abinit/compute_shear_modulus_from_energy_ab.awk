@@ -22,7 +22,6 @@ END {
     # Solve for a using central difference approximation:
     # a is nearly equal to (E(+epislon) + E(-epislon) - 2E(0)) / (2*epsilon^2)
     
-    #-----------------------------------------------------------------
     eps = 0.010
     E_plus = energy[6]
     E_minus = energy[2]
@@ -31,9 +30,6 @@ END {
     
     a = (E_plus + E_minus - 2 * E_zero) / (2 * eps^2)
     G = (2 * a) / V0
-    #G_GPa = G * conversion_factor
     
     printf("Shear modulus G from energy fit: %.6f eV/Bohr^3 = %.2f GPa\n", G, G * conversion_factor)
-    
-    #-----------------------------------------------------------------
 }
