@@ -2594,7 +2594,7 @@ PROGRAM seebeck_analysis
          va = Theta_D / ( (2.0D0*PI*hbar/kb) * ( (3.0D0*N_atom) / (4.0D0*PI*(volume*1.0D-30)) )**(1.0D0/3.0D0) )
          kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * &
            & ((N_atom/volume)*(1.0e30/6.022e23)) * va**2.0D0 * tau_phonon
-         kappa_phonon = km * ( (1.0D0/3.0D0)*(TEM/Theta_D)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D)) )**(-1.0D0)
+         kappa_phonon = km * ( (1.0D0/3.0D0)*(temperature/Theta_D)**2.0D0 + 2.0D0/(3.0D0*(temperature/Theta_D)) )**(-1.0D0)
        END IF
        ZT = power_factor * temperature / (kappa_electron + kappa_phonon)
      ELSE
