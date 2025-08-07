@@ -1,30 +1,60 @@
+# Crystalline silicon : computation of the total energy
+#
 
-acell    3*7.3075326034
+#Definition of the unit cell
+acell 3*10.34          # This is equivalent to   10.34 10.34 10.34
+rprim  0.0  0.5  0.5   # In tutorials 1 and 2, these primitive vectors
+       0.5  0.0  0.5   # (to be scaled by acell) were 1 0 0  0 1 0  0 0 1
+       0.5  0.5  0.0   # that is, the default.
 
-rprim    1.000000000000000   0.000000000000000   0.000000000000000
-         0.500000000000000   0.866025403784439   0.000000000000000
-         0.500000000000000   0.288675134594813   0.816496580927726
+#Definition of the atom types
+ntypat 1          # There is only one type of atom
+znucl 14          # The keyword "znucl" refers to the atomic number of the
+                  # possible type(s) of atom. The pseudopotential(s)
+                  # mentioned in the "files" file must correspond
+                  # to the type(s) of atom. Here, the only type is Silicon.
+pp_dirpath "./"        # This is the path to the directory were
+                       # pseudopotentials for tests are stored
+pseudos "Si.psp8"
+#pseudos Si.GGA_PBE-JTH.xml
+                       # Name and location of the pseudopotential
 
-natom    2
-ntypat   1
-typat    1 1
-znucl    14
-xred     0.750000000000000   0.750000000000000   0.750000000000000
-         0.500000000000000   0.500000000000000   0.500000000000000
+#Definition of the atoms
+natom 2           # There are two atoms
+typat 1 1         # They both are of type 1, that is, Silicon.
+xred              # This keyword indicate that the location of the atoms
+                  # will follow, one triplet of number for each atom
+   0.0  0.0  0.0  # Triplet giving the REDUCED coordinate of atom 1.
+   1/4  1/4  1/4  # Triplet giving the REDUCED coordinate of atom 2.
+                  # Note the use of fractions (remember the limited
+                  # interpreter capabilities of ABINIT)
 
-# Common
-ngkpt 8 8 8
-nshiftk 4
+#Definition of the planewave basis set
+ecut  45.0        # Maximal kinetic energy cut-off, in Hartree
+#pawecutdg 60.0    # PAW
+
+#Definition of the k-point grid
+kptopt 1          # Option for the automatic generation of k points, taking
+                  # into account the symmetry
+ngkpt 8 8 8       # This is a 2x2x2 grid based on the primitive vectors
+nshiftk 4         # of the reciprocal space (that form a BCC lattice !),
+                  # repeated four times, with different shifts :
 shiftk 0.5 0.5 0.5
        0.5 0.0 0.0
        0.0 0.5 0.0
        0.0 0.0 0.5
+                  # In cartesian coordinates, this grid is simple cubic, and
+                  # actually corresponds to the
+                  # so-called 4x4x4 Monkhorst-Pack grid
 
-ecut 30.
-pawecutdg 60.
-
-nsppol 1
-
-toldfe 1.0d-6
-
-pseudos = "Si.GGA_PBE-JTH.xml"
+#Definition of the SCF procedure
+nstep 100         # Maximal number of SCF cycles
+toldfe 1.0d-6     # Will stop when, twice in a row, the difference
+                  # between two consecutive evaluations of total energy
+                  # differ by less than toldfe (in Hartree)
+                  # This value is WAY TOO LARGE for most realistic studies of materials
+diemac 12.0       # Although this is not mandatory, it is worth to
+                  # precondition the SCF cycle. The model dielectric
+                  # function used as the standard preconditioner
+                  # is described in the "dielng" input variable section.
+                  # Here, we follow the prescription for bulk silicon.
