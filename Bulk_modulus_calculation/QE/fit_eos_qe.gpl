@@ -54,6 +54,7 @@ set label fit_label at graph 0.5, graph 0.8 center font "Arial,12"
 plot f(x) t "Murnaghan equation of state, f(x)", filename u 3:2 t "QE" w p pt 1 ps 2
 #------------------------------------------------
 print ""
+print "Results on EOS: Trust me on this one."
 print "Bulk modulus [GPa]: ", (a*1.47105078e4)
 print "dB/dP: ", b
 print "see eos.png file"
