@@ -19,7 +19,6 @@ BEGIN {
 
 END {
     # Fit quadratic: E(epislon) = a * epsilon^2 + b * epsilon + c
-    # Use 5-point fit: -0.01, -0.005, 0.0, 0.005, 0.01
     # Solve for a using central difference approximation:
     # a is nearly equal to (E(+epislon) + E(-epislon) - 2E(0)) / (2*epsilon^2)
     
