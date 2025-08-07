@@ -934,7 +934,9 @@ This section describes the logic used to compute the phonon contribution to ther
 
 3. **Group Velocity**  
    - If longitudinal (`vl`) and transverse (`vt`) sound velocities are available:  
-     $$\ v_{	ext{avg}} = \frac{v_l + 2v_t}{3} \$$  
+     $$\ v_{ext{avg}} = \left( \frac{1}{3} \left( \frac{1}{v_l^3} + \frac{2}{v_t^3} \right) \right)^{-1/3} \$$
+   - This Debye average velocity accounts for both longitudinal and transverse phonon modes and is more physically accurate than the simple arithmetic mean.  
+     $$\ v_{ext{avg}} = \frac{v_l + 2v_t}{3} \$$  
      
    - Otherwise, average velocity is estimated from Debye temperature:  
      $$\ v_a = \frac{\Theta_D}{\left( \frac{2\pi \hbar}{k_B} \right) \left( \frac{3N}{4\pi V} \right)^{1/3}} \$$
