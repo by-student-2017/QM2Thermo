@@ -934,7 +934,8 @@ This section describes the logic used to compute the phonon contribution to ther
 
 3. **Group Velocity**  
    - If longitudinal (`vl`) and transverse (`vt`) sound velocities are available:  
-     $$\ v_{	ext{avg}} = \frac{v_l + 2v_t}{3} \$$
+     $$\ v_{	ext{avg}} = \frac{v_l + 2v_t}{3} \$$  
+     
    - Otherwise, average velocity is estimated from Debye temperature:  
      $$\ v_a = \frac{\Theta_D}{\left( \frac{2\pi \hbar}{k_B} \right) \left( \frac{3N}{4\pi V} \right)^{1/3}} \$$
 
@@ -957,23 +958,35 @@ This section describes the logic used to compute the phonon contribution to ther
    - Used when bulk modulus and density are available:  
      $$\ \kappa_{\text{Cezairliyan}} = k_m \left[ \frac{1}{3} \left( \frac{T}{\Theta_D^{\text{equ}}} \right)^2 + \frac{2}{3} \left( \frac{\Theta_D^{\text{equ}}}{T} \right) \right]^{-1} \$$
 
-2. **Slack Model (High Temperature)**  
+2. **Slack Model (High Temperature)**
+   - The Slack model provides a physically motivated expression for estimating the lattice thermal conductivity of crystalline solids at high temperatures. It is particularly applicable when Umklapp scattering dominates.
    - Applied when temperature exceeds transition threshold:  
-     $$\ \kappa_{\text{Slack}} = \frac{\kappa_{\text{Slack-main}}}{T} \$$
+     $$\ \kappa_{\text{Slack}} = \frac{\kappa_{\text{Slack-main}}}{T} \$$  
+   - Where:  
+     $$\ \kappa_{\text{Slack-main}} = A_{\text{para}} \cdot M_{\text{avg}} \cdot \Theta_{D,\text{va}}^3 \cdot \left( \frac{V}{N} \right)^{1/3} \Big/ \left( \gamma^2 \cdot N^{2/3} \right) \$$  
+   - Parameters:
+     - **$$\( A_{\text{para}} \)$$**: Empirical constant (typically $$\( \sim 3.1 \times 10^{-6} \)$$ W·K/m). (**Note**: If A <= 0.0 is entered, the formula in the paper is used.)
+     - **$$\( M_{\text{avg}} \)$$**: Average atomic mass
+     - **$$\( \Theta_{D,\text{va}} \)$$**: Debye temperature based on average phonon velocity
+     - **$$\( V \)$$**: Volume of the unit cell (A^3)
+     - **$$\( N \)$$**: Number of atoms per unit cell
+     - **$$\( \gamma \)$$**: Grüneisen parameter
+     - **$$\( T \)$$**: Absolute temperature (K)
+   - Applicability:
+     - Valid in **high-temperature regimes** where Umklapp scattering is the dominant phonon scattering mechanism.
+     - Suitable for **crystalline solids** with well-defined atomic structure and phonon properties.
+   - This model is often used in combination with other empirical or semi-empirical models to describe thermal conductivity across a wide temperature range.
 
-3. **Smooth Transition Function**  
-   - Sigmoid-like function for interpolation:
+4. **Smooth Transition Function**  
+   - Sigmoid-like function for interpolation:  
      $$\ f_{\text{transition}} = \frac{1}{1 + \exp\left( -\frac{T - \Theta_D^{\text{equ}}}{\Delta T} \right)} \$$
-   - Final conductivity:
+   - Final conductivity:  
      $$\ \kappa_{\text{phonon}} = (1 - f_{\text{transition}}) \cdot \kappa_{\text{Cezairliyan}} + f_{\text{transition}} \cdot \kappa_{\text{Slack}} \$$
 
 ### Figure of Merit (ZT)
 
-The thermoelectric figure of merit is computed as:
-
-$$
-ZT = \frac{\text{power factor} \cdot T}{\kappa_{\text{electron}} + \kappa_{\text{phonon}}}
-$$
+The thermoelectric figure of merit is computed as:  
+  $$\ ZT = \frac{\text{power factor} \cdot T}{\kappa_{\text{electron}} + \kappa_{\text{phonon}}} \$$
 
 ### Notes
 
