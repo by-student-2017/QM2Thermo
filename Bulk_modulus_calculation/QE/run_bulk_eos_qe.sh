@@ -46,7 +46,7 @@ for strain in "${strain_values[@]}"; do
         # Distortion is introduced in this range.
         line++
         for (i=1; i<=3; i++) {
-            $i = sprintf("%19.15f", $i * (1 + strain))
+            $i = sprintf("%19.15f", $i * (1 + strain)**(1/3))
         }
         #---------------------------------------
         print
