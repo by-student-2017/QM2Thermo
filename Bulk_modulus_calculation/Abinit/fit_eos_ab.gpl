@@ -52,7 +52,7 @@ convet = 1081.20238102 # (1 [eV/Bohr^3] = 1081.20238102 [GPa])
 fit_label = sprintf("B=%.4f [GPa], dB/dP=%.4f", (a*convet), b)
 set label fit_label at graph 0.5, graph 0.8 center font "Arial,12"
 
-plot f(x) t "Murnaghan equation of state, f(x)", filename u 3:2 t "QE" w p pt 1 ps 2
+plot f(x) t "Murnaghan equation of state, f(x)", filename u 3:2 t "Abinit" w p pt 1 ps 2
 #------------------------------------------------
 print ""
 print "Results on EOS: Trust me on this one."
