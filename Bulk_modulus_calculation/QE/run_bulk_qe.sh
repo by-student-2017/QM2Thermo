@@ -77,3 +77,5 @@ echo "The method using energy does not match the method using"
 echo "stress unless the calculation conditions are made more precise."
 echo "command: awk -f compute_bulk_modulus_from_energy_qe.awk bulk_results.txt"
 awk -f compute_bulk_modulus_from_energy_qe.awk bulk_results.txt
+
+gnuplot fit_eos_qe.gpl

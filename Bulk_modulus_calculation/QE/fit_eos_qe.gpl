@@ -1,0 +1,63 @@
+#!/usr/local/bin/gnuplot -persist
+#------------------------------------------------
+filename = "Bulk_results.txt"
+
+stats filename using 2 name "E"
+
+# Extract volume corresponding to minimum energy
+set table "min_volume.txt"
+plot filename using ( ($2 == E_min) ? $3 : 1/0 ) with table
+unset table
+
+# Read the volume value from the file and assign to variable
+stats "min_volume.txt" using 1 name "V"
+V_min = V_mean  # Only one line, so mean equals the value
+
+# Print results
+print "Minimum energy: ", E_min
+print "Volume at minimum energy: ", V_min
+#------------------------------------------------
+set terminal pngcairo size 800,600 font "Times New Roman,12"
+set output "eos.png"
+#------------------------------------------------
+#set key opaque box lc rgb "white" height 1
+set key box lw 1 lc "black"
+set key top center
+#-----------------------------------------------
+set title "Murnaghan equation of state"
+set xlabel "Volume [Angstrom^3]"
+set ylabel "Total energy [eV/atom]"
+set mxtics 5
+set mytics 5
+#-----------------------------------------------
+# Murnaghan equation of state
+f(x) = (a*x/(b*(b-1)))*(b*(1-c/x)+(c/x)**b-1)+d
+#
+#Birch-Murnaghan equation of state (failed: BREAK: Singular matrix in Invert_RtR)
+#f(x) = (9*c*a/16)*(((c/x)**(2/3)-1)**3*b+((c/x)**(2/3)-1)**2*(6-4*(c/x)**(2/3)))+d
+#
+# Vinet equation of state (failed: BREAK: Singular matrix in Invert_RtR)
+#f(x) = (9*a*c/(b-1)**2)*(1+(b-1)*(1-(x/c)**(1/3))-exp(-(3/2)*(b-1)*(1-(x/c)**(1/3))))+d
+#-----------------------------------------------
+# new version [Ry] and [Bohr^3] unit
+a=1.0        # Bulk modulus [Ry/Bohr^3] (1 [Ry/Bohr^3] = 1.47105078e4 [GPa])
+b=3.5        # Differential of bulk modulus [dimensionless]
+c=V_min      # Unit cell volume [Bohr^3]
+d=E_min      # Total energy in the volume of a stable unit cell [Ry]
+#-----------------------------------------------
+fit f(x) filename u 3:2 via a,b,c,d 
+
+# Create a label string with fitted parameters
+fit_label = sprintf("B=%.4f [GPa], dB/dP=%.4f", (a*1.47105078e4), b)
+set label fit_label at graph 0.5, graph 0.8 center font "Arial,12"
+
+plot f(x) t "Murnaghan equation of state, f(x)", filename u 3:2 t "QE" w p pt 1 ps 2
+#------------------------------------------------
+print ""
+print "Bulk modulus [GPa]: ", (a*1.47105078e4)
+print "dB/dP: ", b
+print "see eos.png file"
+#------------------------------------------------
+set terminal win font "Arial,12"
+replot
+#------------------------------------------------
