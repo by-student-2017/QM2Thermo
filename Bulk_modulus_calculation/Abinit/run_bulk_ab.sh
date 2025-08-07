@@ -87,3 +87,5 @@ awk -f compute_Bulk_modulus_from_energy_ab.awk Bulk_results.txt
 
 rm -f caseo_DDB caseo_DEN caseo_EBANDS.agr caseo_WFK
 rm -f caseo_EIG caseo_EIG.nc caseo_GSR.nc caseo_OUT.nc 
+
+gnuplot fit_eos_ab.gpl
