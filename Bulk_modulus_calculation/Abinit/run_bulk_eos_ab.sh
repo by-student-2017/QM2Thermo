@@ -13,8 +13,8 @@ results_file="Bulk_results.txt"
 echo "#strain     energy[eV]      volume[bohr^3]    s_xx[GPa]       s_xy[GPa]       s_xz[GPa]       s_yy[GPa]       s_yz[GPa]       s_zz[GPa]" > "$results_file"
 
 # Strain values to apply
-strain_values=(-0.012 -0.011 -0.010 -0.009 -0.008 -0.007 -0.006 -0.005 -0.004 -0.003 -0.002 -0.001
-        +0.000 +0.001 +0.002 +0.003 +0.004 +0.005 +0.006 +0.007 +0.008 +0.009 +0.010 +0.011 +0.012)
+#strain_values=(-0.012 -0.011 -0.010 -0.009 -0.008 -0.007 -0.006 -0.005 -0.004 -0.003 -0.002 -0.001
+#        +0.000 +0.001 +0.002 +0.003 +0.004 +0.005 +0.006 +0.007 +0.008 +0.009 +0.010 +0.011 +0.012)
 #--------------
 #strain_values=(-0.012 -0.010 -0.008 -0.006 -0.004 -0.002
 #        +0.000 +0.002 +0.004 +0.006 +0.008 +0.010 +0.012)
@@ -25,8 +25,8 @@ strain_values=(-0.012 -0.011 -0.010 -0.009 -0.008 -0.007 -0.006 -0.005 -0.004 -0
 #strain_values=(-0.012 -0.008 -0.004
 #        +0.000 +0.004 +0.008 +0.012)
 #--------------
-#strain_values=(-0.015 -0.010 -0.005
-#        +0.000 +0.005 +0.010 +0.015)
+strain_values=(-0.015 -0.010 -0.005
+        +0.000 +0.005 +0.010 +0.015)
 #--------------
 
 # Create log directory if it doesn't exist
@@ -87,5 +87,8 @@ for strain in "${strain_values[@]}"; do
     "$strain" "$energy" "$volume" "$xx" "$xy" "$xz" "$yy" "$yz" "$zz" >> "$results_file"
 
 done
+
+rm -f caseo_DDB caseo_DEN caseo_EBANDS.agr caseo_WFK
+rm -f caseo_EIG caseo_EIG.nc caseo_GSR.nc caseo_OUT.nc 
 
 gnuplot fit_eos_ab.gpl
