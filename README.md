@@ -959,7 +959,7 @@ This section describes the logic used to compute the phonon contribution to ther
 
 2. **Slack Model (High Temperature)**  
    - Applied when temperature exceeds transition threshold:  
-     $$\ \kappa_{\text{Slack}} = \frac{\kappa_{\text{Slack@xK}}}{T} \$$
+     $$\ \kappa_{\text{Slack}} = \frac{\kappa_{\text{Slack-main}}}{T} \$$
 
 3. **Smooth Transition Function**  
    - Sigmoid-like function for interpolation:
