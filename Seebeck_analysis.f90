@@ -13,7 +13,7 @@
 !
 ! Physical constants:
 !   TEM = k * 300 [K] = 0.000861734 * 300 = 0.0258199727 [eV] (thermal energy)
-!   e   = 1.602176565 * 10^-19  [C]   (charge conversion: 1 [eV] -> [Coulomb])
+!   e   = 1.602176565 * 10^-19  [C]   (charge conversion: 1 [eV] -> [Coulomb]) ([C] or [J/eV])
 !
 ! Compilation:
 !   gfortran -O2 seebeck_analysis.f90 -o seebeck_analysis.exe
