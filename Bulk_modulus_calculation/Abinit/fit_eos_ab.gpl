@@ -25,7 +25,7 @@ set key box lw 1 lc "black"
 set key top center
 #-----------------------------------------------
 set title "Murnaghan equation of state"
-set xlabel "Volume [Angstrom^3]"
+set xlabel "Volume [Bohr^3]"
 set ylabel "Total energy [eV]"
 set mxtics 5
 set mytics 5
