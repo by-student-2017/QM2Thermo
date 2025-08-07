@@ -288,7 +288,7 @@ MODULE seebeck_data
   REAL(KIND=8) :: vs                              ! Shear wave velocity
   REAL(KIND=8) :: va                              ! The average sound wave velocity (the Harmonic Mean of velocities in this code.)
   REAL(KIND=8) :: Mavg                            ! The mean atomic mass, density * 1.0D6 [g/m] * (volume/N_atom) [A^3/N] * 1.0D30/6.022D23
-  REAL(KIND=8) :: MPF_phonon                      ! mean free path of phonon, l = (vl + 2*vt)/3 * tau0_phonon [s]
+  REAL(KIND=8) :: MFP_phonon                      ! mean free path of phonon, l = (vl + 2*vt)/3 * tau0_phonon [s]
   REAL(KIND=8) :: tau0_phonon                     ! For phonons, it is about 10-100 times stronger than for electrons. (If it is 0.0, tau_ph * 100)
   LOGICAL :: use_tau0_phonon_flag                 ! tau0_phonon > 0.0 case -> .TRUE.
   REAL(KIND=8) :: A_U                             ! Coefficient AU of Umklapp (U) scattering
@@ -1728,11 +1728,11 @@ PROGRAM seebeck_analysis
   REAL(8) :: f_transition            ! Smooth connection between Cezairliyan and Slack
   REAL(8), PARAMETER:: delta_T = 50.0D0  ! Smoothness of the transition (in K)
   
-  CHARACTER(LEN=335), PARAMETER :: hdr = "#  T [K]   mu [eV]    <E-mu> [eV] &
+  CHARACTER(LEN=350), PARAMETER :: hdr = "#  T [K]   mu [eV]    <E-mu> [eV] &
     & S [muV/K]    s_all [S/m]  s_hole [S/m] s_elec [S/m] R [Ohm m]    PF [W/m/K^2] ke [W/m/K]  &
     & MFP_hole [A] MFP_elec [A] Nc [cm^-3]   Nc_h [cm^-3] Nc_e [cm^-3] RH [m^3/C]  &
     & Mh[cm^2/V/s] Me[cm^2/V/s] Meffh[kg/kg] Meffe[kg/kg] Cv[J/(molK)]&
-    & kp [W/m/K]   ZT           A(T)         B(T)         tau_ph [s]"
+    & kp [W/m/K]   ZT           A(T)         B(T)         tau_ph [s]   MPF_ph [A]"
   
   ! ------------------------------------------------------------------
   ! Step 0: Load "DEF(Energy shift offset)" data from 'parameter.txt'
@@ -1952,8 +1952,17 @@ PROGRAM seebeck_analysis
     END IF
     WRITE(*,*) "-------------------------------"
     
-    MPF_phonon = (vl + 2.0D0*vt)/3.0D0 * tau0_phonon * 1.0D10
-    WRITE(*,*) "mean free path of phonon [A]:", MPF_phonon
+    !-----------------------------------------------------------------------------------------------------
+    ! MFP_phonon = (vl + 2.0D0*vt)/3.0D0 * tau0_phonon * 1.0D10
+    ! Unlike the simple averaging described above, we used averaging that takes into account 
+    ! the phonon dispersion relation and density of states based on the Debye model below. 
+    ! This correctly reflects the contribution of each mode. This is because it more accurately expresses 
+    ! the effect that the difference in speed between longitudinal and transverse waves has on 
+    ! the heat transfer ability of phonons.
+    !-----------------------------------------------------------------------------------------------------
+    va = ( (1.0D0/3.0D0) * (1.0D0/vl**3.0D0 + 2.0D0/vt**3.0D0) )**(-1.0D0/3.0D0)
+    MFP_phonon = va * tau0_phonon * 1.0D10
+    WRITE(*,*) "mean free path of phonon [A]:", MFP_phonon
     WRITE(*,*) "-------------------------------"
     
     WRITE(*,*)
@@ -2011,10 +2020,22 @@ PROGRAM seebeck_analysis
     WRITE(*,*) " transverse waves travel. This model is flexible enough to be applied to non-crystalline materials and"
     WRITE(*,*) " nanoscale structures."
     WRITE(*,*)
-    !
+    
+    !-----------------------------------------------------------------------------------------------------
     ! kb [eV/K], ech [C], kb * ech [J/K] = [W*s/K]
+    !kappa_phonon_min = (1.0D0/2.0D0) * (PI/6.0D0)**(1.0D0/3.0D0) * (kb * ech) * &
+    !  & (N_atom/(volume*1.0D-30))**(2.0D0/3.0D0) * (vl + 2.0D0*vt)
+    ! 
+    ! Unlike the simple averaging described above, we used averaging that takes into account 
+    ! the phonon dispersion relation and density of states based on the Debye model below. 
+    ! This correctly reflects the contribution of each mode. This is because it more accurately expresses 
+    ! the effect that the difference in speed between longitudinal and transverse waves has on 
+    ! the heat transfer ability of phonons.
+    !-----------------------------------------------------------------------------------------------------
+    va = ( (1.0D0/3.0D0) * (1.0D0/vl**3.0D0 + 2.0D0/vt**3.0D0) )**(-1.0D0/3.0D0)
     kappa_phonon_min = (1.0D0/2.0D0) * (PI/6.0D0)**(1.0D0/3.0D0) * (kb * ech) * &
-      & (N_atom/(volume*1.0D-30))**(2.0D0/3.0D0) * (vl + 2.0D0*vt)
+      & (N_atom/(volume*1.0D-30))**(2.0D0/3.0D0) * va
+    !
     WRITE(*,*) "Cahill-Pohl model: kappa_phonon_min [W/m/K]:", kappa_phonon_min
     kappa_phonon_min_Cahill = kappa_phonon_min
     
@@ -2169,8 +2190,19 @@ PROGRAM seebeck_analysis
         & km * ( (1.0D0/3.0D0)*(TEM/Theta_D)**2.0D0 + 2.0D0/(3.0D0*(TEM/Theta_D)) )**(-1.0D0) ,&
         & " at ", TEM, " [K]"
     ELSE
+      !-----------------------------------------------------------------------------------------------------
       ! [J/(mol*K)] * [mol/m^3] * ([m/s])^2 * [s] = [(J*s)/(m*K)] = [W/(m*K)]
-      kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
+      !kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau0_phonon
+      !
+      ! Unlike the simple averaging described above, we used averaging that takes into account 
+      ! the phonon dispersion relation and density of states based on the Debye model below. 
+      ! This correctly reflects the contribution of each mode. This is because it more accurately expresses 
+      ! the effect that the difference in speed between longitudinal and transverse waves has on 
+      ! the heat transfer ability of phonons.
+      !-----------------------------------------------------------------------------------------------------
+      va = ( (1.0D0/3.0D0) * (1.0D0/vl**3.0D0 + 2.0D0/vt**3.0D0) )**(-1.0D0/3.0D0)
+      kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * va**2.0D0 * tau0_phonon
+      !
       WRITE(*, *) "Calculation results of phonon thermal conductivity using Cv_DOS calculated from data in phononDOS.dat and"
       WRITE(*, *) " vl and vt calculated from Bulk modulus and Poisson's_ratio, etc."
       WRITE(*, *) "kappa_phonon(Cv_DOS, vl, vt) [W/m/K]: ", kappa_phonon
@@ -2223,6 +2255,7 @@ PROGRAM seebeck_analysis
       WRITE(20, *) "!   kappa_phonon = (1.0D0 - f_transition) * kappa_Cezairliyan + f_transition * kappa_Slack"
     END IF
     WRITE(20, *) "! The relaxation time of phonon is not calculated. tau(phonon) = 0.0000E+00 [s]"
+    WRITE(20, *) "! The mean free path of phonon is not calculated.  MFP(phonon) = 0.0000E+00 [A]"
     ! -----
     WRITE(*, *) "Specific heat at constant volume is not calculated. Cv = 0.0000E+00 [J/(mol K)]"
     WRITE(*, *) "Since phononDOS.dat is not used, the Slack model + Cezairliyan is used for the phonon thermal conductivity."
@@ -2238,6 +2271,7 @@ PROGRAM seebeck_analysis
       WRITE(*, *) "!   kappa_phonon = (1.0D0 - f_transition) * kappa_Cezairliyan + f_transition * kappa_Slack"
     END IF
     WRITE(*, *) "The relaxation time of phonon is not calculated. tau(phonon) = 0.0000E+00 [s]"
+    WRITE(*, *) "The mean free path of phonon is not calculated.  MFP(phonon) = 0.0000E+00 [A]"
   END IF
   WRITE(20,'(A)') hdr
   !
@@ -2579,28 +2613,51 @@ PROGRAM seebeck_analysis
        IF (use_tau0_phonon_flag) THEN
          tau_phonon = get_tau_phonon_T(TEM)
          IF (vl > 0.0 .and. vt > 0.0) THEN
+           !-----------------------------------------------------------------------------------------------------
            ! [J/(mol*K)] * [mol/m^3] * ([m/s])^2 * [s] = [(J*s)/(m*K)] = [W/(m*K)]
-           kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * &
-             & ((N_atom/volume)*(1.0e30/6.022e23)) * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau_phonon
+           !kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * &
+           !  & ((N_atom/volume)*(1.0e30/6.022e23)) * ((vl + 2.0D0*vt)/3.0D0)**2.0D0 * tau_phonon
+           !
+           ! Unlike the simple averaging described above, we used averaging that takes into account 
+           ! the phonon dispersion relation and density of states based on the Debye model below. 
+           ! This correctly reflects the contribution of each mode. This is because it more accurately expresses 
+           ! the effect that the difference in speed between longitudinal and transverse waves has on 
+           ! the heat transfer ability of phonons.
+           !-----------------------------------------------------------------------------------------------------
+           ! Compute phonon thermal conductivity using Debye average velocity.
+           ! This approach is based on the Debye model, which provides a more physically accurate
+           ! representation of the average phonon group velocity than the simple arithmetic mean.
+           !
+           ! va = [ (1/3) * (1/vl^3 + 2/vt^3) ]^(-1/3) is the Debye average velocity,
+           ! accounting for both longitudinal and transverse phonon modes.
+           !
+           ! The thermal conductivity is then calculated as:
+           ! [J/(mol*K)] * [mol/m^3] * ([m/s])^2 * [s] = [W/(m*K)]
+           va = ( (1.0D0/3.0D0) * (1.0D0/vl**3.0D0 + 2.0D0/vt**3.0D0) )**(-1.0D0/3.0D0)
+           kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * va**2.0D0 * tau_phonon
          ELSE
            va = Theta_D / ( (2.0D0*PI*hbar/kb) * ( (3.0D0*N_atom) / (4.0D0*PI*(volume*1.0D-30)) )**(1.0D0/3.0D0) )
            ! [J/(mol*K)] * [mol/m^3] * ([m/s])^2 * [s] = [(J*s)/(m*K)] = [W/(m*K)]
-           kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * &
-             & ((N_atom/volume)*(1.0e30/6.022e23)) * va**2.0D0 * tau_phonon
+           kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * va**2.0D0 * tau_phonon
          END IF
        ELSE
          ! Cezairliyan
          tau_phonon = get_tau_phonon_T(Theta_D)
-         va = Theta_D / ( (2.0D0*PI*hbar/kb) * ( (3.0D0*N_atom) / (4.0D0*PI*(volume*1.0D-30)) )**(1.0D0/3.0D0) )
-         kappa_phonon = (1.0D0/3.0D0) * Cv_DOS * &
-           & ((N_atom/volume)*(1.0e30/6.022e23)) * va**2.0D0 * tau_phonon
+         IF (vl > 0.0 .and. vt > 0.0) THEN
+           va = ( (1.0D0/3.0D0) * (1.0D0/vl**3.0D0 + 2.0D0/vt**3.0D0) )**(-1.0D0/3.0D0)
+         ELSE
+           va = Theta_D / ( (2.0D0*PI*hbar/kb) * ( (3.0D0*N_atom) / (4.0D0*PI*(volume*1.0D-30)) )**(1.0D0/3.0D0) )
+         END IF
+         km = (1.0D0/3.0D0) * Cv_DOS * ((N_atom/volume)*(1.0e30/6.022e23)) * va**2.0D0 * tau_phonon
          kappa_phonon = km * ( (1.0D0/3.0D0)*(temperature/Theta_D)**2.0D0 + 2.0D0/(3.0D0*(temperature/Theta_D)) )**(-1.0D0)
        END IF
        ZT = power_factor * temperature / (kappa_electron + kappa_phonon)
+       MFP_phonon = va * tau_phonon * 1.0D10
      ELSE
        Cv_DOS = 0.0
        specific_heat = Cv_DOS         ! Specific heat at constant volume
        tau_phonon = 0.0
+       MFP_phonon = 0.0
        IF (Bulk_modulus > 0.0 .and. density > 0.0) THEN
          ! Cezairliyan
          kappa_Cezairliyan = km * ( (1.0D0/3.0D0)*(temperature/Theta_D_Cezairliyan_equ)**2.0D0 + &
@@ -2608,7 +2665,7 @@ PROGRAM seebeck_analysis
          !
          IF ( (use_Cezairliyan_all_range .neqv. .TRUE.)  .and. &
             & (temperature > (Theta_D_Cezairliyan_equ - 2.0D0*delta_T)) ) THEN
-
+           
            ! f_transition is a smooth switching function between the Cezairliyan and Slack models.
            ! It takes the form of a sigmoid function, transitioning from 0 to 1 as temperature increa
            ! The transition is centered around Theta_D_Cezairliyan_equ, with delta_T controlling the
@@ -2660,7 +2717,7 @@ PROGRAM seebeck_analysis
         ! Calculate and output average energy offset <E - mu> and Seebeck coefficient
         ! T1/T is the averaged energy deviation <E - mu>
         ! -T1/T/TEM * CO gives Seebeck coefficient in muV/K
-        WRITE(6,'(F8.1,1X,F10.6, 24(1X,E12.4))') &
+        WRITE(6,'(F8.1,1X,F10.6, 25(1X,E12.4))') &
           &   temperature &
           & , chemical_potential &
           & , mean_energy &
@@ -2686,8 +2743,9 @@ PROGRAM seebeck_analysis
           & , ZT &
           & , A_T &
           & , B_T &
-          &, tau_phonon
-        WRITE(20,'(F8.1,1X,F10.6, 24(1X,E12.4))') &
+          &, tau_phonon &
+          &, MFP_phonon
+        WRITE(20,'(F8.1,1X,F10.6, 25(1X,E12.4))') &
           &   temperature &
           & , chemical_potential &
           & , mean_energy &
@@ -2713,7 +2771,8 @@ PROGRAM seebeck_analysis
           & , ZT &
           & , A_T &
           & , B_T &
-          &, tau_phonon
+          &, tau_phonon &
+          &, MFP_phonon
      ELSE
         ! If denominator T is too small (numerical instability), output placeholders
         WRITE(6,'(F8.1,1X,F10.6,1X,A)') TEM, CP, "-- -- -- -- -- -- -- -- -- -- -- --"
