@@ -26,7 +26,7 @@ set key top center
 #-----------------------------------------------
 set title "Murnaghan equation of state"
 set xlabel "Volume [Angstrom^3]"
-set ylabel "Total energy [eV/atom]"
+set ylabel "Total energy [Ry]"
 set mxtics 5
 set mytics 5
 #-----------------------------------------------
@@ -48,14 +48,15 @@ d=E_min      # Total energy in the volume of a stable unit cell [Ry]
 fit f(x) filename u 3:2 via a,b,c,d 
 
 # Create a label string with fitted parameters
-fit_label = sprintf("B=%.4f [GPa], dB/dP=%.4f", (a*1.47105078e4), b)
+convert = 1.47105078e4 # (1 [Ry/Bohr^3] = 1.47105078e4 [GPa])
+fit_label = sprintf("B=%.4f [GPa], dB/dP=%.4f", (a*convert), b)
 set label fit_label at graph 0.5, graph 0.8 center font "Arial,12"
 
 plot f(x) t "Murnaghan equation of state, f(x)", filename u 3:2 t "QE" w p pt 1 ps 2
 #------------------------------------------------
 print ""
 print "Results on EOS: Trust me on this one."
-print "Bulk modulus [GPa]: ", (a*1.47105078e4)
+print "Bulk modulus [GPa]: ", (a*convert)
 print "dB/dP: ", b
 print "see eos.png file"
 #------------------------------------------------
