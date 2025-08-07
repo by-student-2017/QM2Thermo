@@ -20,11 +20,6 @@ BEGIN {
     strain[$1 + 0] = $5
 }
 END {
-    # 1 Ry = 13.605693122994 [eV] * 1.602176634e-19 [J/eV] = 2.179872361e-18 [J]
-    # 1 [bohr] = 0.529177210903e-10 [m]
-    # 1 [bohr^3] = 1.481847e-31 [m^3]
-    # 1 [Ry/Bohr^3] = 2.179872361e-18 / 1.481847e-31 = 1.47105078e13 [Pa] = 1.47105078e4 [GPa]
-    
     # Central difference approximation: G = (sigma(+e) - sigma(-e)) / (2 * e)
     if ((strain[epsilon5] != "") && (strain[epsilon1] != "")) {
         G1 = -(strain[epsilon5] - strain[epsilon1]) / (2 * epsilon5)
