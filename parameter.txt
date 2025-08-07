@@ -1,6 +1,6 @@
 !-----Main (tau_el)-----:------------!--Memo---------------------------------------------------------------------------
 DEF (Energy shift)  [eV]:  0.000000  ! -0.002700 or 1.173000, etc. Also compare it with the output VEC.
-Base relaxation time [s]:  1.00e-12  ! tau0=1.00000e-14 is often used. (1.0 if you don't want to consider it)
+Base relaxation time [s]:  1.00e-14  ! tau0=1.00000e-14 is often used. (1.0 if you don't want to consider it)
 phonon (lambda) (F or T):  F         ! The lambda file output by EPW (QE or Abinit) is read and processed.
 impurity        (F or T):  F         ! Impurity scattering. Typically used in heavily doped semiconductors
 n_impurity              :  3.000     ! 1: Mild energy-dependence, 3.0: high energy, 4.0: more. (works: impurity = T)
