@@ -2608,7 +2608,12 @@ PROGRAM seebeck_analysis
          !
          IF ( (use_Cezairliyan_all_range .neqv. .TRUE.)  .and. &
             & (temperature > (Theta_D_Cezairliyan_equ - 2.0D0*delta_T)) ) THEN
-           
+
+           ! f_transition is a smooth switching function between the Cezairliyan and Slack models.
+           ! It takes the form of a sigmoid function, transitioning from 0 to 1 as temperature increa
+           ! The transition is centered around Theta_D_Cezairliyan_equ, with delta_T controlling the
+           ! This form is mathematically similar to the Fermi–Dirac distribution but is used here purely
+           ! for numerical interpolation, not for its physical meaning.
            f_transition = 1.0D0 / (1.0D0 + EXP(-(temperature - Theta_D_Cezairliyan_equ) / delta_T))
            
            kappa_Slack = kappa_phonon_min_Slack_xK / temperature
