@@ -28,22 +28,22 @@ END {
     kappa = (volume[2] - V0)/V0
     K1 = (pressure[epsilon1] - pressure[epsilon3]) / kappa
 
-    printf("Bulk modulus K from energy fit (epislon = &%.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", epsilon1, K1, K1 * conversion_factor)
+    printf("Bulk modulus K from energy fit (epislon = %.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", epsilon1, K1, K1 * conversion_factor)
 
     kappa = (volume[3] - V0)/V0
     K2 = (pressure[epsilon2] - pressure[epsilon3]) / kappa
 
-    printf("Bulk modulus K from energy fit (epislon = &%.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", epsilon2, K2, K2 * conversion_factor)
+    printf("Bulk modulus K from energy fit (epislon = %.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", epsilon2, K2, K2 * conversion_factor)
 
     kappa = (volume[5] - V0)/V0
     K4 = (pressure[epsilon4] - pressure[epsilon3]) / kappa
 
-    printf("Bulk modulus K from energy fit (epislon = &%.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", epsilon4, K4, K4 * conversion_factor)
+    printf("Bulk modulus K from energy fit (epislon = %.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", epsilon4, K4, K4 * conversion_factor)
 
     kappa = (volume[6] - V0)/V0
     K5 = (pressure[epsilon5] - pressure[epsilon3]) / kappa
     
-    printf("Bulk modulus K from energy fit (epislon = &%.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", epsilon5, K5, K5 * conversion_factor)
+    printf("Bulk modulus K from energy fit (epislon = %.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", epsilon5, K5, K5 * conversion_factor)
     
     K = (K1 + K2 + K4 + K5)/4
     printf("Average Bulk modulus K from energy fit: %.6f Ry/Bohr^3 = %.2f GPa\n", K, K * conversion_factor)
