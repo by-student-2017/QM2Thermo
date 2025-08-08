@@ -142,8 +142,6 @@ for dir in {1..6}; do
     done
     
     echo "Results for dir=${dir} saved to $results_file"
-    echo "command: awk -f compute_shear_modulus_from_stress_qe.awk $results_file"
-    awk -f compute_shear_modulus_from_stress_qe.awk "$results_file"
 done
 
 # Evaluate Elastic constants using AWK
