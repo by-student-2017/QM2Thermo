@@ -22,7 +22,15 @@ mkdir -p log
 for strain in "${strain_values[@]}"; do
     input_file="log/case.scf.${strain}.in"
     output_file="log/case.scf.${strain}.out"
-
+    
+    # Get A in &SYSTEM section
+    A=$(awk '/acell / {print $2; exit}' "$base_input")
+    B=$(awk '/acell / {print $3; exit}' "$base_input")
+    C=$(awk '/acell / {print $4; exit}' "$base_input")
+    echo "lattice parameter A: ${A}"
+    echo "lattice parameter B: ${B}"
+    echo "lattice parameter C: ${C}"
+    
     # Generate strained input file using awk
     awk -v strain="${strain}" '
     BEGIN {in_cell=0; line=0}
