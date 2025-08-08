@@ -95,9 +95,5 @@ echo ""
 # Evaluate Bulk modulus using AWK
 echo "command: awk -f compute_Bulk_modulus_from_stress_ab.awk Bulk_results.txt"
 awk -f compute_Bulk_modulus_from_stress_ab.awk Bulk_results.txt
-echo ""
-echo "The method using energy does not match the method using"
-echo "stress unless the calculation conditions are made more precise."
-echo "command: awk -f compute_Bulk_modulus_from_energy_ab.awk Bulk_results.txt"
-awk -f compute_Bulk_modulus_from_energy_ab.awk Bulk_results.txt
+
 
