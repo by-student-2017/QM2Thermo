@@ -1,5 +1,5 @@
-# AWK script to compute shear modulus G from energy vs strain using finite strain method
-# Input format: strain energy volume stress_xy
+# AWK script to compute bulk modulus K from energy vs strain using finite strain method
+# Input format: strain energy volume s_xx s_yy s_zz
 
 BEGIN {
     # 1 Ry = 13.605693122994 [eV] * 1.602176634e-19 [J/eV] = 2.179872361e-18 [J]
