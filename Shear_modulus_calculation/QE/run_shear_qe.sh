@@ -10,7 +10,7 @@ base_input="case.scf.in"
 # Output file for stress results
 results_file="shear_results.txt"
 > "$results_file"
-echo "#strain     energy[Ry]      volume[Bohr^3]    s_xx[Ry/Bohr^3] s_xy[Ry/Bohr^3] s_xz[Ry/Bohr^3] s_yy[Ry/Bohr^3] s_yz[Ry/Bohr^3] s_zz[Ry/Bohr^3]" > "$results_file"
+echo "#strain     energy[Ry]      volume[Bohr^3]    s_xx[Ry/Bohr^3] s_xy[Ry/Bohr^3] s_xz[Ry/Bohr^3] s_yy[Ry/Bohr^3] s_yz[Ry/Bohr^3] s_zz[Ry/Bohr^3] Ly[Angstrom]" > "$results_file"
 
 # Strain values to apply
 strain_values=(-0.010 -0.005 +0.000 +0.005 +0.010)
@@ -22,22 +22,54 @@ mkdir -p log
 for strain in "${strain_values[@]}"; do
     input_file="log/case.scf.${strain}.in"
     output_file="log/case.scf.${strain}.out"
-
+    
+    # Get A in &SYSTEM section
+    A=$(awk '/A / {print $3; exit} /A=/ {print $2; exit}' "$base_input")
+    #A=$(awk '
+    #  /A / {print $3; exit}
+    #  /A=/ {print $2; exit}
+    #' "$base_input")
+    echo "lattice parameter A:", $A
+    
     # Generate strained input file using awk
-    awk -v strain="${strain}" '
+    awk -v strain="${strain}" -v A="$A" '
     BEGIN {in_cell=0; line=0}
     /^CELL_PARAMETERS/ {in_cell=1; print; next}
     in_cell && NF==3 {
         line++
-        if (line==1) {
-            $2 = sprintf("%19.15f", $2 + strain)
+        #---------------------------------------
+        # Distortion is introduced in this range.
+        if (line==2) { # a2 line
+          # a2_x <- a2_x + epsilon, (epsilon = strain/A)
+          $1 = sprintf("%19.15f", $1 + strain/A) 
         }
+        #---------------------------------------
         print
         if (line==3) in_cell=0
         next
     }
     {print}
     ' "$base_input" > "$input_file"
+    
+    # Get Ly
+    Ly=$(awk -v A="$A" '
+    BEGIN {in_cell=0; line=0}
+    /^CELL_PARAMETERS/ {in_cell=1; next}
+    in_cell && NF==3 {
+        line++
+        #---------------------------------------
+        # Distortion is introduced in this range.
+        if (line==2) { # a2 line
+          len = sqrt($1*$1 + $2*$2 + $3*$3) * A
+          printf("%19.15f", len)
+          exit
+        }
+        #---------------------------------------
+        if (line==3) in_cell=0
+        next
+    }
+    ' "$base_input")
+    echo "lattice parameter Ly:", ${Ly}
 
     # Run QE and extract stress tensor
     mpirun -np ${NCPUs} pw.x < "$input_file" | tee "$output_file"
@@ -59,8 +91,8 @@ for strain in "${strain_values[@]}"; do
             print $3
         }' "$output_file")
     # Output strain, energy, volume, and stress tensor components
-    printf "%+8.4f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f\\n" \
-    "$strain" "$energy" "$volume" "$xx" "$xy" "$xz" "$yy" "$yz" "$zz" >> "$results_file"
+    printf "%+8.4f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f\\n" \
+    "$strain" "$energy" "$volume" "$xx" "$xy" "$xz" "$yy" "$yz" "$zz" "$Ly">> "$results_file"
 
 done
 
@@ -69,8 +101,3 @@ echo ""
 # Evaluate shear modulus using AWK
 echo "command: awk -f compute_shear_modulus_from_stress_qe.awk shear_results.txt"
 awk -f compute_shear_modulus_from_stress_qe.awk shear_results.txt
-echo ""
-echo "The method using energy does not match the method using"
-echo "stress unless the calculation conditions are made more precise."
-echo "command: awk -f compute_shear_modulus_from_energy_qe.awk shear_results.txt"
-awk -f compute_shear_modulus_from_energy_qe.awk shear_results.txt
