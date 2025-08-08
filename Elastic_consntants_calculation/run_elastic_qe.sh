@@ -144,3 +144,9 @@ for dir in {1..6}; do
     echo "command: awk -f compute_shear_modulus_from_stress_qe.awk $results_file"
     awk -f compute_shear_modulus_from_stress_qe.awk "$results_file"
 done
+
+# Evaluate Elastic constants using AWK
+echo "command: awk -f compute_elastic_constants_from_stress_qe.awk elastic_results.txt"
+awk -f compute_elastic_constants_from_stress_qe.awk elastic_results.txt
+
+python3 compliance_python3.py
