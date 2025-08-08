@@ -23,8 +23,16 @@ for strain in "${strain_values[@]}"; do
     input_file="log/case.scf.${strain}.in"
     output_file="log/case.scf.${strain}.out"
 
+    # Get A in &SYSTEM section
+    A=$(awk '/A / {print $3; exit} /A=/ {print $2; exit}' "$base_input")
+    #A=$(awk '
+    #  /A / {print $3; exit}
+    #  /A=/ {print $2; exit}
+    #' "$base_input")
+    echo "lattice parameter A:", $A
+
     # Generate strained input file using awk
-    awk -v strain="${strain}" '
+    awk -v strain="${strain}" -v A="${A}" '
     BEGIN {in_cell=0; line=0}
     /^CELL_PARAMETERS/ {in_cell=1; print; next}
     in_cell && NF==3 {
@@ -32,7 +40,7 @@ for strain in "${strain_values[@]}"; do
         # Distortion is introduced in this range.
         line++
         for (i=1; i<=3; i++) {
-            $i = sprintf("%19.15f", $i * (1 + strain)**(1/3))
+            $i = sprintf("%19.15f", $i * (1 + strain/A))
         }
         #---------------------------------------
         print
