@@ -9,7 +9,7 @@ base_input="case.scf.in"
 # output file
 results_file="elastic_results.txt"
 > "$results_file"
-echo "#strain     energy[Ry]      volume[Bohr^3]    s_xx[Ry/Bohr^3] s_xy[Ry/Bohr^3] s_xz[Ry/Bohr^3] s_yy[Ry/Bohr^3] s_yz[Ry/Bohr^3] s_zz[Ry/Bohr^3] Ly[Angstrom]" > "$results_file"
+echo "#strain     energy[Ry]      volume[Bohr^3]    s_xx[Ry/Bohr^3] s_xy[Ry/Bohr^3] s_xz[Ry/Bohr^3] s_yy[Ry/Bohr^3] s_yz[Ry/Bohr^3] s_zz[Ry/Bohr^3] Lx0[Angstrom]   Ly0[Angstrom]   Lz0[Angstrom]" > "$results_file"
 
 # Set number of threads and CPUs
 export OMP_NUM_THREADS=1
@@ -55,13 +55,14 @@ read Lx0 Ly0 Lz0 <<< $(awk -v A="$A" '
       cell[line,i] = $i * A
     }
     if (line==3) {
-    # Length
-    lx = sqrt(cell[1,1]^2 + cell[1,2]^2 + cell[1,3]^2)
-    ly = sqrt(cell[2,1]^2 + cell[2,2]^2 + cell[2,3]^2)
-    lz = sqrt(cell[3,1]^2 + cell[3,2]^2 + cell[3,3]^2)
     
-    printf "%19.15f %19.15f %19.15f", lx, ly, lz
-    exit
+      # Length
+      lx = sqrt(cell[1,1]^2 + cell[1,2]^2 + cell[1,3]^2)
+      ly = sqrt(cell[2,1]^2 + cell[2,2]^2 + cell[2,3]^2)
+      lz = sqrt(cell[3,1]^2 + cell[3,2]^2 + cell[3,3]^2)
+      
+      printf "%19.15f %19.15f %19.15f", lx, ly, lz
+      exit
     }
   }
 ' "$base_input")
