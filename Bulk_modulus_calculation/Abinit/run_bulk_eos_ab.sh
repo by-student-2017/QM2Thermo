@@ -12,7 +12,7 @@ results_file="Bulk_results.txt"
 > "$results_file"
 echo "#strain     energy[eV]      volume[bohr^3]    s_xx[GPa]       s_xy[GPa]       s_xz[GPa]       s_yy[GPa]       s_yz[GPa]       s_zz[GPa]" > "$results_file"
 
-# Strain values to apply
+# Strain values to apply (Note: strain_values/acell*100 [%])
 #strain_values=(-0.012 -0.011 -0.010 -0.009 -0.008 -0.007 -0.006 -0.005 -0.004 -0.003 -0.002 -0.001
 #        +0.000 +0.001 +0.002 +0.003 +0.004 +0.005 +0.006 +0.007 +0.008 +0.009 +0.010 +0.011 +0.012)
 #--------------
@@ -25,11 +25,8 @@ echo "#strain     energy[eV]      volume[bohr^3]    s_xx[GPa]       s_xy[GPa]   
 #strain_values=(-0.012 -0.008 -0.004
 #        +0.000 +0.004 +0.008 +0.012)
 #--------------
-#strain_values=(-0.015 -0.010 -0.005
-#        +0.000 +0.005 +0.010 +0.015)
-#--------------
-strain_values=(-0.030 -0.020 -0.010
-        +0.000 +0.010 +0.020 +0.030)
+strain_values=(-0.020 -0.015 -0.010 -0.005
+        +0.000 +0.005 +0.010 +0.015 +0.020)
 #--------------
 
 # Create log directory if it doesn't exist
@@ -40,8 +37,16 @@ for strain in "${strain_values[@]}"; do
     input_file="log/case.scf.${strain}.in"
     output_file="log/case.scf.${strain}.out"
 
+    # Get A in &SYSTEM section
+    A=$(awk '/acell / {print $2; exit}' "$base_input")
+    B=$(awk '/acell / {print $3; exit}' "$base_input")
+    C=$(awk '/acell / {print $4; exit}' "$base_input")
+    echo "lattice parameter A: ${A}"
+    echo "lattice parameter B: ${B}"
+    echo "lattice parameter C: ${C}"
+
     # Generate strained input file using awk
-    awk -v strain="${strain}" '
+    awk -v strain="${strain}" -v A="${A}" -v B="${B}" -v C="${C}" '
     BEGIN {in_cell=0; line=0}
     /rprim/ {in_cell=1}
     in_cell {
@@ -49,13 +54,13 @@ for strain in "${strain_values[@]}"; do
         # Distortion is introduced in this range.
         line++
         if (line==1) {
-            for (i=2; i<=4; i++) {
-            $i = sprintf("%19.15f", $i * (1 + strain)**(1/3))
-          }
-        } else if (line == 2 || line == 3) {
-            for (i=1; i<=3; i++) {
-            $i = sprintf("%19.15f", $i * (1 + strain)**(1/3))
-          }
+            $2 = sprintf("%19.15f", $2 * (1 + strain/A))
+            $3 = sprintf("%19.15f", $3 * (1 + strain/B))
+            $4 = sprintf("%19.15f", $4 * (1 + strain/C))
+        } else if (line==2 || line==3) {
+            $1 = sprintf("%19.15f", $1 * (1 + strain/A))
+            $2 = sprintf("%19.15f", $2 * (1 + strain/B))
+            $3 = sprintf("%19.15f", $3 * (1 + strain/C))
         }
         #---------------------------------------
         print

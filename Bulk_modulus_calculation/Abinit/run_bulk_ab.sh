@@ -32,13 +32,13 @@ for strain in "${strain_values[@]}"; do
         # Distortion is introduced in this range.
         line++
         if (line==1) {
-            for (i=2; i<=4; i++) {
-            $i = sprintf("%19.15f", $i * (1 + strain)**(1/3))
-          }
-        } else if (line == 2 || line == 3) {
-            for (i=1; i<=3; i++) {
-            $i = sprintf("%19.15f", $i * (1 + strain)**(1/3))
-          }
+            $2 = sprintf("%19.15f", $2 * (1 + strain/A))
+            $3 = sprintf("%19.15f", $3 * (1 + strain/B))
+            $4 = sprintf("%19.15f", $4 * (1 + strain/C))
+        } else if (line==2 || line==3) {
+            $1 = sprintf("%19.15f", $1 * (1 + strain/A))
+            $2 = sprintf("%19.15f", $2 * (1 + strain/B))
+            $3 = sprintf("%19.15f", $3 * (1 + strain/C))
         }
         #---------------------------------------
         print
