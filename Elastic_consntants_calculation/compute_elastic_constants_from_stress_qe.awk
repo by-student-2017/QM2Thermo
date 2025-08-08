@@ -1,5 +1,5 @@
-# AWK script to compute shear modulus from shear_results.txt
-# Assumes format: strain stress_xy (=stress_yx)
+# AWK script to compute shear modulus from elastic_results.txt
+# Assumes format: strain stress_xx, ...
 
 BEGIN {
     # 1 Ry = 13.605693122994 [eV] * 1.602176634e-19 [J/eV] = 2.179872361e-18 [J]
@@ -11,28 +11,34 @@ BEGIN {
 }
 {
     print "Read:", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
-    strain[NR] = $1 + 0
-    energy[NR] = $2 + 0
-    volume[NR] = $3 + 0
+    strain[NR]    = $1 + 0
+    energy[NR]    = $2 + 0
+    volume[NR]    = $3 + 0
     stress_xx[NR] = $4 + 0
     stress_xy[NR] = $5 + 0
     stress_xz[NR] = $6 + 0
     stress_yy[NR] = $7 + 0
     stress_yz[NR] = $8 + 0
     stress_zz[NR] = $9 + 0
-    Lx[NR] = $10 + 0
-    Ly[NR] = $10 + 0
-    Lz[NR] = $10 + 0
+    Lx[NR]        = $10 + 0
+    Ly[NR]        = $11 + 0
+    Lz[NR]        = $12 + 0
 }
 END {
-    #                d1(s_xx) d2(s_xy)
+    # elastic_results.txt
+    # Item                d1(s_xx), ...
+    # Standard: +0.0000
     # dir 1 minus
     # dir 1 plus
     # dir 2 minus
+    # dir 2 plus
+    # dir 3 minus
     # ...
     
-    # minues
+    
     for (i=1; i<=6; i++) {
+      
+      #printf("\n strain: %15.8f \n", strain[3+2*(i-1)])
       # minues
       C1neg = -(stress_xx[3+2*(i-1)] - stress_xx[2]) / (strain[3+2*(i-1)] / Lx[2]) * conversion_factor # d1
       C2neg = -(stress_yy[3+2*(i-1)] - stress_yy[2]) / (strain[3+2*(i-1)] / Ly[2]) * conversion_factor # d2
@@ -41,6 +47,7 @@ END {
       C5neg = -(stress_xz[3+2*(i-1)] - stress_xz[2]) / (strain[3+2*(i-1)] / Lz[2]) * conversion_factor # d5
       C6neg = -(stress_xy[3+2*(i-1)] - stress_xy[2]) / (strain[3+2*(i-1)] / Ly[2]) * conversion_factor # d6
       
+      #printf("\n strain: %15.8f \n", strain[4+2*(i-1)])
       # plus
       C1pos = -(stress_xx[4+2*(i-1)] - stress_xx[2]) / (strain[4+2*(i-1)] / Lx[2]) * conversion_factor # d1
       C2pos = -(stress_yy[4+2*(i-1)] - stress_yy[2]) / (strain[4+2*(i-1)] / Ly[2]) * conversion_factor # d2
