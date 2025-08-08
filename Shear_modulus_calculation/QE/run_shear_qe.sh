@@ -39,6 +39,8 @@ for strain in "${strain_values[@]}"; do
     /^CELL_PARAMETERS/ {in_cell=1; print; next}
     in_cell && NF==3 {
         line++
+        #---------------------------------------
+        # Distortion is introduced in this range.
         for (i=1; i<=3; i++) {
             cell[line,i] = $i * A
         }
@@ -68,6 +70,7 @@ for strain in "${strain_values[@]}"; do
             in_cell=0
             next
         }
+        #---------------------------------------
         next
     }
     {print}
