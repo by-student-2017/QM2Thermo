@@ -10,11 +10,11 @@ BEGIN {
     conversion_factor = 1.0      # GPa
     
     epsilon0 =  ""
-    epsilon1 = -0.010
-    epsilon2 = -0.005
+    epsilon1 = -0.020
+    epsilon2 = -0.010
     epsilon3 =  0.0
-    epsilon4 =  0.005
-    epsilon5 =  0.010
+    epsilon4 =  0.010
+    epsilon5 =  0.020
 }
 {
     print "Read:", $1, $4, $7, $9

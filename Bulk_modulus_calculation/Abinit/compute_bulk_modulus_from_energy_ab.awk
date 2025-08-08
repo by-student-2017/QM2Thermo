@@ -22,7 +22,7 @@ END {
     # Fit quadratic: E(epislon) = a * epsilon^2 + b * epsilon + c
     # Use central difference: a is nearly equal to (E(+eps) + E(-eps) - 2E(0)) / (2 * eps^2)
     
-    eps = 0.010
+    eps = 0.020
     E_plus = energy[6]
     E_minus = energy[2]
     E_zero = energy[4]
