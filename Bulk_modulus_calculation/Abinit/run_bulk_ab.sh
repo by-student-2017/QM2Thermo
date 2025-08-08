@@ -12,8 +12,11 @@ results_file="Bulk_results.txt"
 > "$results_file"
 echo "#strain     energy[eV]      volume[bohr^3]    s_xx[GPa]       s_xy[GPa]       s_xz[GPa]       s_yy[GPa]       s_yz[GPa]       s_zz[GPa]" > "$results_file"
 
-# Strain values to apply
-strain_values=(-0.010 -0.005 +0.000 +0.005 +0.010)
+# Create log directory if it doesn't exist
+mkdir -p log
+
+strain_values=(-0.020 -0.010
+        +0.000 +0.010 +0.020)
 
 # Create log directory if it doesn't exist
 mkdir -p log
@@ -32,13 +35,13 @@ for strain in "${strain_values[@]}"; do
     echo "lattice parameter C: ${C}"
     
     # Generate strained input file using awk
-    awk -v strain="${strain}" '
+    awk -v strain="${strain}" -v A="${A}" -v B="${B}" -v C="${C}" '
     BEGIN {in_cell=0; line=0}
     /rprim/ {in_cell=1}
     in_cell {
+        line++
         #---------------------------------------
         # Distortion is introduced in this range.
-        line++
         if (line==1) {
             $2 = sprintf("%19.15f", $2 * (1 + strain/A))
             $3 = sprintf("%19.15f", $3 * (1 + strain/B))
@@ -82,6 +85,11 @@ for strain in "${strain_values[@]}"; do
 
 done
 
+rm -f caseo_DDB caseo_DEN caseo_EBANDS.agr caseo_WFK
+rm -f caseo_EIG caseo_EIG.nc caseo_GSR.nc caseo_OUT.nc 
+
+gnuplot fit_eos_ab.gpl
+
 echo "Bulk strain calculations completed. Results saved to $results_file."
 echo ""
 # Evaluate Bulk modulus using AWK
@@ -93,7 +101,3 @@ echo "stress unless the calculation conditions are made more precise."
 echo "command: awk -f compute_Bulk_modulus_from_energy_ab.awk Bulk_results.txt"
 awk -f compute_Bulk_modulus_from_energy_ab.awk Bulk_results.txt
 
-rm -f caseo_DDB caseo_DEN caseo_EBANDS.agr caseo_WFK
-rm -f caseo_EIG caseo_EIG.nc caseo_GSR.nc caseo_OUT.nc 
-
-gnuplot fit_eos_ab.gpl
