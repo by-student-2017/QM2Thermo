@@ -26,22 +26,22 @@ END {
     printf("Ly = %.6f [Angstrom] \n", Ly[4])
 
     gamma = (epsilon1 - epsilon3)/Ly[4]
-    G1 = -(stress[epsilon1] - stress[epsilon3]) / gamma
+    G1 = (stress[epsilon1] - stress[epsilon3]) / gamma
 
     printf("Shear modulus G from energy fit (epislon = %.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", epsilon1, G1, G1 * conversion_factor)
 
     gamma = (epsilon2 - epsilon3)/Ly[4]
-    G2 = -(stress[epsilon2] - stress[epsilon3]) / gamma
+    G2 = (stress[epsilon2] - stress[epsilon3]) / gamma
 
     printf("Shear modulus G from energy fit (epislon = %.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", epsilon2, G2, G2 * conversion_factor)
 
     gamma = (epsilon4 - epsilon3)/Ly[4]
-    G4 = -(stress[epsilon4] - stress[epsilon3]) / gamma
+    G4 = (stress[epsilon4] - stress[epsilon3]) / gamma
 
     printf("Shear modulus G from energy fit (epislon = %.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", epsilon4, G4, G4 * conversion_factor)
 
     gamma = (epsilon5 - epsilon3)/Ly[4]
-    G5 = -(stress[epsilon5] - stress[epsilon3]) / gamma
+    G5 = (stress[epsilon5] - stress[epsilon3]) / gamma
     
     printf("Shear modulus G from energy fit (epislon = %.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", epsilon5, G5, G5 * conversion_factor)
     
