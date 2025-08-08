@@ -71,40 +71,40 @@ END {
     C22all = C2[2]
     C33all = C3[3]
     
-    C12all = 0.5*(C1[2]+C2[1])
-    C13all = 0.5*(C1[3]+C3[1])
-    C23all = 0.5*(C2[3]+C3[2])
+    C12all = 0.5 * (C1[2] + C2[1])
+    C13all = 0.5 * (C1[3] + C3[1])
+    C23all = 0.5 * (C2[3] + C3[2])
     
     C44all = C4[4]
     C55all = C5[5]
     C66all = C6[6]
     
-    C14all = 0.5*(C1[4]+C4[1])
-    C15all = 0.5*(C1[5]+C5[1])
-    C16all = 0.5*(C1[6]+C6[1])
+    C14all = 0.5 * (C1[4] + C4[1])
+    C15all = 0.5 * (C1[5] + C5[1])
+    C16all = 0.5 * (C1[6] + C6[1])
     
-    C24all = 0.5*(C2[4]+C4[2])
-    C25all = 0.5*(C2[5]+C5[2])
-    C26all = 0.5*(C2[6]+C6[2])
+    C24all = 0.5 * (C2[4] + C4[2])
+    C25all = 0.5 * (C2[5] + C5[2])
+    C26all = 0.5 * (C2[6] + C6[2])
     
-    C34all = 0.5*(C3[4]+C4[3])
-    C35all = 0.5*(C3[5]+C5[3])
-    C36all = 0.5*(C3[6]+C6[3])
+    C34all = 0.5 * (C3[4] + C4[3])
+    C35all = 0.5 * (C3[5] + C5[3])
+    C36all = 0.5 * (C3[6] + C6[3])
     
-    C45all = 0.5*(C4[5]+C5[4])
-    C46all = 0.5*(C4[6]+C6[4])
-    C56all = 0.5*(C5[6]+C6[5])
+    C45all = 0.5 * (C4[5] + C5[4])
+    C46all = 0.5 * (C4[6] + C6[4])
+    C56all = 0.5 * (C5[6] + C6[5])
     
     # Average moduli for cubic crystals
     
-    C11cubic = (C11all+C22all+C33all)/3.0
-    C12cubic = (C12all+C13all+C23all)/3.0
-    C44cubic = (C44all+C55all+C66all)/3.0
+    C11cubic = (C11all + C22all + C33all) / 3.0
+    C12cubic = (C12all + C13all + C23all) / 3.0
+    C44cubic = (C44all + C55all + C66all) / 3.0
     
-    bulkmodulus = (C11cubic+2*C12cubic)/3.0
+    bulkmodulus = (C11cubic + 2*C12cubic) / 3.0
     shearmodulus1 = C44cubic
-    shearmodulus2 = (C11cubic-C12cubic)/2.0
-    poissonratio = 1.0/(1.0+C11cubic/C12cubic)
+    shearmodulus2 = (C11cubic - C12cubic) / 2.0
+    poissonratio = 1.0 / (1.0 + C11cubic/C12cubic)
     
     printf("========================================= \n")
     printf("Components of the Elastic Constant Tensor \n")
