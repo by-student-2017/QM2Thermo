@@ -70,6 +70,7 @@ echo "Lx0: $Lx0, Ly0: $Ly0, Lz0: $Lz0"
 printf "%+8.4f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f\n" \
 "$strain" "$energy" "$volume" "$xx" "$xy" "$xz" "$yy" "$yz" "$zz" "$Lx0" "$Ly0" "$Lz0" >> "$results_file"
 
+Lx0=0.0; Ly0=0.0; Lz0=0.0
 
 # Loop over directions (1 to 6)
 for dir in {1..6}; do
@@ -86,37 +87,37 @@ for dir in {1..6}; do
         BEGIN {in_cell=0; line=0}
         /^CELL_PARAMETERS/ {in_cell=1; print; next}
         in_cell && NF==3 {
-            line++
-            if (line == 1){
-              if (dir == 1) {
-                $1 = sprintf("%19.15f", $1 + strain/A)
-                $2 = sprintf("%19.15f", $2 + strain/A)
-                $3 = sprintf("%19.15f", $3 + strain/A)
-              }
-              if (dir == 5) {
-                $3 = sprintf("%19.15f", $3 + strain/A)
-              }
-              if (dir == 6) {
-                $2 = sprintf("%19.15f", $2 + strain/A)
+          line++
+          for (i=1; i<=3; i++) {
+            cell[line,i] = $i * A
+          }
+          if (line==3) {
+            for (i = 1; i <= 3; i++) {
+              for (j = 1; j <= 3; j++) {
+                strain_tensor[i, j] = (i == j) ? 1.0 : 0.0
               }
             }
-            if (line == 2){
-              if (dir == 2) {
-                $2 = sprintf("%19.15f", $2 + strain/A)
-                $3 = sprintf("%19.15f", $3 + strain/A)
+            
+            if (dir == 1) { strain_tensor[1,1] += strain }  # e_xx
+            if (dir == 2) { strain_tensor[2,2] += strain }  # e_yy
+            if (dir == 3) { strain_tensor[3,3] += strain }  # e_zz
+            if (dir == 4) { strain_tensor[2,3] += strain }  # e_yz
+            if (dir == 5) { strain_tensor[1,3] += strain }  # e_xz
+            if (dir == 6) { strain_tensor[1,2] += strain }  # e_xy
+            
+            for (i = 1; i <= 3; i++) {
+              for (j = 1; j <= 3; j++) {
+                newcell[i, j] = 0.0
+                for (k = 1; k <= 3; k++) {
+                  newcell[i, j] += cell[i, k] * strain_tensor[k, j]
+                }
               }
-              if (dir == 4) {
-                $3 = sprintf("%19.15f", $3 + strain/A)
-              }
+              printf("%19.15f %19.15f %19.15f\n", newcell[i,1]/A, newcell[i,2]/A, newcell[i,3]/A)
             }
-            if (line == 3){
-              if (dir == 3) {
-                $3 = sprintf("%19.15f", $3 + strain/A)
-              }
-            }
-            print
-            if (line==3) in_cell=0
+            in_cell=0
             next
+          }
+          next
         }
         {print}
         ' "$base_input" > "$input_file"
