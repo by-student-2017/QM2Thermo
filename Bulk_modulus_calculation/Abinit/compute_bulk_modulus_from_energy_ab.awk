@@ -19,8 +19,10 @@ BEGIN {
 }
 
 END {
-    # Fit quadratic: E(epislon) = a * epsilon^2 + b * epsilon + c
-    # Use central difference: a is nearly equal to (E(+eps) + E(-eps) - 2E(0)) / (2 * eps^2)
+    # Fit quadratic: E(epsilon) = a * epsilon^2 + b * epsilon + c
+    # Use central difference: 
+    # (d(dE/d(epsilon))/d(epsilon) is nearly equal to (E(+eps) + E(-eps) - 2E(0)) / (eps^2)
+    # K = 1/V0 * (d(dE/d(epsilon))/d(epsilon) = 2a/V0
     
     eps = 0.020
     E_plus = energy[6]
@@ -28,8 +30,8 @@ END {
     E_zero = energy[4]
     V0 = volume[4]
     
-    a = (E_plus + E_minus - 2 * E_zero) / (2 * eps^2)
-    K = (2 * a) / V0
+    second_derivative = (E_plus + E_minus - 2 * E_zero) / (eps^2)
+    K = 2*second_derivative / V0
     
     printf("Bulk modulus K from energy fit: %.6f eV/Bohr^3 = %.2f GPa\n", K, K * conversion_factor)
 }
