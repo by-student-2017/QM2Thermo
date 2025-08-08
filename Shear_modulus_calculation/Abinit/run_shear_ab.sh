@@ -1,5 +1,7 @@
 #!/bin/bash
 
+dir=4 # C44: Shear modulus
+
 # Set number of threads and CPUs
 export OMP_NUM_THREADS=1
 NCPUs=$(($(nproc) / 2))
@@ -10,7 +12,7 @@ base_input="case.scf.in"
 # Output file for stress results
 results_file="shear_results.txt"
 > "$results_file"
-echo "#strain     energy[eV]      volume[bohr^3]    s_xx[GPa]       s_xy[GPa]       s_xz[GPa]       s_yy[GPa]       s_yz[GPa]       s_zz[GPa] Ly[Angstrom]" > "$results_file"
+echo "#strain     energy[eV]      volume[bohr^3]    s_xx[GPa]       s_xy[GPa]       s_xz[GPa]       s_yy[GPa]       s_yz[GPa]       s_zz[GPa]" > "$results_file"
 
 # Strain values to apply
 strain_values=(-0.010 -0.005 +0.000 +0.005 +0.010)
@@ -32,43 +34,58 @@ for strain in "${strain_values[@]}"; do
     echo "lattice parameter C: ${C}"
     
     # Generate strained input file using awk
-    awk -v strain="${strain}" -v A="$A" -v B="$B" -v C="$C" '
+    awk -v strain="${strain}" -v A="$A" -v B="$B" -v C="$C" -v dir="${dir}" '
     BEGIN {in_cell=0; line=0}
     /rprim/ {in_cell=1}
     in_cell {
         line++
         #---------------------------------------
         # Distortion is introduced in this range.
-        if (line==2) {
-            $1 = sprintf("%19.15f", $1 + (strain/B))
+        if (line==1) {
+          cell[line,1] = $2 * A
+          cell[line,2] = $3 * B
+          cell[line,3] = $4 * C
+        }
+        if (line==2 || line==3) {
+          cell[line,1] = $1 * A
+          cell[line,2] = $2 * B
+          cell[line,3] = $3 * C
         }
         #---------------------------------------
-        print
-        if (line==3) in_cell=0
+        if (line==3) {
+            for (i = 1; i <= 3; i++) {
+                for (j = 1; j <= 3; j++) {
+                    strain_tensor[i, j] = (i == j) ? 1.0 : 0.0
+                }
+            }
+            
+            if (dir == 1) { strain_tensor[1,1] += strain }  # e_xx
+            if (dir == 2) { strain_tensor[2,2] += strain }  # e_yy
+            if (dir == 3) { strain_tensor[3,3] += strain }  # e_zz
+            if (dir == 4) { strain_tensor[2,3] += strain }  # e_yz
+            if (dir == 5) { strain_tensor[1,3] += strain }  # e_xz
+            if (dir == 6) { strain_tensor[1,2] += strain }  # e_xy
+            
+            for (i = 1; i <= 3; i++) {
+                for (j = 1; j <= 3; j++) {
+                    newcell[i, j] = 0.0
+                    for (k = 1; k <= 3; k++) {
+                        newcell[i, j] += cell[i, k] * strain_tensor[k, j]
+                    }
+                }
+            }
+            printf("rprim %19.15f %19.15f %19.15f\n", newcell[1,1]/A, newcell[1,2]/B, newcell[1,3]/C)
+            printf("      %19.15f %19.15f %19.15f\n", newcell[2,1]/A, newcell[2,2]/B, newcell[2,3]/C)
+            printf("      %19.15f %19.15f %19.15f\n", newcell[3,1]/A, newcell[3,2]/B, newcell[3,3]/C)
+            
+            in_cell=0
+            next
+        }
+        #---------------------------------------
         next
     }
     {print}
     ' "$base_input" > "$input_file"
-
-    # Get Ly
-    Ly=$(awk -v A="$A" -v B="$B" -v C="$C" '
-    BEGIN {in_cell=0; line=0}
-    /rprim/ {in_cell=1}
-    in_cell {
-        line++
-        #---------------------------------------
-        # Distortion is introduced in this range.
-        if (line==2) { # a2 line
-          len = sqrt(($1*A)*($1*A) + ($2*B)*($2*B) + ($3*C)*($3*C))
-          printf("%19.15f", len)
-          exit
-        }
-        #---------------------------------------
-        if (line==3) in_cell=0
-        next
-    }
-    ' "$base_input")
-    echo "lattice parameter Ly:", ${Ly}
 
     # Run Abinit and extract stress tensor
     mpirun -np ${NCPUs} abinit "$input_file" | tee "$output_file"
@@ -91,8 +108,8 @@ for strain in "${strain_values[@]}"; do
         }' "$output_file")
 
     # Output strain, energy, volume, and stress tensor components
-    printf "%+8.4f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f\\n" \
-    "$strain" "$energy" "$volume" "$xx" "$xy" "$xz" "$yy" "$yz" "$zz" "$Ly">> "$results_file"
+    printf "%+8.4f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f \\n" \
+    "$strain" "$energy" "$volume" "$xx" "$xy" "$xz" "$yy" "$yz" "$zz" >> "$results_file"
 
 done
 
