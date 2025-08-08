@@ -205,6 +205,8 @@ If a calculation result file already exists, the corresponding calculation will 
 - [18] P. B. Allen, Phys. Rev. B 88 (2013) 144302.: https://doi.org/10.1103/PhysRevB.88.144302 (In heat conduction, it has been shown that the phonon N-process (which is wavenumber-conserving scattering and may change the direction of phonon momentum but does not have the effect of damping the overall heat flow) does not contribute to the relaxation of the heat flow. By treating only the U-process as an effective scattering mechanism, the Callaway model is physically improved and becomes applicable.)
 - [19] ElaStic: https://exciting-code.org/elastic/ and https://github.com/ponychen123/Elastic2020
 - [20] https://www.paradim.org/toolbox/theory/quantum_espresso/tutorials
+- [21] https://github.com/viniciusfacco/autoelastic
+- [22] https://dalcorso.github.io/thermo_pw/
 
 
 ## Citation
