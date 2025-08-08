@@ -43,7 +43,7 @@ for strain in "${strain_values[@]}"; do
     #  /A / {print $3; exit}
     #  /A=/ {print $2; exit}
     #' "$base_input")
-    echo "lattice parameter A:", $A
+    echo "lattice parameter A: ${A}"
 
     # Generate strained input file using awk
     awk -v strain="${strain}" -v A="${A}" '
