@@ -3,22 +3,20 @@
 # Strain values to apply
 strain_values=(-0.010 +0.010)
 
-# Base input file
-base_input="case.scf.in"
-
-# output file
-results_file="elastic_results.txt"
-> "$results_file"
-echo "#strain     energy[Ry]      volume[Bohr^3]    s_xx[Ry/Bohr^3] s_xy[Ry/Bohr^3] s_xz[Ry/Bohr^3] s_yy[Ry/Bohr^3] s_yz[Ry/Bohr^3] s_zz[Ry/Bohr^3] Lx0[Angstrom]   Ly0[Angstrom]   Lz0[Angstrom]" > "$results_file"
-
 # Set number of threads and CPUs
 export OMP_NUM_THREADS=1
 NCPUs=$(($(nproc) / 2))
 
+# Base input file
+base_input="case.scf.in"
+
+# Output file for stress results
+results_file="elastic_results.txt"
+> "$results_file"
+echo "#strain     energy[Ry]      volume[Bohr^3]    s_xx[Ry/Bohr^3] s_xy[Ry/Bohr^3] s_xz[Ry/Bohr^3] s_yy[Ry/Bohr^3] s_yz[Ry/Bohr^3] s_zz[Ry/Bohr^3] Lx0[Angstrom]   Ly0[Angstrom]   Lz0[Angstrom]" > "$results_file"
 
 # Create log directory if it doesn't exist
 mkdir -p log
-
 
 # set strain = 0 data
 dir=0
@@ -28,11 +26,16 @@ output_file="log/case.scf.dir${dir}.strain${strain}.out"
 
 cp "$base_input" "$input_file"
 
+# Run QE and extract stress tensor
 mpirun -np ${NCPUs} pw.x < "$input_file" | tee "$output_file"
 
+# Extract unit-cell volume
 volume=$(awk '/unit-cell volume/ {print $4}' "$output_file")
+
+# Extract total energy
 energy=$(awk '/! *total energy/ {print $5}' "$output_file")
 
+# Extract all 6 components of the stress tensor (Ry/Bohr^3)
 read -r xx xy xz yy yz zz <<< $(awk '
   /Computing stress/ {
   getline; getline; getline;
@@ -89,9 +92,11 @@ for dir in {1..6}; do
         /^CELL_PARAMETERS/ {in_cell=1; print; next}
         in_cell && NF==3 {
           line++
+          #---------------------------------------
           for (i=1; i<=3; i++) {
             cell[line,i] = $i * A
           }
+          #---------------------------------------
           if (line==3) {
             for (i = 1; i <= 3; i++) {
               for (j = 1; j <= 3; j++) {
@@ -118,16 +123,22 @@ for dir in {1..6}; do
             in_cell=0
             next
           }
+          #---------------------------------------
           next
         }
         {print}
         ' "$base_input" > "$input_file"
         
+        # Run QE and extract stress tensor
         mpirun -np ${NCPUs} pw.x < "$input_file" | tee "$output_file"
         
+        # Extract unit-cell volume
         volume=$(awk '/unit-cell volume/ {print $4}' "$output_file")
+        
+        # Extract total energy
         energy=$(awk '/! *total energy/ {print $5}' "$output_file")
         
+        # Extract all 6 components of the stress tensor (Ry/Bohr^3)
         read -r xx xy xz yy yz zz <<< $(awk '
             /Computing stress/ {
                 getline; getline; getline;
