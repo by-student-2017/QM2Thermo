@@ -152,7 +152,9 @@ done
 
 # Evaluate shear modulus using AWK
 echo "command: awk -f compute_elastic_constants_from_stress_ab.awk elastic_results.txt"
-awk -f compute_elastic_constants_from_stress_ab.awk elastic_results.txt
+awk -f compute_elastic_constants_from_stress_ab.awk elastic_results.txt | tee elastic.txt
 
 rm -f caseo_DDB caseo_DEN caseo_EBANDS.agr caseo_WFK
 rm -f caseo_EIG caseo_EIG.nc caseo_GSR.nc caseo_OUT.nc 
+
+python3 compliance_python3.py
