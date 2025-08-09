@@ -5,7 +5,7 @@
 # followed by the 6x6 tensor of compliance constants Sij
 # It uses the same conventions as described in:
 # Sprik, Impey and Klein PRB (1984).  
-# The units of Cij are whatever was used in log.lammps (usually GPa)
+# The units of Cij are whatever was used in elastic.txt (usually GPa)
 # The units of Sij are the inverse of that (usually 1/GPa)
 
 from numpy import zeros
