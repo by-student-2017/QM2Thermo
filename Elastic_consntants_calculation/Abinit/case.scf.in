@@ -1,0 +1,47 @@
+# Crystalline silicon : computation of the total energy
+#
+
+#Definition of the unit cell
+acell  7.30 7.30  7.30      # Abinit [Bohr] (Ref. QE [A])
+rprim  1.000000000000000   0.000000000000000   0.000000000000000  # In tutorials 1 and 2, these primitive vectors
+       0.500000000000000   0.866025403784439   0.000000000000000  # (to be scaled by acell) were 1 0 0  0 1 0  0 0 1
+       0.500000000000000   0.288675134594813   0.816496580927726  # that is, the default.
+
+#Definition of the atom types
+ntypat 1          # There is only one type of atom
+znucl 14          # The keyword "znucl" refers to the atomic number of the
+                  # possible type(s) of atom. The pseudopotential(s)
+                  # mentioned in the "files" file must correspond
+                  # to the type(s) of atom. Here, the only type is Silicon.
+pp_dirpath "./"        # This is the path to the directory were
+                       # pseudopotentials for tests are stored
+pseudos "Si.psp8"      # Name and location of the pseudopotential
+
+#Definition of the atoms
+natom 2           # There are two atoms
+typat 1 1         # They both are of type 1, that is, Silicon.
+xred              # This keyword indicate that the location of the atoms
+                  # will follow, one triplet of number for each atom
+   3/4  3/4  3/4  # Triplet giving the REDUCED coordinate of atom 1.
+   1/2  1/2  1/2  # Triplet giving the REDUCED coordinate of atom 2.
+                  # Note the use of fractions (remember the limited
+                  # interpreter capabilities of ABINIT)
+
+#Definition of the planewave basis set
+ecut  44.0        # Maximal kinetic energy cut-off, in Hartree [Ha] (Ref. 1 [Ha] = 2*[Ry])
+
+#Definition of the k-point grid
+kptopt 4          
+ngkpt 12 12 12    # This is a 10x10x10 grid based on the primitive vectors
+nshiftk 1
+shiftk 0.0 0.0 0.0
+
+occopt 7          # 7:Methfessel-Paxton (mp), 3: Fermi-Dirac, 4: Gaussian
+tsmear 0.04       # smearing width: 0.04 [Ha] = 0.02 [Ry]
+
+#Definition of the SCF procedure
+nstep 100         # Maximal number of SCF cycles
+toldfe 1.0d-4     # Will stop when, twice in a row, the difference (1.0d-4 [Ha] = 1.0d-6 [Ry] (QE))
+                  # between two consecutive evaluations of total energy
+                  # differ by less than toldfe (in Hartree)
+                  # This value is WAY TOO LARGE for most realistic studies of materials
