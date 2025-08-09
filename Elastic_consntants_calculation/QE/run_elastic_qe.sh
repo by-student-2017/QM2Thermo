@@ -161,7 +161,7 @@ for dir in {1..6}; do
 done
 
 # Evaluate Elastic constants using AWK
-echo "command: awk -f compute_elastic_constants_from_stress_qe.awk elastic_results.txt"
-awk -f compute_elastic_constants_from_stress_qe.awk elastic_results.txt
+echo "command: awk -f compute_elastic_constants_from_stress_qe.awk elastic_results.txt | tee elastic.txt"
+awk -f compute_elastic_constants_from_stress_qe.awk elastic_results.txt | tee elastic.txt
 
 python3 compliance_python3.py
