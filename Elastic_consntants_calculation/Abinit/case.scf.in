@@ -45,3 +45,8 @@ toldfe 1.0d-4     # Will stop when, twice in a row, the difference (1.0d-4 [Ha] 
                   # between two consecutive evaluations of total energy
                   # differ by less than toldfe (in Hartree)
                   # This value is WAY TOO LARGE for most realistic studies of materials
+                  
+ionmov  = 2       # Optimization of atomic positions (BFGS algorithm)
+optcell = 0       # The cell shape is fixed (acell and rprim are not changed)
+ntime   = 100     # Maximum number of steps
+tolmxf  = 5.0d-5  # Force convergence condition (the force acting on the atom converges below this value)
