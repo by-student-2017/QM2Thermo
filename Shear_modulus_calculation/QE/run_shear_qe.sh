@@ -2,6 +2,9 @@
 
 dir=4 # C44: Shear modulus
 
+# Strain values to apply
+strain_values=(-0.010 -0.005 +0.000 +0.005 +0.010)
+
 # Set number of threads and CPUs
 export OMP_NUM_THREADS=1
 NCPUs=$(($(nproc) / 2))
@@ -13,9 +16,6 @@ base_input="case.scf.in"
 results_file="shear_results.txt"
 > "$results_file"
 echo "#strain     energy[Ry]      volume[Bohr^3]    s_xx[Ry/Bohr^3] s_xy[Ry/Bohr^3] s_xz[Ry/Bohr^3] s_yy[Ry/Bohr^3] s_yz[Ry/Bohr^3] s_zz[Ry/Bohr^3]" > "$results_file"
-
-# Strain values to apply
-strain_values=(-0.010 -0.005 +0.000 +0.005 +0.010)
 
 # Create log directory if it doesn't exist
 mkdir -p log
@@ -40,10 +40,10 @@ for strain in "${strain_values[@]}"; do
     in_cell && NF==3 {
         line++
         #---------------------------------------
-        # Distortion is introduced in this range.
         for (i=1; i<=3; i++) {
             cell[line,i] = $i * A
         }
+        #---------------------------------------
         if (line==3) {
             for (i = 1; i <= 3; i++) {
                 for (j = 1; j <= 3; j++) {
@@ -75,16 +75,16 @@ for strain in "${strain_values[@]}"; do
     }
     {print}
     ' "$base_input" > "$input_file"
-
+    
     # Run QE and extract stress tensor
     mpirun -np ${NCPUs} pw.x < "$input_file" | tee "$output_file"
-
+    
     # Extract unit-cell volume
     volume=$(awk '/unit-cell volume/ {print $4}' "$output_file")
-
+    
     # Extract total energy
     energy=$(awk '/! *total energy/ {print $5}' "$output_file")
-
+    
     # Extract all 6 components of the stress tensor (Ry/Bohr^3)
     read -r xx xy xz yy yz zz <<< $(awk '
         /Computing stress/ {
@@ -95,14 +95,13 @@ for strain in "${strain_values[@]}"; do
             getline;
             print $3
         }' "$output_file")
+    
     # Output strain, energy, volume, and stress tensor components
     printf "%+8.4f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f\\n" \
     "$strain" "$energy" "$volume" "$xx" "$xy" "$xz" "$yy" "$yz" "$zz" >> "$results_file"
 
 done
 
-echo "Shear strain calculations completed. Results saved to $results_file."
-echo ""
 # Evaluate shear modulus using AWK
 echo "command: awk -f compute_shear_modulus_from_stress_qe.awk shear_results.txt"
 awk -f compute_shear_modulus_from_stress_qe.awk shear_results.txt
