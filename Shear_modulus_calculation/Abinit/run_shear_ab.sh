@@ -86,16 +86,16 @@ for strain in "${strain_values[@]}"; do
     }
     {print}
     ' "$base_input" > "$input_file"
-
+    
     # Run Abinit and extract stress tensor
     mpirun -np ${NCPUs} abinit "$input_file" | tee "$output_file"
-
+    
     # Extract unit-cell volume
     volume=$(awk '/Unit cell volume ucvol=/ {print $5}' "$output_file")
-
+    
     # Extract total energy
     energy=$(awk '/Etot       = :/ {print $7}' "$output_file")
-
+    
     # Extract all 6 components of the stress tensor (Ry/Bohr^3)
     read -r xx yz yy xz zz xy <<< $(awk '
         /-Cartesian components of stress tensor \(GPa\)/ {
@@ -106,15 +106,13 @@ for strain in "${strain_values[@]}"; do
             getline;
             printf "%s %s ", $4, $7;
         }' "$output_file")
-
+    
     # Output strain, energy, volume, and stress tensor components
     printf "%+8.4f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f \\n" \
     "$strain" "$energy" "$volume" "$xx" "$xy" "$xz" "$yy" "$yz" "$zz" >> "$results_file"
 
 done
 
-echo "Shear strain calculations completed. Results saved to $results_file."
-echo ""
 # Evaluate shear modulus using AWK
 echo "command: awk -f compute_shear_modulus_from_stress_ab.awk shear_results.txt"
 awk -f compute_shear_modulus_from_stress_ab.awk shear_results.txt
