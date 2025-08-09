@@ -151,7 +151,7 @@ for dir in {1..6}; do
 done
 
 # Evaluate shear modulus using AWK
-echo "command: awk -f compute_elastic_constants_from_stress_ab.awk elastic_results.txt"
+echo "command: awk -f compute_elastic_constants_from_stress_ab.awk elastic_results.txt | tee elastic.txt"
 awk -f compute_elastic_constants_from_stress_ab.awk elastic_results.txt | tee elastic.txt
 
 rm -f caseo_DDB caseo_DEN caseo_EBANDS.agr caseo_WFK
