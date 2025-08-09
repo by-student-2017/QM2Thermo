@@ -18,6 +18,7 @@ echo "#strain     energy[Ry]      volume[Bohr^3]    s_xx[Ry/Bohr^3] s_xy[Ry/Bohr
 # Create log directory if it doesn't exist
 mkdir -p log
 
+
 # set strain = 0 data
 dir=0
 strain="+0.000"
@@ -71,14 +72,17 @@ read Lx0 Ly0 Lz0 <<< $(awk -v A="$A" '
 ' "$base_input")
 echo "Lx0: $Lx0, Ly0: $Ly0, Lz0: $Lz0"
 
+# Output strain, energy, volume, and stress tensor components
 printf "%+8.4f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f\n" \
 "$strain" "$energy" "$volume" "$xx" "$xy" "$xz" "$yy" "$yz" "$zz" "$Lx0" "$Ly0" "$Lz0" >> "$results_file"
+
 
 Lx0=0.0; Ly0=0.0; Lz0=0.0
 
 # Loop over directions (1 to 6)
 for dir in {1..6}; do
     
+    # Loop over strain values
     for strain in "${strain_values[@]}"; do
         input_file="log/case.scf.dir${dir}.strain${strain}.in"
         output_file="log/case.scf.dir${dir}.strain${strain}.out"
@@ -148,7 +152,7 @@ for dir in {1..6}; do
                 getline;
                 print $3
             }' "$output_file")
-            
+        
         printf "%+8.4f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f\n" \
         "$strain" "$energy" "$volume" "$xx" "$xy" "$xz" "$yy" "$yz" "$zz" "$Lx0" "$Ly0" "$Lz0" >> "$results_file"
     done
