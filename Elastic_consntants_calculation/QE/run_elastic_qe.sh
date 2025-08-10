@@ -13,7 +13,7 @@ base_input="case.scf.in"
 # Output file for stress results
 results_file="elastic_results.txt"
 > "$results_file"
-echo "#strain     energy[Ry]      volume[Bohr^3]    s_xx[Ry/Bohr^3] s_xy[Ry/Bohr^3] s_xz[Ry/Bohr^3] s_yy[Ry/Bohr^3] s_yz[Ry/Bohr^3] s_zz[Ry/Bohr^3] Lx0[Angstrom]   Ly0[Angstrom]   Lz0[Angstrom]" > "$results_file"
+echo "#strain     energy[Ry]      volume[Bohr^3]    s_xx[Ry/Bohr^3] s_xy[Ry/Bohr^3] s_xz[Ry/Bohr^3] s_yy[Ry/Bohr^3] s_yz[Ry/Bohr^3] s_zz[Ry/Bohr^3]" > "$results_file"
 
 # Create log directory if it doesn't exist
 mkdir -p log
@@ -47,37 +47,9 @@ read -r xx xy xz yy yz zz <<< $(awk '
   print $3
 }' "$output_file")
 
-A=$(awk '/A / {print $3; exit} /A=/ {print $2; exit}' "$base_input")
-echo "lattice parameter A: $A"
-
-read Lx0 Ly0 Lz0 <<< $(awk -v A="$A" '
-  BEGIN {in_cell=0; line=0}
-  /^CELL_PARAMETERS/ {in_cell=1; next}
-  in_cell && NF==3 {
-    line++
-    for (i=1; i<=3; i++) {
-      cell[line,i] = $i * A
-    }
-    if (line==3) {
-    
-      # Length
-      lx = sqrt(cell[1,1]^2 + cell[1,2]^2 + cell[1,3]^2)
-      ly = sqrt(cell[2,1]^2 + cell[2,2]^2 + cell[2,3]^2)
-      lz = sqrt(cell[3,1]^2 + cell[3,2]^2 + cell[3,3]^2)
-      
-      printf "%19.15f %19.15f %19.15f", lx, ly, lz
-      exit
-    }
-  }
-' "$base_input")
-echo "Lx0: $Lx0, Ly0: $Ly0, Lz0: $Lz0"
-
 # Output strain, energy, volume, and stress tensor components
-printf "%+8.4f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f\n" \
-"$strain" "$energy" "$volume" "$xx" "$xy" "$xz" "$yy" "$yz" "$zz" "$Lx0" "$Ly0" "$Lz0" >> "$results_file"
-
-
-Lx0=0.0; Ly0=0.0; Lz0=0.0
+printf "%+8.4f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f \n" \
+"$strain" "$energy" "$volume" "$xx" "$xy" "$xz" "$yy" "$yz" "$zz" >> "$results_file"
 
 # Loop over directions (1 to 6)
 for dir in {1..6}; do
@@ -153,8 +125,8 @@ for dir in {1..6}; do
                 print $3
             }' "$output_file")
         
-        printf "%+8.4f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f\n" \
-        "$strain" "$energy" "$volume" "$xx" "$xy" "$xz" "$yy" "$yz" "$zz" "$Lx0" "$Ly0" "$Lz0" >> "$results_file"
+        printf "%+8.4f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f \n" \
+        "$strain" "$energy" "$volume" "$xx" "$xy" "$xz" "$yy" "$yz" "$zz" >> "$results_file"
     done
     
     echo "Results for dir=${dir} saved to $results_file"

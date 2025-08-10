@@ -1,5 +1,5 @@
 &CONTROL
-  calculation  = 'scf' ,
+  calculation  = 'relax' ,
   prefix  = 'POSCAR' ,
   outdir  = './work/' ,
   pseudo_dir = './' ,
@@ -12,24 +12,27 @@
   nat = 2
   ntyp = 1
   ecutwfc  =  44.0 ,
-  ecutrho  = 175.0 ,
+  ecutrho  = 440.0 ,
   occupations = 'smearing' ,
   degauss  = 0.02 ,
   smearing = 'mp',
   nosym = .true.
 /
 &ELECTRONS
-  conv_thr = 1.0e-06 ,
+  conv_thr = 1.0e-6 ,
   mixing_beta = 0.7 ,
+/
+&IONS
+  ion_dynamics = 'bfgs',
 /
 CELL_PARAMETERS {alat}
   1.000000000000000   0.000000000000000   0.000000000000000 
   0.500000000000000   0.866025403784439   0.000000000000000 
   0.500000000000000   0.288675134594813   0.816496580927726 
 ATOMIC_SPECIES
-  Si   28.08500  Si.pbe-nl-kjpaw_psl.1.0.0.UPF
+  Si   28.08500  Si.pbe-n-kjpaw_psl.1.0.0.UPF
 ATOMIC_POSITIONS {crystal}
-  Si   0.750000000000000   0.750000000000000   0.750000000000000 
-  Si   0.500000000000000   0.500000000000000   0.500000000000000 
+  Si   0.750010000000000   0.750000000000000   0.750000000000000 
+  Si   0.500000000000000   0.500010000000000   0.500000000000000 
 K_POINTS automatic
  12 12 12  0 0 0
