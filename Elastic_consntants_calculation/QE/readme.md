@@ -12,6 +12,7 @@
 1. pip install numpy
 
 # Shear modulus calculation
-1. bash ./run_elastic_qe.sh
-2. awk -f compute_elastic_constants_from_stress_qe.awk elastic_results.txt
-3. python3 compliance_python3.py
+1. bash ./run_opt.sh
+2. bash ./run_elastic_qe.sh
+3. awk -f compute_elastic_constants_from_stress_qe.awk elastic_results.txt
+4. python3 compliance_python3.py

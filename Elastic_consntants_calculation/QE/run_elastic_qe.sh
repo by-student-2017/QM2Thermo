@@ -8,7 +8,8 @@ export OMP_NUM_THREADS=1
 NCPUs=$(($(nproc) / 2))
 
 # Base input file
-base_input="case.scf.in"
+#base_input="case.scf.in" # old version
+base_input="case.opt.in"  # after "bash run_opt.sh"
 
 # Output file for stress results
 results_file="elastic_results.txt"
