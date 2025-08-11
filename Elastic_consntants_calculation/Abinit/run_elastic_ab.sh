@@ -28,6 +28,9 @@ output_file="log/case.scf.dir${dir}.strain${strain}.out"
 
 cp "$base_input" "$input_file"
 
+sed -i 's/optcell.*/optcell 0/' "$input_file"
+sed -i 's/ionmov.*/ionmov 0/' "$input_file"
+
 # Run Abinit and extract stress tensor
 mpirun -np ${NCPUs} abinit "$input_file" | tee "$output_file"
 
