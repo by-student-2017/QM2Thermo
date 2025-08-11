@@ -89,11 +89,11 @@ for strain in "${strain_values[@]}"; do
     read -r xx xy xz yy yz zz <<< $(awk '
         /Computing stress/ {
             getline; getline; getline;
-            printf "%s %s %s ", $1, $2, $3;
+            printf "%13.8f %13.8f %13.8f ", $1+0, $2+0, $3+0;
             getline;
-            printf "%s %s ", $2, $3;
+            printf "%13.8f %13.8f ", $2+0, $3+0;
             getline;
-            print $3
+            printf "%13.8f ",  $3+0
         }' "$output_file")
     
     # Output strain, energy, volume, and stress tensor components
