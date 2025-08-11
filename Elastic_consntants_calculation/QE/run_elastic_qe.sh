@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Strain values to apply
-strain_values=(-0.001 +0.001)
+strain_values=(-0.010 +0.010)
 
 # Set number of threads and CPUs
 export OMP_NUM_THREADS=1
@@ -14,7 +14,6 @@ base_input="case.opt.in"  # after "bash run_opt.sh"
 # Output file for stress results
 results_file="elastic_results.txt"
 > "$results_file"
-#echo "#strain     energy[Ry]      volume[Bohr^3]    s_xx[kbar]      s_xy[kbar]      s_xz[kbar]      s_yy[kbar]      s_yz[kbar]      s_zz[kbar]     " > "$results_file"
 echo "#strain     energy[Ry]      volume[Bohr^3]    s_xx[Ry/Bohr^3] s_xy[Ry/Bohr^3] s_xz[Ry/Bohr^3] s_yy[Ry/Bohr^3] s_yz[Ry/Bohr^3] s_zz[Ry/Bohr^3]" > "$results_file"
 
 # Create log directory if it doesn't exist
@@ -42,13 +41,13 @@ energy=$(awk '/! *total energy/ {print $5}' "$output_file")
 
 # Extract all 6 components of the stress tensor (Ry/Bohr^3)
 read -r xx xy xz yy yz zz <<< $(awk '
-  /Computing stress/ {
-  getline; getline; getline;
-  printf "%s %s %s ", $1, $2, $3;
-  getline;
-  printf "%s %s ", $2, $3;
-  getline;
-  print $3
+  /total.*stress.*Ry/ {
+  getline
+  printf "%13.8f %13.8f %13.8f ", $1+0, $2+0, $3+0;
+  getline
+  printf "%13.8f %13.8f ", $2+0, $3+0;
+  getline
+  printf "%13.8f ", $3+0;
 }' "$output_file")
 
 # Output strain, energy, volume, and stress tensor components
@@ -64,31 +63,34 @@ for dir in {1..6}; do
         A=$(awk '/A / {print $3; exit} /A=/ {print $2; exit}' "$base_input")
         echo "lattice parameter A:", $A
         
-        read -r strain <<< $(awk -v strain="${strain}" -v A="${A}" -v dir="${dir}" '
-        BEGIN {in_cell=0; line=0}
-        /^CELL_PARAMETERS/ {in_cell=1; next}
-        in_cell && NF==3 {
-          line++
-          #---------------------------------------
-          for (i=1; i<=3; i++) {
-            cell[line,i] = $i * A
-          }
-          #---------------------------------------
-          if (line==3) {
-            if (dir == 1) { strain = cell[1,1] * strain }  # e_xx
-            if (dir == 2) { strain = cell[2,2] * strain }  # e_yy
-            if (dir == 3) { strain = cell[3,3] * strain }  # e_zz
-            if (dir == 4) { strain = (cell[2,3] + cell[3,2]) * strain }  # e_yz
-            if (dir == 5) { strain = (cell[1,3] + cell[3,1]) * strain }  # e_xz
-            if (dir == 6) { strain = (cell[1,2] + cell[2,1]) * strain }  # e_xy
-            printf("%+8.4f", strain)
-            in_cell=0
-            next
-          }
-          #---------------------------------------
-          next
-        }
-        ' "$base_input")
+        #read -r strain <<< $(awk -v strain="${strain}" -v A="${A}" -v dir="${dir}" '
+        #BEGIN {in_cell=0; line=0}
+        #/^CELL_PARAMETERS/ {in_cell=1; next}
+        #in_cell && NF==3 {
+        #  line++
+        #  #---------------------------------------
+        #  for (i=1; i<=3; i++) {
+        #    cell[line,i] = $i * A
+        #  }
+        #  #---------------------------------------
+        #  if (line==3) {
+        #    lx0 = sqrt(cell[1,1]*cell[1,1] + cell[1,2]*cell[1,2] + cell[1,3]*cell[1,3])
+        #    ly0 = sqrt(cell[2,1]*cell[2,1] + cell[2,2]*cell[2,2] + cell[2,3]*cell[2,3])
+        #    lz0 = sqrt(cell[3,1]*cell[3,1] + cell[3,2]*cell[3,2] + cell[3,3]*cell[3,3])
+        #    if (dir == 1) { strain = lx0 * strain }  # e_xx
+        #    if (dir == 2) { strain = ly0 * strain }  # e_yy
+        #    if (dir == 3) { strain = lz0 * strain }  # e_zz
+        #    if (dir == 4) { strain = lz0 * strain }  # e_yz
+        #    if (dir == 5) { strain = lz0 * strain }  # e_xz
+        #    if (dir == 6) { strain = ly0 * strain }  # e_xy
+        #    printf("%+8.4f", strain)
+        #    in_cell=0
+        #    next
+        #  }
+        #  #---------------------------------------
+        #  next
+        #}
+        #' "$base_input")
         
         input_file="log/case.scf.dir${dir}.strain${strain}.in"
         output_file="log/case.scf.dir${dir}.strain${strain}.out"
@@ -145,27 +147,38 @@ for dir in {1..6}; do
         # Extract total energy
         energy=$(awk '/! *total energy/ {print $5}' "$output_file")
         
-        ## Extract all 6 components of the stress tensor (kbar)
+        # scf case
+        ## Extract all 6 components of the stress tensor (Ry/Bohr^3)
         #read -r xx xy xz yy yz zz <<< $(awk '
-        #    /Computing stress/ {
-        #        getline; getline; getline;
-        #        printf "%s %s %s ", $4, $5, $6;
-        #        getline;
-        #        printf "%s %s ", $5, $6;
-        #        getline;
-        #        print $6
+        #    /total.*stress.*Ry/ {
+        #        getline
+        #        printf "%13.8f %13.8f %13.8f ", $1+0, $2+0, $3+0;
+        #        getline
+        #        printf "%13.8f %13.8f ", $2+0, $3+0;
+        #        getline
+        #        printf "%13.8f ",  $3+0
         #    }' "$output_file")
         
-        # Extract all 6 components of the stress tensor (Ry/Bohr^3)
+        # relax case
         read -r xx xy xz yy yz zz <<< $(awk '
-            /Computing stress/ {
-                getline; getline; getline;
-                printf "%s %s %s ", $1, $2, $3;
-                getline;
-                printf "%s %s ", $2, $3;
-                getline;
-                print $3
-            }' "$output_file")
+            /total.*stress.*Ry/ { found=1; next }
+            found==1 {
+                stress[++i] = $0;
+                if (i == 3) {
+                    last1 = stress[1];
+                    last2 = stress[2];
+                    last3 = stress[3];
+                    found = 0;
+                    i = 0;
+                }
+            }
+            END {
+                split(last1, a); split(last2, b); split(last3, c);
+                printf "%13.8f %13.8f %13.8f ", a[1]+0, a[2]+0, a[3]+0;
+                printf "%13.8f %13.8f ", b[2]+0, b[3]+0;
+                printf "%13.8f", c[3]+0;
+            }
+        ' "$output_file")
         
         printf "%+8.4f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f \n" \
         "$strain" "$energy" "$volume" "$xx" "$xy" "$xz" "$yy" "$yz" "$zz" >> "$results_file"
