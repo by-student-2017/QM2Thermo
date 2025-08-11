@@ -116,9 +116,9 @@ for dir in {1..6}; do
             if (dir == 1) { strain_tensor[1,1] += strain }  # e_xx
             if (dir == 2) { strain_tensor[2,2] += strain }  # e_yy
             if (dir == 3) { strain_tensor[3,3] += strain }  # e_zz
-            if (dir == 4) { strain_tensor[2,3] += strain }  # e_yz
-            if (dir == 5) { strain_tensor[1,3] += strain }  # e_xz
-            if (dir == 6) { strain_tensor[1,2] += strain }  # e_xy
+            if (dir == 4) { strain_tensor[2,3] += strain; strain_tensor[3,2] += strain }  # e_yz
+            if (dir == 5) { strain_tensor[1,3] += strain; strain_tensor[3,1] += strain }  # e_xz
+            if (dir == 6) { strain_tensor[1,2] += strain; strain_tensor[2,1] += strain }  # e_xy
             
             for (i = 1; i <= 3; i++) {
               for (j = 1; j <= 3; j++) {
