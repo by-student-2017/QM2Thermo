@@ -100,11 +100,11 @@ for strain in "${strain_values[@]}"; do
     read -r xx yz yy xz zz xy <<< $(awk '
         /-Cartesian components of stress tensor \(GPa\)/ {
             getline;
-            printf "%s %s ", $4, $7;
+            printf "%15.8e %15.8e ", $4, $7;
             getline;
-            printf "%s %s ", $4, $7;
+            printf "%15.8e %15.8e ", $4, $7;
             getline;
-            printf "%s %s ", $4, $7;
+            printf "%15.8e %15.8e ", $4, $7;
         }' "$output_file")
     
     # Output strain, energy, volume, and stress tensor components
