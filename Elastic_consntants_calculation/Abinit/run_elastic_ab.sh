@@ -8,7 +8,8 @@ export OMP_NUM_THREADS=1
 NCPUs=$(($(nproc) / 2))
 
 # Base input file
-base_input="case.scf.in"
+#base_input="case.scf.in" # old version
+base_input="case.opt.in"  # after "bash run_opt.sh"
 
 # Output file for stress results
 results_file="elastic_results.txt"
@@ -156,5 +157,6 @@ awk -f compute_elastic_constants_from_stress_ab.awk elastic_results.txt | tee el
 
 rm -f caseo_DDB caseo_DEN caseo_EBANDS.agr caseo_WFK
 rm -f caseo_EIG caseo_EIG.nc caseo_GSR.nc caseo_OUT.nc 
+rm -f caseo_HIST.nc caseo_TIM*_DEN
 
 python3 compliance_python3.py

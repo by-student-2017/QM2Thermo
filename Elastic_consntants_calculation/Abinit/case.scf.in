@@ -18,14 +18,15 @@ pp_dirpath "./"        # This is the path to the directory were
 pseudos "Si.psp8"      # Name and location of the pseudopotential
 
 #Definition of the atoms
-natom 2           # There are two atoms
-typat 1 1         # They both are of type 1, that is, Silicon.
-xred              # This keyword indicate that the location of the atoms
-                  # will follow, one triplet of number for each atom
-   3/4  3/4  3/4  # Triplet giving the REDUCED coordinate of atom 1.
-   1/2  1/2  1/2  # Triplet giving the REDUCED coordinate of atom 2.
-                  # Note the use of fractions (remember the limited
-                  # interpreter capabilities of ABINIT)
+natom 2             # There are two atoms
+typat 1 1           # They both are of type 1, that is, Silicon.
+                    #
+                    # This keyword indicate that the location of the atoms
+                    # will follow, one triplet of number for each atom
+xred 3/4  3/4  3/4  # Triplet giving the REDUCED coordinate of atom 1.
+     1/2  1/2  1/2  # Triplet giving the REDUCED coordinate of atom 2.
+                    # Note the use of fractions (remember the limited
+                    # interpreter capabilities of ABINIT)
 
 #Definition of the planewave basis set
 ecut  44.0        # Maximal kinetic energy cut-off, in Hartree [Ha] (Ref. 1 [Ha] = 2*[Ry])
@@ -36,8 +37,8 @@ ngkpt 12 12 12    # This is a 10x10x10 grid based on the primitive vectors
 nshiftk 1
 shiftk 0.0 0.0 0.0
 
-occopt 7          # 7:Methfessel-Paxton (mp), 3: Fermi-Dirac, 4: Gaussian
-tsmear 0.04       # smearing width: 0.04 [Ha] = 0.02 [Ry]
+#occopt 7          # 7:Methfessel-Paxton (mp), 3: Fermi-Dirac, 4: Gaussian
+#tsmear 0.04       # smearing width: 0.04 [Ha] = 0.02 [Ry]
 
 #Definition of the SCF procedure
 nstep 100         # Maximal number of SCF cycles
@@ -46,7 +47,7 @@ toldfe 1.0d-4     # Will stop when, twice in a row, the difference (1.0d-4 [Ha] 
                   # differ by less than toldfe (in Hartree)
                   # This value is WAY TOO LARGE for most realistic studies of materials
                   
-ionmov  = 2       # Optimization of atomic positions (BFGS algorithm)
-optcell = 0       # The cell shape is fixed (acell and rprim are not changed)
+ionmov  = 2       # Optimization of atomic positions (BFGS algorithm) (2:BFGS, 3:FIRE, 7:CG)
+optcell = 0       # The cell shape is fixed ("acell" and "rprim" are not changed)
 ntime   = 100     # Maximum number of steps
 tolmxf  = 5.0d-5  # Force convergence condition (the force acting on the atom converges below this value)
