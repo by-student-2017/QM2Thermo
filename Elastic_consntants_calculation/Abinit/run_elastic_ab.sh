@@ -58,8 +58,8 @@ for dir in {1..6}; do
 
     # Loop over strain values
     for strain in "${strain_values[@]}"; do
-        input_file="log/case.scf.${strain}.in"
-        output_file="log/case.scf.${strain}.out"
+        input_file="log/case.scf.dir${dir}.strain${strain}.in"
+        output_file="log/case.scf.dir${dir}.strain${strain}.out"
         
         # Get A in &SYSTEM section
         A=$(awk '/acell / {print $2; exit}' "$base_input")
