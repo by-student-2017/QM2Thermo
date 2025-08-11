@@ -6,7 +6,8 @@ BEGIN {
     # 1 [bohr] = 0.529177210903e-10 [m]
     # 1 [bohr^3] = 1.481847e-31 [m^3]
     # 1 [Ry/Bohr^3] = 2.179872361e-18 / 1.481847e-31 = 1.47105078e13 [Pa] = 1.47105078e4 [GPa]
-    #conversion_factor = 14710.5  # Ry/Bohr^3 -> GPa
+    # 1 [kbar] = 0.1 [GPa]
+    #conversion_factor = 0.1 # kbar -> GPa
     conversion_factor = 14710.5  # Ry/Bohr^3 -> GPa
 }
 {
@@ -40,21 +41,21 @@ END {
       
       #printf("\n strain: %15.8f \n", strain[3+2*(i-1)])
       # minues
-      C1neg = -(stress_xx[3+2*(i-1)] - stress_xx[2]) / (strain[3+2*(i-1)]) * conversion_factor # d1
-      C2neg = -(stress_yy[3+2*(i-1)] - stress_yy[2]) / (strain[3+2*(i-1)]) * conversion_factor # d2
-      C3neg = -(stress_zz[3+2*(i-1)] - stress_zz[2]) / (strain[3+2*(i-1)]) * conversion_factor # d3
-      C4neg = -(stress_yz[3+2*(i-1)] - stress_yz[2]) / (strain[3+2*(i-1)]) * conversion_factor # d4
-      C5neg = -(stress_xz[3+2*(i-1)] - stress_xz[2]) / (strain[3+2*(i-1)]) * conversion_factor # d5
-      C6neg = -(stress_xy[3+2*(i-1)] - stress_xy[2]) / (strain[3+2*(i-1)]) * conversion_factor # d6
+      C1neg = -(stress_xx[3+2*(i-1)] - stress_xx[2]) / (strain[3+2*(i-1)]) * conversion_factor # d1, xx
+      C2neg = -(stress_yy[3+2*(i-1)] - stress_yy[2]) / (strain[3+2*(i-1)]) * conversion_factor # d2, yy
+      C3neg = -(stress_zz[3+2*(i-1)] - stress_zz[2]) / (strain[3+2*(i-1)]) * conversion_factor # d3, zz
+      C4neg = -(stress_yz[3+2*(i-1)] - stress_yz[2]) / (strain[3+2*(i-1)]) * conversion_factor # d4, yz
+      C5neg = -(stress_xz[3+2*(i-1)] - stress_xz[2]) / (strain[3+2*(i-1)]) * conversion_factor # d5, xz
+      C6neg = -(stress_xy[3+2*(i-1)] - stress_xy[2]) / (strain[3+2*(i-1)]) * conversion_factor # d6, xy
       
       #printf("\n strain: %15.8f \n", strain[4+2*(i-1)])
       # plus
-      C1pos = -(stress_xx[4+2*(i-1)] - stress_xx[2]) / (strain[4+2*(i-1)]) * conversion_factor # d1
-      C2pos = -(stress_yy[4+2*(i-1)] - stress_yy[2]) / (strain[4+2*(i-1)]) * conversion_factor # d2
-      C3pos = -(stress_zz[4+2*(i-1)] - stress_zz[2]) / (strain[4+2*(i-1)]) * conversion_factor # d3
-      C4pos = -(stress_yz[4+2*(i-1)] - stress_yz[2]) / (strain[4+2*(i-1)]) * conversion_factor # d4
-      C5pos = -(stress_xz[4+2*(i-1)] - stress_xz[2]) / (strain[4+2*(i-1)]) * conversion_factor # d5
-      C6pos = -(stress_xy[4+2*(i-1)] - stress_xy[2]) / (strain[4+2*(i-1)]) * conversion_factor # d6
+      C1pos = -(stress_xx[4+2*(i-1)] - stress_xx[2]) / (strain[4+2*(i-1)]) * conversion_factor # d1, xx
+      C2pos = -(stress_yy[4+2*(i-1)] - stress_yy[2]) / (strain[4+2*(i-1)]) * conversion_factor # d2, yy
+      C3pos = -(stress_zz[4+2*(i-1)] - stress_zz[2]) / (strain[4+2*(i-1)]) * conversion_factor # d3, zz
+      C4pos = -(stress_yz[4+2*(i-1)] - stress_yz[2]) / (strain[4+2*(i-1)]) * conversion_factor # d4, yz
+      C5pos = -(stress_xz[4+2*(i-1)] - stress_xz[2]) / (strain[4+2*(i-1)]) * conversion_factor # d5, xz
+      C6pos = -(stress_xy[4+2*(i-1)] - stress_xy[2]) / (strain[4+2*(i-1)]) * conversion_factor # d6, xy
       
       # dir = 1, C1${dir}...C6${dir}
       C1[i] = 0.5 * (C1neg + C1pos)

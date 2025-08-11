@@ -14,6 +14,7 @@ base_input="case.opt.in"  # after "bash run_opt.sh"
 # Output file for stress results
 results_file="elastic_results.txt"
 > "$results_file"
+#echo "#strain     energy[Ry]      volume[Bohr^3]    s_xx[kbar]      s_xy[kbar]      s_xz[kbar]      s_yy[kbar]      s_yz[kbar]      s_zz[kbar]     " > "$results_file"
 echo "#strain     energy[Ry]      volume[Bohr^3]    s_xx[Ry/Bohr^3] s_xy[Ry/Bohr^3] s_xz[Ry/Bohr^3] s_yy[Ry/Bohr^3] s_yz[Ry/Bohr^3] s_zz[Ry/Bohr^3]" > "$results_file"
 
 # Create log directory if it doesn't exist
@@ -143,6 +144,17 @@ for dir in {1..6}; do
         
         # Extract total energy
         energy=$(awk '/! *total energy/ {print $5}' "$output_file")
+        
+        ## Extract all 6 components of the stress tensor (kbar)
+        #read -r xx xy xz yy yz zz <<< $(awk '
+        #    /Computing stress/ {
+        #        getline; getline; getline;
+        #        printf "%s %s %s ", $4, $5, $6;
+        #        getline;
+        #        printf "%s %s ", $5, $6;
+        #        getline;
+        #        print $6
+        #    }' "$output_file")
         
         # Extract all 6 components of the stress tensor (Ry/Bohr^3)
         read -r xx xy xz yy yz zz <<< $(awk '
