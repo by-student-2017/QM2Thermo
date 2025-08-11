@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Strain values to apply
-strain_values=(-0.001 +0.001)
+strain_values=(-0.010 +0.010)
 
 # Set number of threads and CPUs
 export OMP_NUM_THREADS=1
@@ -70,39 +70,42 @@ for dir in {1..6}; do
         echo "lattice parameter B: ${B}"
         echo "lattice parameter C: ${C}"
         
-        read -r strain <<< $(awk -v strain="${strain}" -v A="$A" -v B="$B" -v C="$C" -v dir="${dir}" '
-        BEGIN {in_cell=0; line=0}
-        /rprim/ {in_cell=1}
-        in_cell {
-            line++
-            #---------------------------------------
-            # Distortion is introduced in this range.
-            if (line==1) {
-              cell[line,1] = $2 * A
-              cell[line,2] = $3 * B
-              cell[line,3] = $4 * C
-            }
-            if (line==2 || line==3) {
-              cell[line,1] = $1 * A
-              cell[line,2] = $2 * B
-              cell[line,3] = $3 * C
-            }
-            #---------------------------------------
-            if (line==3) {
-              if (dir == 1) { strain = cell[1,1] * strain }  # e_xx
-              if (dir == 2) { strain = cell[2,2] * strain }  # e_yy
-              if (dir == 3) { strain = cell[3,3] * strain }  # e_zz
-              if (dir == 4) { strain = (cell[2,3] + cell[3,2]) * strain }  # e_yz
-              if (dir == 5) { strain = (cell[1,3] + cell[3,1]) * strain }  # e_xz
-              if (dir == 6) { strain = (cell[1,2] + cell[2,1]) * strain }  # e_xy
-              printf("%+8.4f", strain)
-              in_cell=0
-              next
-            }
-            #---------------------------------------
-            next
-        }
-        ' "$base_input")
+        #read -r strain <<< $(awk -v strain="${strain}" -v A="$A" -v B="$B" -v C="$C" -v dir="${dir}" '
+        #BEGIN {in_cell=0; line=0}
+        #/rprim/ {in_cell=1}
+        #in_cell {
+        #    line++
+        #    #---------------------------------------
+        #    # Distortion is introduced in this range.
+        #    if (line==1) {
+        #      cell[line,1] = $2 * A
+        #      cell[line,2] = $3 * B
+        #      cell[line,3] = $4 * C
+        #    }
+        #    if (line==2 || line==3) {
+        #      cell[line,1] = $1 * A
+        #      cell[line,2] = $2 * B
+        #      cell[line,3] = $3 * C
+        #    }
+        #    #---------------------------------------
+        #    if (line==3) {
+        #    lx0 = sqrt(cell[1,1]*cell[1,1] + cell[1,2]*cell[1,2] + cell[1,3]*cell[1,3])
+        #    ly0 = sqrt(cell[2,1]*cell[2,1] + cell[2,2]*cell[2,2] + cell[2,3]*cell[2,3])
+        #    lz0 = sqrt(cell[3,1]*cell[3,1] + cell[3,2]*cell[3,2] + cell[3,3]*cell[3,3])
+        #    if (dir == 1) { strain = lx0 * strain }  # e_xx
+        #    if (dir == 2) { strain = ly0 * strain }  # e_yy
+        #    if (dir == 3) { strain = lz0 * strain }  # e_zz
+        #    if (dir == 4) { strain = lz0 * strain }  # e_yz
+        #    if (dir == 5) { strain = lz0 * strain }  # e_xz
+        #    if (dir == 6) { strain = ly0 * strain }  # e_xy
+        #      printf("%+8.4f", strain)
+        #      in_cell=0
+        #      next
+        #    }
+        #    #---------------------------------------
+        #    next
+        #}
+        #' "$base_input")
         
         input_file="log/case.scf.dir${dir}.strain${strain}.in"
         output_file="log/case.scf.dir${dir}.strain${strain}.out"
