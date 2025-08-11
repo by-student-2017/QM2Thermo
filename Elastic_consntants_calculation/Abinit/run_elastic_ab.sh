@@ -44,15 +44,15 @@ energy=$(awk '/Etot       = :/ {print $7}' "$output_file")
 read -r xx yz yy xz zz xy <<< $(awk '
     /-Cartesian components of stress tensor \(GPa\)/ {
         getline;
-        printf "%s %s ", $4, $7;
+        printf "%15.8e %15.8e ", $4, $7;
         getline;
-        printf "%s %s ", $4, $7;
+        printf "%15.8e %15.8e ", $4, $7;
         getline;
-        printf "%s %s ", $4, $7;
+        printf "%15.8e %15.8e ", $4, $7;
     }' "$output_file")
 
 # Output strain, energy, volume, and stress tensor components
-printf "%+8.4f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f \\n" \
+printf "%+8.4f %15.8f %15.8f %15.8e %15.8e %15.8e %15.8e %15.8e %15.8e \\n" \
 "$strain" "$energy" "$volume" "$xx" "$xy" "$xz" "$yy" "$yz" "$zz" >> "$results_file"
 
 
@@ -177,15 +177,15 @@ for dir in {1..6}; do
         read -r xx yz yy xz zz xy <<< $(awk '
             /-Cartesian components of stress tensor \(GPa\)/ {
                 getline;
-                printf "%s %s ", $4, $7;
+                printf "%15.8e %15.8e ", $4, $7;
                 getline;
-                printf "%s %s ", $4, $7;
+                printf "%15.8e %15.8e ", $4, $7;
                 getline;
-                printf "%s %s ", $4, $7;
+                printf "%15.8e %15.8e ", $4, $7;
             }' "$output_file")
         
         # Output strain, energy, volume, and stress tensor components
-        printf "%+8.4f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f %15.8f \\n" \
+        printf "%+8.4f %15.8f %15.8f %15.8e %15.8e %15.8e %15.8e %15.8e %15.8e \\n" \
         "$strain" "$energy" "$volume" "$xx" "$xy" "$xz" "$yy" "$yz" "$zz" >> "$results_file"
     done
     
