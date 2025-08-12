@@ -8,36 +8,43 @@ BEGIN {
     # 1 [Ry/Bohr^3] = 2.179872361e-18 / 1.481847e-31 = 1.47105078e13 [Pa] = 1.47105078e4 [GPa]
     #conversion_factor = 14710.5  # Ry/Bohr^3 -> GPa
     conversion_factor = 14710.5  # Ry/Bohr^3 -> GPa
-
-    epsilon0 =  ""
-    epsilon1 = -0.010
-    epsilon2 = -0.005
-    epsilon3 =  0.0
-    epsilon4 =  0.005
-    epsilon5 =  0.010
 }
 {
-    print "Read:", $1, $8
-    stress_yz[$1 + 0] = $8
+    print "Read:", $1, $2, $3, $4, $5, $6, $7, $8, $9
+    strain[NR]    = $1 + 0
+    energy[NR]    = $2 + 0
+    volume[NR]    = $3 + 0
+    stress_xx[NR] = $4 + 0
+    stress_xy[NR] = $5 + 0
+    stress_xz[NR] = $6 + 0
+    stress_yy[NR] = $7 + 0
+    stress_yz[NR] = $8 + 0
+    stress_zz[NR] = $9 + 0
 }
 END {
-
-    G1 = -(stress_yz[epsilon1] - stress_yz[epsilon3]) / (epsilon1 - epsilon3)
-
-    printf("Shear modulus G from energy fit (epislon = %.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", epsilon1, G1, G1 * conversion_factor)
-
-    G2 = -(stress_yz[epsilon2] - stress_yz[epsilon3]) / (epsilon2 - epsilon3)
-
-    printf("Shear modulus G from energy fit (epislon = %.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", epsilon2, G2, G2 * conversion_factor)
-
-    G4 = -(stress_yz[epsilon4] - stress_yz[epsilon3]) / (epsilon4 - epsilon3)
-
-    printf("Shear modulus G from energy fit (epislon = %.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", epsilon4, G4, G4 * conversion_factor)
-
-    G5 = -(stress_yz[epsilon5] - stress_yz[epsilon3]) / (epsilon5 - epsilon3)
     
-    printf("Shear modulus G from energy fit (epislon = %.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", epsilon5, G5, G5 * conversion_factor)
+    # minus
+    G1 = -(stress_yz[3] - stress_yz[2]) / (2.0*(strain[3] - strain[2]))
+    #printf("Shear modulus G from energy fit (epislon = %.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", strain[3], G1, G1 * conversion_factor)
     
-    G = (G1 + G2 + G4 + G5)/4
+    # plus
+    G2 = -(stress_yz[4] - stress_yz[2]) / (2.0*(strain[4] - strain[2]))
+    #printf("Shear modulus G from energy fit (epislon = %.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", strain[4], G2, G2 * conversion_factor)
+    
+    # minus
+    G4 = -(stress_yz[5] - stress_yz[2]) / (2.0*(strain[5] - strain[2]))
+    #printf("Shear modulus G from energy fit (epislon = %.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", strain[5], G4, G4 * conversion_factor)
+    
+    # plus
+    G5 = -(stress_yz[6] - stress_yz[2]) / (2.0*(strain[6] - strain[2]))
+    #printf("Shear modulus G from energy fit (epislon = %.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", strain[6], G5, G5 * conversion_factor)
+    
+    G005 = 0.5*(G1 + G2)
+    printf("Shear modulus G from energy fit (epislon = %.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", strain[4], G005, G005 * conversion_factor)
+    
+    G010 = 0.5*(G4 + G5)
+    printf("Shear modulus G from energy fit (epislon = %.6f): %.6f Ry/Bohr^3 = %.2f GPa\n", strain[6], G010, G010 * conversion_factor)
+    
+    G = (G005 + G010)/2
     printf("Average Shear modulus G from energy fit: %.6f Ry/Bohr^3 = %.2f GPa\n", G, G * conversion_factor)
 }
