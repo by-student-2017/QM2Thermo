@@ -12,7 +12,7 @@
   nat = 2
   ntyp = 1
   ecutwfc  =  44.0 ,
-  ecutrho  = 440.0 ,
+  ecutrho  = 175.0 ,
   occupations = 'smearing' ,
   degauss  = 0.02 ,
   smearing = 'mp',
