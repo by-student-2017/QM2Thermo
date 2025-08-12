@@ -20,7 +20,7 @@
 # Note
 - For conventional cells, values close to those of Materials Projects were obtained. However, for primitive cells, large values were obtained for C14, C56, etc.
 - It is better to use relax to optimize the atomic positions. For structures other than the reference structure, calculations will be performed with the settings unchanged, so you can specify relax in case.scf.in or case.opt.in.
-- Si Data (elastic.txt) in this code. (Conventional cell calculation. see case.opt.in)
+- Si Data (elastic.txt) in this code. (Conventional cell calculation. see case.opt.in) (calculation time: 1 h)
 ```
 ========================================= 
 Components of the Elastic Constant Tensor 
@@ -54,3 +54,8 @@ Shear Modulus 1 =     74.81760300 [GPa]
 Shear Modulus 2 =     48.62433187 [GPa] 
 Poisson's ratio =      0.26931174 [GPa] 
 ```
+
+## Test
+- OS: Ubuntu 22.04 LTS (WSL2, Windows 11)
+- GPU: 12th Gen Intel(R) Core(TM) i7-12700
+- Memory: 32 GB
