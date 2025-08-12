@@ -13,6 +13,8 @@ L_bound       [Angstrom]:  0.0       ! Boundary scattering. (works: phononDOS = 
 b_para   [dimensionless]:  0.0       ! Umklapp (Klemens-Callaway type model) scat. (Ref. 1 - 2) (works: phononDOS = T)
 C_phel      [s^-1*eV^-2]:  0.0       ! Phonon-Electron scattering coefficient. (Ref. 2.31e10) (works: a2Fdos = F)
 B_pdef      [s^-1*eV^-4]:  0.0       ! Point defect scattering coefficient. (Ref. 5.33e15)
+Melting point, Tm    [K]:  0.0       ! if Tm >= 700.0, calculate grain size (dmin). (Recommend: 1800 K >= Tm => 700 K)
+Recovery Ratio, Rratio  :  0.0       ! if Tm >= 700.0 & L_band <= 0.0, L_bound = dmin * Rratio(if <= 0.0, Rratio = 1.5)
 !---EOS data to kappa---:------------!--optional-----------------------------------------------------------------------
 Bulk modulus, B    [GPa]: 100.0      ! For example, use Bulk_modulus_from_EOS and get Bulk modulus.
 B' (=dB/dP)             :  0.0       ! Derivative of bulk modulus with respect to pressure. You can get it from EOS.

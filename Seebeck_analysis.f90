@@ -273,6 +273,9 @@ MODULE seebeck_data
   REAL(KIND=8) :: b_para                          ! Umklapp (Klemens-Callaway type model) scattering (Ref. 1 - 2) (works: phononDOS = T)
   REAL(KIND=8) :: C_phel                          ! Phonon-Electron scattering coefficient (works: a2Fdos = F): (Ref. 2.31e10) [s^-1*eV^-2]
   REAL(KIND=8) :: B_pdef                          ! Point defect scattering coefficient: (Ref. 5.33e15) [s^-1*eV^-4]
+  REAL(KIND=8) :: Tm                              ! Melting point [K]
+  REAL(KIND=8) :: dmin                            ! Minimum Particle Size [nm]
+  REAL(KIND=8) :: Rratio                          ! Recovery Ratio
   REAL(KIND=8) :: Bulk_modulus                    ! Bulk_modulus [GPa] (1 [eV/A^3] = 160.2 [GPa]), B = K
   REAL(KIND=8) :: dB_per_dP                       ! dB/dP from EOS
   REAL(KIND=8) :: dB_per_dV                       ! dB/dV
@@ -1753,6 +1756,8 @@ PROGRAM seebeck_analysis
   READ(90, '(25X, E12.6)') b_para                 ! Umklapp (Klemens-Callaway type model) scattering. (Ref. 1 - 2) (works: phononDOS = T)
   READ(90, '(25X, E12.6)') C_phel                 ! Phonon-Electron scattering coefficient. (works: a2Fdos = F): (Ref. 2.31e10)
   READ(90, '(25X, E12.6)') B_pdef                 ! Point defect scattering coefficient. (Ref. 5.33e15)
+  READ(90, '(25X, E12.6)') Tm                     ! Melting point [K]
+  READ(90, '(25X, E12.6)') Rratio                 ! Recovery Ratio
   READ(90, *)
   READ(90, '(25X, E12.6)') Bulk_modulus           ! Bulk_modulus [GPa] (1 [eV/A^3] = 160.2 [GPa]), B = K
   READ(90, '(25X, E12.6)') dB_per_dP              ! dB/dP from EOS
@@ -1801,7 +1806,9 @@ PROGRAM seebeck_analysis
   WRITE(*,*) "tau, a2Fdos             :", use_a2Fdos
   WRITE(*,*) "tau, phononDOS          :", use_phononDOS
   IF (use_a2Fdos .and. use_phononDOS) THEN
+    WRITE(*,*) "------------------------"
     WRITE(*,*) "a2F.dos takes precedence over phononDOS.dat in calculating relaxation times."
+    WRITE(*,*) "------------------------"
   END IF
   WRITE(*,*) "N_atom                  :", N_atom
   WRITE(*,*) "tau, filter             :", use_selection_filter
@@ -1809,6 +1816,35 @@ PROGRAM seebeck_analysis
   WRITE(*,*) "b_para                  :", b_para
   WRITE(*,*) "C_phel                  :", C_phel
   WRITE(*,*) "B_pdef                  :", B_pdef
+  WRITE(*,*) "Melting point, Tm    [K]:", Tm
+  IF (Tm >= 700.0) THEN
+    dmin = (25 - 7.5) / (1000 - 1750) * (Tm - 1000) + 25  ! [nm]
+    WRITE(*,*) "------------------------"
+    WRITE(*,*) "(Automatically setting) Grain size [nm]:", dmin, "+/- 5 [nm]"
+    WRITE(*,*) 
+    WRITE(*,*) "If you expand in the future: Minimum distance between dislocations Lc (grain size)"
+    WRITE(*,*) "Lc = 3*G*b/(PI*(1-v)*h) [nm] (Theory) -> Lc = 2.5*(Lc - 3) + 5 [nm] (Exp.)"
+    WRITE(*,*) "where G is the shear modulus, b is the Burgers vector, "
+    WRITE(*,*) "  v is the Poisson's ratio, and h is the hardness of the alloy."
+    WRITE(*,*) "  FCC: b = (a/2)*sart(2), BCC: b = (a/2)*sqrt(3), HCP & SC: b = a, a = lattice constant."
+    WRITE(*,*) "The definition and evaluation of lattice constants and Burgers vectors are "
+    WRITE(*,*) "always performed on a unit cell basis for conventional cells."
+    WRITE(*,*) "------------------------"
+  END IF
+  WRITE(*,*) "Recovery Ratio, Rratio  :", Rratio
+  IF (Rratio <= 0.0) THEN
+    Rratio = 1.5
+    WRITE(*,*) "------------------------"
+    WRITE(*,*) "(Automatically setting) Recovery Ratio:", Rratio
+    IF (Tm >= 700.0 .and. L_bound <= 0.0) THEN
+      WRITE(*,*) "(Automatically setting) For Boundary scattering, L_bound [Angstrom]:", dmin * Rratio * 1.0D10
+      WRITE(*,*) 
+      WRITE(*,*) "If you expand in the future: Grain Growth Model"
+      WRITE(*,*) "d^n - d0^n = k*t, where n is 2 to 4, k = k0*exp(-Q/RT), t is time [h]"
+      WRITE(*,*) "  Q is the activation energy (determined by DSC)"
+    END IF
+    WRITE(*,*) "------------------------"
+  END IF
   WRITE(*,*) "----- Thermal conductivity from equation of state: optional -----"
   WRITE(*,*) "Bulk modulus, B    [GPa]:", Bulk_modulus
   WRITE(*,*) "B' (=dB/dP)             :", dB_per_dP
@@ -1833,8 +1869,10 @@ PROGRAM seebeck_analysis
   use_tau0_phonon_flag = .TRUE.
   IF (tau0_phonon <= 0.0) THEN
     tau0_phonon = tau0 * 100.0D0 * 100.0D0
+    WRITE(*,*) "------------------------"
     WRITE(*,*) "(Automatically setting) Base relaxation time (phonon) [s]:"
     WRITE(*,*) "  Base relaxation time (electron) [s] * 100:", tau0_phonon
+    WRITE(*,*) "------------------------"
     use_tau0_phonon_flag = .FALSE.
   END IF
   WRITE(*,*) "A_U (Umklapp process)   :", A_U
