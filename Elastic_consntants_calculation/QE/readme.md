@@ -17,6 +17,12 @@
 3. awk -f compute_elastic_constants_from_stress_qe.awk elastic_results.txt
 4. python3 compliance_python3.py
 
+# If there is not enough memory
+- Reduce the number of parallel processes as follows (in this example it is 1, but if you have enough memory you can use 2 or 4):
+```
+NCPUs=1
+```
+
 # Note
 - For conventional cells, values close to those of Materials Projects were obtained. However, for primitive cells, large values were obtained for C14, C56, etc.
 - It is better to use relax to optimize the atomic positions. For structures other than the reference structure, calculations will be performed with the settings unchanged, so you can specify relax in case.scf.in or case.opt.in.
