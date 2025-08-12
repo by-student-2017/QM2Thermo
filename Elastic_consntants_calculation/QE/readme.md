@@ -28,37 +28,37 @@ NCPUs=1
 - It is better to use relax to optimize the atomic positions. For structures other than the reference structure, calculations will be performed with the settings unchanged, so you can specify relax in case.scf.in or case.opt.in.
 - Si Data (elastic.txt) in this code. (Conventional cell calculation. see case.opt.in) (calculation time: 1 h)
 ```
-========================================= 
-Components of the Elastic Constant Tensor 
-========================================= 
-Elastic Constant C11all =    153.98951400 [GPa] 
-Elastic Constant C22all =    154.04100075 [GPa] 
-Elastic Constant C33all =    154.01157975 [GPa] 
-Elastic Constant C12all =     56.76046425 [GPa] 
-Elastic Constant C13all =     56.74943138 [GPa] 
-Elastic Constant C23all =     56.78620763 [GPa] 
-Elastic Constant C44all =     74.82128062 [GPa] 
-Elastic Constant C55all =     74.82128062 [GPa] 
-Elastic Constant C66all =     74.81024775 [GPa] 
-Elastic Constant C14all =     -0.00183881 [GPa] 
-Elastic Constant C15all =     -0.00183881 [GPa] 
-Elastic Constant C16all =      0.00000000 [GPa] 
-Elastic Constant C24all =      0.00000000 [GPa] 
-Elastic Constant C25all =      0.00551644 [GPa] 
-Elastic Constant C26all =     -0.00183881 [GPa] 
-Elastic Constant C34all =      0.00367762 [GPa] 
-Elastic Constant C35all =      0.00183881 [GPa] 
-Elastic Constant C36all =     -0.00551644 [GPa] 
-Elastic Constant C45all =     -0.00551644 [GPa] 
-Elastic Constant C46all =     -0.00183881 [GPa] 
-Elastic Constant C56all =     -0.00367762 [GPa] 
-========================================= 
-Average properties for a cubic crystal    
-========================================= 
-Bulk Modulus    =     89.18158900 [GPa] 
-Shear Modulus 1 =     74.81760300 [GPa] 
-Shear Modulus 2 =     48.62433187 [GPa] 
-Poisson's ratio =      0.26931174 [GPa] 
+=========================================
+Components of the Elastic Constant Tensor
+=========================================
+Elastic Constant C11all =    153.93802725 [GPa]
+Elastic Constant C22all =    153.98215875 [GPa]
+Elastic Constant C33all =    153.96744825 [GPa]
+Elastic Constant C12all =     56.77149712 [GPa]
+Elastic Constant C13all =     56.76414187 [GPa]
+Elastic Constant C23all =     56.79724050 [GPa]
+Elastic Constant C44all =     74.80657013 [GPa]
+Elastic Constant C55all =     74.81024775 [GPa]
+Elastic Constant C66all =     74.79185963 [GPa]
+Elastic Constant C14all =     -0.00183881 [GPa]
+Elastic Constant C15all =      0.00183881 [GPa]
+Elastic Constant C16all =      0.00000000 [GPa]
+Elastic Constant C24all =      0.00000000 [GPa]
+Elastic Constant C25all =      0.00551644 [GPa]
+Elastic Constant C26all =      0.00367762 [GPa]
+Elastic Constant C34all =      0.00367762 [GPa]
+Elastic Constant C35all =      0.00183881 [GPa]
+Elastic Constant C36all =     -0.00367762 [GPa]
+Elastic Constant C45all =     -0.00551644 [GPa]
+Elastic Constant C46all =     -0.00183881 [GPa]
+Elastic Constant C56all =     -0.00367762 [GPa]
+=========================================
+Average properties for a cubic crystal
+=========================================
+Bulk Modulus    =     89.17259925 [GPa]
+Shear Modulus 1 =     74.80289250 [GPa]
+Shear Modulus 2 =     48.59245913 [GPa]
+Poisson's ratio =      0.26942005 [GPa]
 ```
 
 ## Test
