@@ -1821,6 +1821,8 @@ PROGRAM seebeck_analysis
     dmin = (25 - 7.5) / (1000 - 1750) * (Tm - 1000) + 25  ! [nm]
     WRITE(*,*) "------------------------"
     WRITE(*,*) "(Automatically setting) Grain size [nm]:", dmin, "+/- 5 [nm]"
+    WRITE(*,*) "  This value is based on fitting results obtained from data reported in "
+    WRITE(*,*) "  research papers on mechanical alloying (MA) systems."
     WRITE(*,*) 
     WRITE(*,*) "If you expand in the future: Minimum distance between dislocations Lc (grain size)"
     WRITE(*,*) "Lc = 3*G*b/(PI*(1-v)*h) [nm] (Theory) -> Lc = 2.5*(Lc - 3) + 5 [nm] (Exp.)"
