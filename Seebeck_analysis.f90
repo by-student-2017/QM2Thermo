@@ -1820,7 +1820,7 @@ PROGRAM seebeck_analysis
   IF (Tm >= 700.0) THEN
     dmin = (25 - 7.5) / (1000 - 1750) * (Tm - 1000) + 25  ! [nm]
     WRITE(*,*) "------------------------"
-    WRITE(*,*) "(Automatically setting) Grain size [nm]:", dmin, "+/- 5 [nm]"
+    WRITE(*,*) "(Automatically setting) Grain size [nm]:", dmin, "+/- 5 [nm] (Note: 1 [nm] = 10 [Angstrom])"
     WRITE(*,*) "  This value is based on fitting results obtained from data reported in "
     WRITE(*,*) "  research papers on mechanical alloying (MA) systems."
     WRITE(*,*) 
@@ -1834,17 +1834,18 @@ PROGRAM seebeck_analysis
     WRITE(*,*) "------------------------"
   END IF
   WRITE(*,*) "Recovery Ratio, Rratio  :", Rratio
-  IF (Rratio <= 0.0) THEN
-    Rratio = 1.5
+
+  IF (Tm >= 700.0 .and. L_bound <= 0.0) THEN
     WRITE(*,*) "------------------------"
-    WRITE(*,*) "(Automatically setting) Recovery Ratio:", Rratio
-    IF (Tm >= 700.0 .and. L_bound <= 0.0) THEN
-      WRITE(*,*) "(Automatically setting) For Boundary scattering, L_bound [Angstrom]:", dmin * Rratio * 1.0D10
-      WRITE(*,*) 
-      WRITE(*,*) "If you expand in the future: Grain Growth Model"
-      WRITE(*,*) "d^n - d0^n = k*t, where n is 2 to 4, k = k0*exp(-Q/RT), t is time [h]"
-      WRITE(*,*) "  Q is the activation energy (determined by DSC)"
+    IF (Rratio <= 0.0) THEN
+      Rratio = 1.5
+      WRITE(*,*) "(Automatically setting) Recovery Ratio:", Rratio
     END IF
+    WRITE(*,*) "(Automatically setting) For Boundary scattering, L_bound [Angstrom]:", dmin * Rratio * 10.0
+    WRITE(*,*) 
+    WRITE(*,*) "If you expand in the future: Grain Growth Model"
+    WRITE(*,*) "d^n - d0^n = k*t, where n is 2 to 4, k = k0*exp(-Q/RT), t is time [h]"
+    WRITE(*,*) "  Q is the activation energy (determined by DSC)"
     WRITE(*,*) "------------------------"
   END IF
   WRITE(*,*) "----- Thermal conductivity from equation of state: optional -----"
