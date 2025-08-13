@@ -203,9 +203,9 @@ If a calculation result file already exists, the corresponding calculation will 
 - [16] PINK: Physical-Informed Machine Learning for Thermal Conductivity: https://doi.org/10.48550/arXiv.2503.17060
 - [17] G. Qin et al., Mater. Adv., 2022,3, 6826-6830: https://doi.org/10.1039/D2MA00694D
 - [18] P. B. Allen, Phys. Rev. B 88 (2013) 144302.: https://doi.org/10.1103/PhysRevB.88.144302 (In heat conduction, it has been shown that the phonon N-process (which is wavenumber-conserving scattering and may change the direction of phonon momentum but does not have the effect of damping the overall heat flow) does not contribute to the relaxation of the heat flow. By treating only the U-process as an effective scattering mechanism, the Callaway model is physically improved and becomes applicable.)
-- [19] https://github.com/dalcorso/thermo_pw
+- [19] thermo_pw: https://github.com/dalcorso/thermo_pw
 - [20] ElaStic: https://exciting-code.org/elastic/ and https://github.com/ponychen123/Elastic2020
-- [21] https://www.paradim.org/toolbox/theory/quantum_espresso/tutorials
+- [21] QE tutorial: https://www.paradim.org/toolbox/theory/quantum_espresso/tutorials
 - [22] https://github.com/viniciusfacco/autoelastic
 
 
