@@ -115,7 +115,7 @@ NCPUs=1
 ## version information
 | thermo_pw | QE     | test    | EPW   |
 | --------- | ------ | ------- | ----- |
-| 1.3.0     | 6.5Max | success |       |
+| 1.3.0     | 6.5MaX | success |       |
 | 1.5.1     | 6.8    | failed  |       |
 | 1.6.0     | 6.8    | success | 5.6   |
 | 1.8.1     | 7.2    | success | 5.7   |
