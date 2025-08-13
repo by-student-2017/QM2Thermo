@@ -34,7 +34,7 @@
 0. sudo apt -y install gnuplot ghostscript
 1. bash ./run_disp_thermo_pw.sh
 
-## Average Gruneisen parameters (example09)
+## Average Gruneisen parameters (example09) (Time: about 1 [h])
 1. bash ./run_Gruneisen_thermo_pw.sh
 
 ## Restart
