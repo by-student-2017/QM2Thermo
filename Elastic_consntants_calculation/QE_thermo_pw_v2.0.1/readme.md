@@ -137,3 +137,6 @@ NCPUs=1
 1. cd q-e-qe-7.4.1
 2. cd thermo_pw
 3. make leave_qe
+
+## References
+- https://people.sissa.it/~dalcorso/thermo_pw/ug.2.0.0.pdf
