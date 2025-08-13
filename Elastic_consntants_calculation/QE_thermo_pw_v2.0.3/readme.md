@@ -46,7 +46,7 @@
 NCPUs=1
 ```
 
-## Show results
+## Show results (1 [kbar] = 0.1 [GPa])
 - grep -A 50 "Elastic" case.elastic.out | tail -70
 ```
      Elastic constants C_ij (kbar)
