@@ -206,7 +206,6 @@ If a calculation result file already exists, the corresponding calculation will 
 - [19] thermo_pw: https://github.com/dalcorso/thermo_pw
 - [20] ElaStic: https://exciting-code.org/elastic/ and https://github.com/ponychen123/Elastic2020
 - [21] QE tutorial: https://www.paradim.org/toolbox/theory/quantum_espresso/tutorials
-- [22] https://github.com/viniciusfacco/autoelastic
 
 
 ## Citation
