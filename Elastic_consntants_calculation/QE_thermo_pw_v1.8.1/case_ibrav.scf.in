@@ -1,0 +1,38 @@
+&control
+  calculation = 'scf' ,
+  prefix='POSCAR',
+  outdir='./work/' ,
+  pseudo_dir = './',
+/
+&system
+  ibrav=  2, 
+  celldm(1) =10.20, 
+  nat=  2, 
+  ntyp= 1,
+  ecutwfc  =  44.0 ,
+  ecutrho  = 175.0 ,
+  occupations = 'smearing' ,
+  degauss  = 0.02 ,
+  smearing = 'mp',
+  ! nosym = .true. is bad
+/
+&ELECTRONS
+  conv_thr = 1.0e-6 ,
+  mixing_beta = 0.7 ,
+/
+&IONS
+  ion_dynamics = 'bfgs',
+/
+&CELL
+  cell_dynamics = 'bfgs' ,
+  press = 0.0d0 ,
+  press_conv_thr = 0.5D0 ,
+  cell_dofree = 'all' ,
+/
+ATOMIC_SPECIES
+  Si   28.08500  Si.pbe-n-kjpaw_psl.1.0.0.UPF
+ATOMIC_POSITIONS {crystal}
+  Si   0.750000000000000   0.750000000000000   0.750000000000000 
+  Si   0.500000000000000   0.500000000000000   0.500000000000000 
+K_POINTS AUTOMATIC
+ 4 4 4 1 1 1 
