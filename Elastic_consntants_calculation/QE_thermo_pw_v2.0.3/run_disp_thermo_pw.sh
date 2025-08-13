@@ -48,3 +48,7 @@ EOF
 
 # thermo_pw execution (dispersion)
 ${PARA_IMAGE_PREFIX} ${BIN_DIR}/thermo_pw.x  < ${input_file} | tee ${output_file}
+
+ps2pdf output_disp.g1.ps disp.pdf
+ps2pdf output_dos.g1.ps dos.pdf
+ps2pdf output_therm.g1.ps therm.pdf
