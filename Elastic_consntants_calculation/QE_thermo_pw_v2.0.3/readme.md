@@ -125,7 +125,7 @@ NCPUs=1
 | 1.9.0     | 7.2   | failed  | 5.7   |
 | 2.0.1     | 7.3.1 | success | 5.8.1 |
 | 2.0.3     | 7.4.1 | success | 5.9   |
-- (Note: PW v5.7 and later is stable)
+- (Note: EPW v5.7 and later is stable)
 
 ## Test
 - OS: Ubuntu 22.04 LTS (WSL2, Windows 11)
