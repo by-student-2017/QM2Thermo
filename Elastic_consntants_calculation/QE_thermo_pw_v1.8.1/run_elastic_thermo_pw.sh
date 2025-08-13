@@ -54,4 +54,4 @@ EOF
 # thermo_pw execution (elastic constant tensor)
 ${PARA_IMAGE_PREFIX} ${BIN_DIR}/thermo_pw.x < ${input_file} | tee ${output_file}
 
-grep -A 50 "Elastic" case.elastic.out | tail -70
+grep -A 50 "Elastic" ${output_file} | tail -70

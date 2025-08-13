@@ -24,7 +24,7 @@
 
 ## Elastic constants calculation
 1. bash ./run_elastic_thermo_pw.sh
-2. grep -A 50 "Elastic" case.elastic.out | tail -70
+2. grep -A 50 "Elastic" log/case.elastic.out | tail -70
 
 ## Restart
 - You need to delete directories such as restart.
