@@ -115,6 +115,8 @@ NCPUs=1
 ## version information
 | thermo_pw | QE     | test    | EPW   |
 | --------- | ------ | ------- | ----- |
+| 1.2.0     | 6.4.1  | failed  |       |
+| 1.2.1     | 6.4.1  | failed  |       |
 | 1.3.0     | 6.5MaX | success |       |
 | 1.5.1     | 6.8    | failed  |       |
 | 1.6.0     | 6.8    | success | 5.6   |
@@ -123,6 +125,7 @@ NCPUs=1
 | 2.0.1     | 7.3.1  | success | 5.8.1 |
 | 2.0.3     | 7.4.1  | success | 5.9   |
 - (Note: EPW v5.7 and later is stable)
+- I did the same as with QE v6.5MaX, but while it was successful with QE v6.4.1, it didn't work with thermo_py. It seems likely that the default gfortran on Ubuntu 22.04 LTS will require code rewrites for earlier versions of thermo_py.
 
 ## Test
 - OS: Ubuntu 22.04 LTS (WSL2, Windows 11)
