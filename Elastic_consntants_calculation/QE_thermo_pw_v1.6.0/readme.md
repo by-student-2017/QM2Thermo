@@ -115,6 +115,7 @@ NCPUs=1
 # version information
 | thermo_pw | QE    | test    |
 | --------- | ----- | ------- |
+| 1.5.1     | 6.8   | failed  |
 | 1.6.0     | 6.8   | success |
 | 1.8.1     | 7.2   | success |
 | 1.9.0     | 7.2   | failed  |
