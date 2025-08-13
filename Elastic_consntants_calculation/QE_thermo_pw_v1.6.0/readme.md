@@ -112,7 +112,7 @@ NCPUs=1
      Debye temperature =      634.507 K
 ```
 
-# version information
+## version information
 | thermo_pw | QE    | test    | EPW   |
 | --------- | ----- | ------- | ----- |
 | 1.5.1     | 6.8   | failed  |       |
@@ -129,7 +129,7 @@ NCPUs=1
 - Memory: 32 GB
 
 
-# (uninstall thermo_pw)
+## (uninstall thermo_pw)
 1. cd q-e-qe-7.2
 2. cd thermo_pw
 3. make leave_qe
