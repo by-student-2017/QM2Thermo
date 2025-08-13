@@ -135,7 +135,7 @@ NCPUs=1
 
 
 ## (uninstall thermo_pw)
-1. cd q-e-qe-7.4.1
+1. cd q-e-qe-7.3.1
 2. cd thermo_pw
 3. make leave_qe
 
