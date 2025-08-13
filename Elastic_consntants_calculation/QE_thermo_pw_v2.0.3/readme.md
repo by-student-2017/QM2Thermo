@@ -1,6 +1,6 @@
 # QE v7.4.1 + thermo_pw v2.0.3
 
-## QE 7.4.1 Installation
+## QE v7.4.1 Installation
 1. sudo apt update
 2. sudo apt -y install gfortran g++ build-essential make libopenblas-dev libopenmpi-dev libfftw3-dev
 3. wget https://github.com/QEF/q-e/archive/refs/tags/qe-7.4.1.tar.gz
@@ -10,7 +10,7 @@
 7. make pwall
 8. sudo make install
 
-## thermo_pw 2.0.3 Installation for QE 7.4.1
+## thermo_pw v2.0.3 Installation for QE v7.4.1
 1. cd q-e-qe-7.4.1
 2. wget https://github.com/dalcorso/thermo_pw/archive/refs/tags/2.0.3.tar.gz
 3. tar -xvzf 2.0.3.tar.gz
@@ -22,12 +22,20 @@
 9. make thermo_pw
 10. sudo make install
 
-## Elastic constants calculation
+## Elastic constants calculation (example22 - example23)
 1. bash ./run_elastic_thermo_pw.sh
 2. grep -A 50 "Elastic" log/case.elastic.out | tail -70
 
-## Phonon dispersion (set ibrav > 0, i.e., case_ibrav.scf.in)
+## Phonon dispersion (set ibrav > 0, i.e., case_ibrav.scf.in) (example04)
+0. sudo apt -y install gnuplot ghostscript
 1. bash ./run_disp_thermo_pw.sh
+
+## Phonon dispersion at the minimum of the Murnaghan (set ibrav > 0, i.e., case_ibrav.scf.in) (example08)
+0. sudo apt -y install gnuplot ghostscript
+1. bash ./run_disp_thermo_pw.sh
+
+## Average Gruneisen parameters (example09)
+1. bash ./run_Gruneisen_thermo_pw.sh
 
 ## Restart
 - You need to delete directories such as restart.
@@ -111,6 +119,7 @@ NCPUs=1
 
 # version information
 | thermo_pw | QE    |
+| --------- | ----- |
 | 2.0.3     | 7.4.1 |
 | 1.8.1     | 7.2   |
 
