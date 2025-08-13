@@ -3,12 +3,13 @@
 ## QE v7.4.1 Installation
 1. sudo apt update
 2. sudo apt -y install gfortran g++ build-essential make libopenblas-dev libopenmpi-dev libfftw3-dev
-3. wget https://github.com/QEF/q-e/archive/refs/tags/qe-7.4.1.tar.gz
-4. tar xvf qe-7.4.1.tar.gz
-5. cd q-e-qe-7.4.1
-6. ./configure
-7. make pwall
-8. sudo make install
+3. sudo apt -y install gnuplot ghostscript
+4. wget https://github.com/QEF/q-e/archive/refs/tags/qe-7.4.1.tar.gz
+5. tar xvf qe-7.4.1.tar.gz
+6. cd q-e-qe-7.4.1
+7. ./configure
+8. make pwall
+9. sudo make install
 
 ## thermo_pw v2.0.3 Installation for QE v7.4.1
 1. cd q-e-qe-7.4.1
@@ -27,11 +28,9 @@
 2. grep -A 50 "Elastic" log/case.elastic.out | tail -70
 
 ## Phonon dispersion (set ibrav > 0, i.e., case_ibrav.scf.in) (example04)
-0. sudo apt -y install gnuplot ghostscript
 1. bash ./run_disp_thermo_pw.sh
 
 ## Phonon dispersion at the minimum of the Murnaghan (set ibrav > 0, i.e., case_ibrav.scf.in) (example08)
-0. sudo apt -y install gnuplot ghostscript
 1. bash ./run_disp_thermo_pw.sh
 
 ## Average Gruneisen parameters (example09) (Time: about 1 [h])
