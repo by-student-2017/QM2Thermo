@@ -1,4 +1,4 @@
-# QE v7.2 + thermo_pw v1.8.1 (Ubuntu 22.04 LTS)
+# QE v7.2 + thermo_pw v1.8.1
 
 ## QE v7.2 Installation
 1. sudo apt update
@@ -18,9 +18,9 @@
 5. cd thermo_pw
 6. make join_qe
 7. cd ..
-11. ./configure
-12. make thermo_pw
-13. sudo make install
+8. ./configure
+9. make thermo_pw
+10. sudo make install
 
 ## Elastic constants calculation
 1. bash ./run_elastic_thermo_pw.sh
@@ -104,8 +104,8 @@ NCPUs=1
 
 # version information
 | thermo_pw | QE    |
-| 2.0.3     | 7.4.1 |
 | 1.8.1     | 7.2   |
+| 2.0.3     | 7.4.1 |
 
 ## Test
 - OS: Ubuntu 22.04 LTS (WSL2, Windows 11)
