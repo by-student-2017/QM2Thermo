@@ -23,14 +23,14 @@
 9. make thermo_pw
 10. sudo make install
 
-## Elastic constants calculation (example22 - example23)
+## Elastic constants calculation (example22 - example23) (Time: about 2 [min])
 1. bash ./run_elastic_thermo_pw.sh
 2. grep -A 50 "Elastic" log/case.elastic.out | tail -70
 
-## Phonon dispersion (set ibrav > 0, i.e., case_ibrav.scf.in) (example04)
+## Phonon dispersion (set ibrav > 0, i.e., case_ibrav.scf.in) (example04) (Time: about 2 [min])
 1. bash ./run_disp_thermo_pw.sh
 
-## Phonon dispersion at the minimum of the Murnaghan (set ibrav > 0, i.e., case_ibrav.scf.in) (example08)
+## Phonon dispersion at the minimum of the Murnaghan (set ibrav > 0, i.e., case_ibrav.scf.in) (example08) (Time: about 2 [min])
 1. bash ./run_disp_thermo_pw.sh
 
 ## Average Gruneisen parameters (example09) (Time: about 1 [h])
