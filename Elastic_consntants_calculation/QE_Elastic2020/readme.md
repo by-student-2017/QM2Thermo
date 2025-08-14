@@ -29,3 +29,13 @@
 
 ## Calculation method (energy base. 2nd order)
 1. run_elastic_energy_2nd.sh
+
+## Calculation method (stress base. 3rd order) (Some confirmation required)
+1. run_elastic_stress_3rd.sh
+
+## Calculation method (energy base. 3rd order) (All need to be checked)
+1. run_elastic_energy_3rd.sh
+
+## Building data in a Python environment
+1. sudo apt -y install python3-pip
+2. pip freeze > requirements.txt
