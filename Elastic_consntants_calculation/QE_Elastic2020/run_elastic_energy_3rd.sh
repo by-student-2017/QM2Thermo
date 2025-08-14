@@ -73,5 +73,22 @@ python3 $HOME/Elastic2020/ElaStic_Analyze
 
 # Return to the main directory and run ElaStic_Result
 python3 $HOME/Elastic2020/ElaStic_Result
-cat ./Energy-vs-Strain/ElaStic_2nd.out
-echo "see ElaStic_2nd.out file in Energy-vs-Strain directory."
+
+# Check and display ElaStic_3rd.out in Energy-vs-Strain directory
+if [ -f ./Energy-vs-Strain/ElaStic_3rd.out ]; then
+    echo "ElaStic_3rd.out found in Energy-vs-Strain. Displaying contents:"
+    cat ./Energy-vs-Strain/ElaStic_3rd.out
+else
+    echo "./Energy-vs-Strain/ElaStic_3rd.out not found."
+fi
+
+echo "see ElaStic_3rd.out file in Energy-vs-Strain directory."
+
+# Check and display ElaStic_3rd.out in current directory
+if [ -f ElaStic_3rd.out ]; then
+    echo "ElaStic_3rd.out found in current directory. Displaying contents:"
+    cat ElaStic_3rd.out
+else
+    echo "ElaStic_3rd.out not found in current directory."
+fi
+
