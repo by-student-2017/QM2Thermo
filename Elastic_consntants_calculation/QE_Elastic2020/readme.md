@@ -46,7 +46,7 @@
 ```
 ElaStic_2nd.out found in Energy-vs-Strain. Displaying contents:
     The output of ElaStic code
-    Today is Fri Aug 15 10:00:32 2025
+    Today is Fri Aug 15 13:29:00 2025
 
     Symmetry of the second-order elastic constant matrix in Voigt notation.
     for, space group-number between 207 and 230, Cubic I structure.
@@ -120,9 +120,9 @@ ElaStic_2nd.out found in Energy-vs-Strain. Displaying contents:
 
 ## Results: Stress and 2nd order
 ```
-ElaStic_2nd.out found in current directory. Displaying contents:
+ElaStic_2nd.out found in Stress-vs-Strain. Displaying contents:
     The output of ElaStic code
-    Today is Fri Aug 15 09:54:32 2025
+    Today is Fri Aug 15 13:30:19 2025
 
     Symmetry of the second-order elastic constant matrix in Voigt notation.
     for, space group-number between 207 and 230, Cubic I structure.
