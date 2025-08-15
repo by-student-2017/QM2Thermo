@@ -78,16 +78,13 @@ python3 $HOME/Elastic2020/ElaStic_Result
 if [ -f ./Energy-vs-Strain/ElaStic_2nd.out ]; then
     echo "ElaStic_2nd.out found in Energy-vs-Strain. Displaying contents:"
     cat ./Energy-vs-Strain/ElaStic_2nd.out
-else
-    echo "./Energy-vs-Strain/ElaStic_2nd.out not found."
-fi
-
-echo "see ElaStic_2nd.out file in Energy-vs-Strain directory."
-
-# Check and display ElaStic_2nd.out in current directory (if exists)
-if [ -f ElaStic_2nd.out ]; then
+    echo "see ElaStic_2nd.out file in Energy-vs-Strain directory."
+    
+elif [ -f ElaStic_2nd.out ]; then
     echo "ElaStic_2nd.out found in current directory. Displaying contents:"
     cat ElaStic_2nd.out
+    echo "see ElaStic_2nd.out file in current directory."
+    
 else
-    echo "ElaStic_2nd.out not found in current directory."
+    echo "ElaStic_2nd.out not found in either Energy-vs-Strain or current directory."
 fi
