@@ -30,7 +30,7 @@
 ## Calculation method (stress base. 2nd order)
 1. run_elastic_stress_2nd.sh
 
-## Calculation method (stress base. 3rd order) (Some confirmation required)
+## Calculation method (stress base. 3rd order) (Some confirmation required: need to check RII to N structure)
 1. run_elastic_stress_3rd.sh
 
 ## Calculation method (energy base. 3rd order) (All need to be checked)
