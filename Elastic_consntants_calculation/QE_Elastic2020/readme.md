@@ -55,7 +55,7 @@ bash clean.sh
 - Numpy: 1.21.5
 - Matplotlib: 3.5.1
 
-## Results: Energy and 2nd order: Diamond Si
+## Results: Energy and 2nd order: Diamond Si (Time: about 8 [min])
 ```
 ElaStic_2nd.out found in Energy-vs-Strain. Displaying contents:
     The output of ElaStic code
@@ -233,7 +233,7 @@ ElaStic_2nd.out found in Energy-vs-Strain. Displaying contents:
                Bye-Bye! Tschuess! Ciao! Poka! Zia Jian! KhodaHafez!
 ```
 
-## Results: Stress and 2nd order: Diamond Si
+## Results: Stress and 2nd order: Diamond Si (Time: about 8 [min])
 ```
 ElaStic_2nd.out found in Stress-vs-Strain. Displaying contents:
     The output of ElaStic code
