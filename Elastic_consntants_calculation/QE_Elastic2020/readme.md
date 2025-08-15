@@ -24,16 +24,16 @@
 10. cp SpaceGroups/sgroup ./sgroup
 11. echo 'export PATH="$HOME/Elastic2020:$PATH"' >> ~/.bashrc
 
-## Calculation method (energy base. 2nd order)
+## Calculation method (energy base and 2nd order)
 1. run_elastic_energy_2nd.sh
 
-## Calculation method (stress base. 2nd order)
+## Calculation method (stress base and 2nd order)
 1. run_elastic_stress_2nd.sh
 
-## Calculation method (stress base. 3rd order) (Some confirmation required: need to check RII to N structure)
+## Calculation method (stress base and 3rd order) (Some confirmation required: need to check RII to N structure)
 1. run_elastic_stress_3rd.sh
 
-## Calculation method (energy base. 3rd order) (All need to be checked)
+## Calculation method (energy base and 3rd order) (All need to be checked)
 1. run_elastic_energy_3rd.sh
 
 ## Whether or not to display the diagram
@@ -49,6 +49,9 @@ show_plot_flag="yes"
 bash clean.sh
 ```
 
+## input file (case.scf.in)
+- Please use the format of the input file (case.scf.in) that is the base for QE. This is mainly because CELL_PARAMETERS will be changed and the location where it is written will also change.
+
 ## Test
 - OS: Ubuntu 22.04 LTS (WLS2)
 - Python: 3.10.12
@@ -56,11 +59,11 @@ bash clean.sh
 - Matplotlib: 3.5.1
 - Scipy: 3.5.1
 
-## Results: Energy and 2nd order: Diamond Si (Time: about 8 [min])
+## Results: Energy and 2nd order: Diamond Si (Time: about 2 [min])
 ```
 ElaStic_2nd.out found in Energy-vs-Strain. Displaying contents:
     The output of ElaStic code
-    Today is Fri Aug 15 17:01:15 2025
+    Today is Sat Aug 16 00:49:48 2025
 
     Symmetry of the second-order elastic constant matrix in Voigt notation.
     for, space group-number between 207 and 230, Cubic I structure.
@@ -172,23 +175,23 @@ ElaStic_2nd.out found in Energy-vs-Strain. Displaying contents:
 
     Universal Anisotropy Index:    0.000
 
-    Note: Zener Ratio and Structural Behavior
-    Zener ratio quantifies elastic anisotropy in cubic crystals.
-    It helps predict crack propagation direction in anisotropic stress fields.
-    Guides selection of slip systems for dislocation motion.
-    Important for epitaxial growth where lattice matching affects stability.
-    Also used to evaluate directional stress concentration at interfaces.
-
- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    Zener Anisotropy Ratio:    0.998
-
     Note: Universal Elastic Anisotropy Index and Microstructural Effects
     Au measures overall elastic anisotropy in polycrystalline materials.
     Influences GP zone formation by controlling stress field directionality.
     Helps assess delamination risk and interfacial energy variation.
     Guides stacking orientation in composite design for stress optimization.
     Useful for predicting void formation in anisotropic stress environments.
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    Zener Anisotropy Ratio:    0.998
+
+    Note: Zener Ratio and Structural Behavior
+    Zener ratio quantifies elastic anisotropy in cubic crystals.
+    It helps predict crack propagation direction in anisotropic stress fields.
+    Guides selection of slip systems for dislocation motion.
+    Important for epitaxial growth where lattice matching affects stability.
+    Also used to evaluate directional stress concentration at interfaces.
 
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -232,13 +235,15 @@ ElaStic_2nd.out found in Energy-vs-Strain. Displaying contents:
 
     ... Have a G00D Day, Week, Month, Year, and Century (if you are lucky) ...
                Bye-Bye! Tschuess! Ciao! Poka! Zia Jian! KhodaHafez!
+
+see ElaStic_2nd.out file in Energy-vs-Strain directory.
 ```
 
-## Results: Stress and 2nd order: Diamond Si (Time: about 8 [min])
+## Results: Stress and 2nd order: Diamond Si (Time: about 2 [min])
 ```
 ElaStic_2nd.out found in Stress-vs-Strain. Displaying contents:
     The output of ElaStic code
-    Today is Fri Aug 15 17:09:34 2025
+    Today is Sat Aug 16 00:51:41 2025
 
     Symmetry of the second-order elastic constant matrix in Voigt notation.
     for, space group-number between 207 and 230, Cubic I structure.
@@ -354,23 +359,23 @@ ElaStic_2nd.out found in Stress-vs-Strain. Displaying contents:
 
     Universal Anisotropy Index:    0.015
 
-    Note: Zener Ratio and Structural Behavior
-    Zener ratio quantifies elastic anisotropy in cubic crystals.
-    It helps predict crack propagation direction in anisotropic stress fields.
-    Guides selection of slip systems for dislocation motion.
-    Important for epitaxial growth where lattice matching affects stability.
-    Also used to evaluate directional stress concentration at interfaces.
-
- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    Zener Anisotropy Ratio:    1.118
-
     Note: Universal Elastic Anisotropy Index and Microstructural Effects
     Au measures overall elastic anisotropy in polycrystalline materials.
     Influences GP zone formation by controlling stress field directionality.
     Helps assess delamination risk and interfacial energy variation.
     Guides stacking orientation in composite design for stress optimization.
     Useful for predicting void formation in anisotropic stress environments.
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    Zener Anisotropy Ratio:    1.118
+
+    Note: Zener Ratio and Structural Behavior
+    Zener ratio quantifies elastic anisotropy in cubic crystals.
+    It helps predict crack propagation direction in anisotropic stress fields.
+    Guides selection of slip systems for dislocation motion.
+    Important for epitaxial growth where lattice matching affects stability.
+    Also used to evaluate directional stress concentration at interfaces.
 
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
