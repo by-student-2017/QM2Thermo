@@ -63,7 +63,7 @@ bash clean.sh
 ```
 ElaStic_2nd.out found in Energy-vs-Strain. Displaying contents:
     The output of ElaStic code
-    Today is Sat Aug 16 00:49:48 2025
+    Today is Sat Aug 16 01:02:40 2025
 
     Symmetry of the second-order elastic constant matrix in Voigt notation.
     for, space group-number between 207 and 230, Cubic I structure.
@@ -94,6 +94,7 @@ ElaStic_2nd.out found in Energy-vs-Strain. Displaying contents:
     0.00000     0.00000     0.00000     0.01459     0.00000     0.00000
     0.00000     0.00000     0.00000     0.00000     0.01459     0.00000
     0.00000     0.00000     0.00000     0.00000     0.00000     0.01459
+
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     Voigt bulk  modulus, B_V =    89.33  GPa
@@ -239,7 +240,7 @@ ElaStic_2nd.out found in Energy-vs-Strain. Displaying contents:
 see ElaStic_2nd.out file in Energy-vs-Strain directory.
 ```
 
-## Results: Stress and 2nd order: Diamond Si (Time: about 2 [min])
+## Results: Stress and 2nd order: Diamond Si (Time: about 1 [min])
 ```
 ElaStic_2nd.out found in Stress-vs-Strain. Displaying contents:
     The output of ElaStic code
