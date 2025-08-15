@@ -36,6 +36,13 @@
 ## Calculation method (energy base. 3rd order) (All need to be checked)
 1. run_elastic_energy_3rd.sh
 
+## Whether or not to display the diagram
+- The figure is stored in a directory named Plot. If you want to see it immediately, do the following:
+```
+# Choose whether to display the diagram: yes or no
+show_plot_flag="yes"
+```
+
 ## Test
 - OS: Ubuntu 22.04 LTS (WLS2)
 - Python: 3.10.12
