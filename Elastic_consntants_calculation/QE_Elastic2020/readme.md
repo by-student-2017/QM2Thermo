@@ -54,6 +54,7 @@ bash clean.sh
 - Python: 3.10.12
 - Numpy: 1.21.5
 - Matplotlib: 3.5.1
+- Scipy: 3.5.1
 
 ## Results: Energy and 2nd order: Diamond Si (Time: about 8 [min])
 ```
