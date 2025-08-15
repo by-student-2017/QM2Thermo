@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Choose whether to display the diagram: yes or no
+show_plot_flag="no"
+
 # Set number of threads and CPUs
 export OMP_NUM_THREADS=1
 NCPUs=$(($(nproc) / 2))
@@ -68,8 +71,11 @@ done
 
 # Return to the main directory and run ElaStic_Analysis_Stress
 cd ..
-#python3 $HOME/Elastic2020/ElaStic_Analyze_Stress
-python3 $HOME/Elastic2020/ElaStic_Analyze
+if [ "$show_plot_flag" == "yes" ]; then
+  python3 $HOME/Elastic2020/ElaStic_Analyze
+else
+  python3 $HOME/Elastic2020/ElaStic_Analyze_Stress_noshowplot
+fi
 
 # Return to the main directory and run ElaStic_Result
 python3 $HOME/Elastic2020/ElaStic_Result
