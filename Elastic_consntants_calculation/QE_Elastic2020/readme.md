@@ -22,7 +22,8 @@
 8. make
 9. cd ..
 10. cp SpaceGroups/sgroup ./sgroup
-11. echo 'export PATH="$HOME/Elastic2020:$PATH"' >> ~/.bashrc
+11. chmod +x *
+12. echo 'export PATH="$HOME/Elastic2020:$PATH"' >> ~/.bashrc
 
 ## Calculation method (energy base and 2nd order)
 1. run_elastic_energy_2nd.sh
