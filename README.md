@@ -1,4 +1,4 @@
-# LBT-TETRA (QM2Thermo)
+# QM2Thermo (Predecessor: LBT-TETRA)
 ## QM2Thermo: Post-processing Thermoelectric Parameters from Quantum Mechanical calculations Output
 - Currently, only WIEN2k + "(option) EPW (from QE, Abinit, or wannier90, etc) output" is supported, but in the future we plan to make it compatible with various first-principles band calculations. We also plan to support GPUs with OpenACC in the future.
 - Functions other than chemical potential and Seebeck coefficient, such as carrier concentration Nc, were created for future expansion and should be used only as a reference.
