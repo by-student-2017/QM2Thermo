@@ -171,6 +171,13 @@ If a calculation result file already exists, the corresponding calculation will 
 - phononDOS.dat calculates the constant volume specific heat Cv_DOS and Debye temperature Theta_D. If the bulk modulus or density in parameter.txt are <= 0, it calculates the average sound velocity from Cv_DOS and the thermal conductivity.
 - The temperature dependence of the thermal conductivity is calculated using the Cezairliyan's treatment of "Thermal Conductivity of Elements [13]", where the code assumes that Tm = Debye temperature and km is the thermal conductivity at the Debye temperature.
 
+## Elasticity tensor calculation
+- This code uses the values of the elasticity tensor (particularly the bulk modulus and the shear modulus or Poisson's ratio) to calculate the speed of sound, the Gruneisen constant, and the lattice thermal conductivity.
+- Calculating thermal conductivity requires third-order calculations, making the computational cost very high. On the other hand, methods using empirical parameters that utilize elasticity tensors (especially the bulk modulus and shear modulus or Poisson's ratio) are expected to be useful for screening materials.
+- This code also includes methods for calculating elasticity tensors. For QE, we recommend using thermo_pw. If you insist on full potential calculations, we recommend using ElaStic, which uses exciting. QE is of course also fine.
+- This code also includes a calculation method for elasticity tensors (stored in Elastic_consntants_calculation). For QE, we recommend using thermo_pw. If you insist on full-potential calculations, we recommend using ElaStic with exciting (Exciting_ElaStic_v1.1). Of course, QE also works well (QE_Elastic2020).
+- I have my own code for Bulk_modulus_calculation and Shear_modulus_calculation, which I created almost from scratch, but they only work well with conventional cells and Cartesian coordinates. Ultimately, even if you limit the calculations to Bulk modulus and Shear modulus, you cannot expect any improvement in calculation speed for systems that have primitive cells. However, they may be advantageous for systems where symmetry is reduced due to element substitution or defects, and calculations are performed using conventional cells or Cartesian coordinates.
+
 ---
 
 ## Test
