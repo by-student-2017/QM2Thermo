@@ -237,7 +237,7 @@ _A preprint describing QM2Thermo will be uploaded to arXiv when time permits._
 ```
 
 ## License
-- This project is licensed under the MIT License. Please check the LICENSE file for more information.
+This project is licensed under the MIT License. Please check the LICENSE file for more information.
 
 QM2Thermo is a successor to the previously published LBT-TETRA framework. While LBT-TETRA laid the foundation for elasticity tensor-based thermal conductivity estimation, QM2Thermo introduces significant improvements, including temperature-dependent modeling via Slack's and Slater's formulations, enhanced support for substituted systems, and a restructured codebase with over 50% original implementation.
 
