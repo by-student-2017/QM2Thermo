@@ -236,6 +236,7 @@ If a calculation result file already exists, the corresponding calculation will 
 ```
 
 ## License
+- This project is licensed under the MIT License. Please check the LICENSE file for more information.
 - “QM2Thermo is a significantly extended and restructured version of LBT-TETRA, incorporating temperature-dependent thermal conductivity prediction based on elasticity tensors and crystal structure information.”
 
 ---
