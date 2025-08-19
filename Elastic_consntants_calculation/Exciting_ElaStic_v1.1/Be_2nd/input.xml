@@ -1,0 +1,29 @@
+<input>
+ 
+   <title>Be: 2nd-order elastic constants</title>
+ 
+   <structure speciespath="$EXCITINGROOT/species">
+ 
+      <crystal scale="4.3207">
+         <basevect>  1.00000000  0.00000000  0.00000000 </basevect>
+         <basevect> -0.50000000  0.86602540  0.00000000 </basevect>
+         <basevect>  0.00000000  0.00000000  1.52257736 </basevect>
+      </crystal>
+ 
+      <species speciesfile="Be.xml" rmt="1.85">
+         <atom coord="0.66666667  0.33333333  0.75000000"/>
+         <atom coord="0.33333333  0.66666667  0.25000000"/>
+      </species>
+ 
+   </structure>
+ 
+   <groundstate 
+      xctype="GGA_PBE_SOL"
+      ngridk="6 6 4"
+      rgkmax="6.5"
+      maxscl="30">
+   </groundstate>
+ 
+   <relax/>
+ 
+</input>
