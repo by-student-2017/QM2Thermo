@@ -185,6 +185,7 @@ If a calculation result file already exists, the corresponding calculation will 
 - Ubuntu 18.04 LTS or Later
 - WSL, Windows 10 or Later
 - Intel: Core(TM)-i3-2100 or Later
+- gfortran: gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04)
 
 
 ## Space group number
