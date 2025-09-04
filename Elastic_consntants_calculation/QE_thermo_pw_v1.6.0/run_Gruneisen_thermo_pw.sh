@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# delet old files
+rm -rf work restart therm_files gnuplot_files elastic_constants
+
 # Base input file
 base_input="case_ibrav.scf.in" # old version
 
