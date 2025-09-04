@@ -34,12 +34,10 @@ cp ${base_input} ${input_file}
 #  continue_zero_ibrav=.TRUE.,
 
 cat > thermo_control << EOF
-&INPUT_THERMO
-  what='scf_disp',
-  nq1_d=128, 
-  nq2_d=128, 
-  nq3_d=128,
-/
+ &INPUT_THERMO
+  what='mur_lc_disp',
+  nq1_d=128, nq2_d=128, nq3_d=128,
+ /
 EOF
 
 cat > ph_control << EOF

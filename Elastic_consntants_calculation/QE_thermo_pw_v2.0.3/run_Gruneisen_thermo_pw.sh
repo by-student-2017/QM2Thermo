@@ -34,12 +34,10 @@ cp ${base_input} ${input_file}
 #  continue_zero_ibrav=.TRUE.,
 
 cat > thermo_control << EOF
-&INPUT_THERMO
-  what='scf_disp',
-  nq1_d=128, 
-  nq2_d=128, 
-  nq3_d=128,
-/
+ &INPUT_THERMO
+  what='mur_lc_t',
+  deltat=3.
+ /
 EOF
 
 cat > ph_control << EOF
@@ -50,13 +48,9 @@ cat > ph_control << EOF
   outdir='./work/g1/',
   fildyn = 'case.dyn.xml' ,
   ldisp = .TRUE. ,
-  nq1=2, nq2=2, nq3=2,
+  nq1=4, nq2=4, nq3=4,
 /
 EOF
 
 # thermo_pw execution (dispersion)
 ${PARA_IMAGE_PREFIX} ${BIN_DIR}/thermo_pw.x  < ${input_file} | tee ${output_file}
-
-ps2pdf output_disp.g1.ps disp.pdf
-ps2pdf output_dos.g1.ps dos.pdf
-ps2pdf output_therm.g1.ps therm.pdf
