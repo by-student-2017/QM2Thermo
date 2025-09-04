@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# delet old files
+rm -rf log work restart therm_files gnuplot_files elastic_constants thermo_control
+rm -rf phdisp_files dynamical_matrices ph_control
+rm -rf energy_files
+rm -rf anhar_files
+rm -fr *.ps
+rm -fr *.pdf
+
 # Base input file
 base_input="case.scf.in" # old version
 
